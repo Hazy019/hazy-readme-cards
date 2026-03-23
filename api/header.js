@@ -23,7 +23,10 @@ export default async function handler() {
   const ff = await loadFonts();
   const W = 900, H = 155;
 
-  const MC = ["ア","イ","ウ","エ","カ","0","1","<","#","◈"];
+  const MC = [
+    "ア","イ","ウ","エ","カ","キ","ク","サ","シ","ス","タ","チ","ツ","ナ","ニ","ノ",
+    "&lt;","&gt;","[","]","|","!","#","$","@","%","=","∆","Ω","Ψ","∞","√","≈","≠","◈","⬡","◫"
+  ];
   const matrixCols = [18,38,58,78, 822,842,862,882].map((x, i) => {
     const dur = (3.2 + i * 0.55).toFixed(1);
     const delay = (i * 0.38).toFixed(1);
