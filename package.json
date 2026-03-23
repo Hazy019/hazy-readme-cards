@@ -1,6 +1,1 @@
-{
-  "name": "hazy-readme-cards",
-  "version": "1.0.0",
-  "description": "Custom GitHub profile README card generators for Hazy019",
-  "private": true
-}
+{ "name": "hazy-readme-cards", "version": "2.0.0", "private": true }
