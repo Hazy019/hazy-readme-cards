@@ -21,102 +21,125 @@ async function loadFonts() {
   } catch { return ""; }
 }
 
-const FALLBACK = {
-  stars: 4, commits: 28, prs: 6, issues: 8,
-  langs: [
-    { name: "Python",     pct: 50 },
-    { name: "CSS",        pct: 22 },
-    { name: "JavaScript", pct: 18 },
-    { name: "TypeScript", pct: 10 },
-  ],
-};
-
 async function fetchStats() {
-  const token = (typeof process !== "undefined") ? process.env.GITHUB_TOKEN : undefined;
-  const base = { "User-Agent": "hazy-readme/1.0", "Accept": "application/vnd.github.v3+json" };
-  const hdrs = token ? { ...base, Authorization: `Bearer ${token}` } : base;
+  const token = (typeof process !== "undefined") ? process.env.GITHUB_TOKEN : null;
 
+  // ==========================================
+  // PATH 1: HAS TOKEN (Fully Dynamic Pro Stats)
+  // ==========================================
   if (token) {
-    const q = `{user(login:"${USERNAME}"){
-      repositories(first:100,ownerAffiliations:OWNER,isFork:false){nodes{
-        stargazerCount
-        languages(first:8,orderBy:{field:SIZE,direction:DESC}){edges{size node{name}}}
-      }}
-      contributionsCollection(from:"2026-01-01T00:00:00Z"){
-        totalCommitContributions totalPullRequestContributions totalIssueContributions
+    const query = `
+      query {
+        user(login: "${USERNAME}") {
+          repositories(first: 100, ownerAffiliations: OWNER, isFork: false) {
+            nodes {
+              stargazerCount
+              languages(first: 5, orderBy: {field: SIZE, direction: DESC}) {
+                edges { size node { name } }
+              }
+            }
+          }
+          contributionsCollection {
+            totalCommitContributions
+            totalPullRequestContributions
+            totalIssueContributions
+          }
+        }
       }
-    }}`;
+    `;
+
     try {
       const res = await fetch("https://api.github.com/graphql", {
         method: "POST",
-        headers: { ...hdrs, "Content-Type": "application/json" },
-        body: JSON.stringify({ query: q }),
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ query }),
       });
+
       const { data } = await res.json();
-      const u = data.user;
-      const stars = u.repositories.nodes.reduce((s, r) => s + r.stargazerCount, 0);
-      const lm = {};
-      u.repositories.nodes.forEach(r =>
-        r.languages.edges.forEach(({ size, node }) => { lm[node.name] = (lm[node.name] || 0) + size; })
-      );
-      const tot = Object.values(lm).reduce((a, b) => a + b, 0);
-      const langs = Object.entries(lm).sort(([, a], [, b]) => b - a).slice(0, 4)
-        .map(([name, b]) => ({ name, pct: Math.round((b / tot) * 100) }));
+      const user = data.user;
+
+      // Calculate Stars
+      const stars = user.repositories.nodes.reduce((acc, repo) => acc + repo.stargazerCount, 0);
+
+      // Calculate Languages by actual byte size
+      const langMap = {};
+      user.repositories.nodes.forEach(repo => {
+        repo.languages.edges.forEach(edge => {
+          langMap[edge.node.name] = (langMap[edge.node.name] || 0) + edge.size;
+        });
+      });
+
+      const totalBytes = Object.values(langMap).reduce((a, b) => a + b, 0);
+      const langs = Object.entries(langMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([name, bytes]) => ({ name, pct: Math.round((bytes / totalBytes) * 100) }));
+
       return {
-        stars, langs,
-        commits: u.contributionsCollection.totalCommitContributions,
-        prs:     u.contributionsCollection.totalPullRequestContributions,
-        issues:  u.contributionsCollection.totalIssueContributions,
+        labels: ["Total Stars", "Commits (Year)", "Pull Requests", "Issues"],
+        values: [
+          stars, 
+          user.contributionsCollection.totalCommitContributions, 
+          user.contributionsCollection.totalPullRequestContributions, 
+          user.contributionsCollection.totalIssueContributions
+        ],
+        langs: langs.length > 0 ? langs : [{name: "Python", pct: 100}]
       };
-    } catch { /* fall through */ }
+    } catch (e) {
+      console.error("GraphQL Failed, dropping to REST API", e);
+    }
   }
 
+  // ==========================================
+  // PATH 2: NO TOKEN (Dynamic Public Fallback)
+  // ==========================================
   try {
-    const [rR, pR, iR, cR] = await Promise.allSettled([
-      fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&type=owner`, { headers: hdrs }),
-      fetch(`https://api.github.com/search/issues?q=author:${USERNAME}+type:pr&per_page=1`, { headers: hdrs }),
-      fetch(`https://api.github.com/search/issues?q=author:${USERNAME}+type:issue&per_page=1`, { headers: hdrs }),
-      fetch(`https://api.github.com/search/commits?q=author:${USERNAME}+committer-date:2026-01-01..2026-12-31&per_page=1`, {
-        headers: { ...hdrs, Accept: "application/vnd.github.cloak-preview+json" },
-      }),
-    ]);
+    const userRes = await fetch(`https://api.github.com/users/${USERNAME}`);
+    const repoRes = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100`);
+    
+    const userData = await userRes.json();
+    const repoData = await repoRes.json();
 
-    let { stars, langs, prs, issues, commits } = FALLBACK;
+    const stars = repoData.reduce((acc, repo) => acc + (repo.stargazers_count || 0), 0);
+    
+    // Calculate simple languages based on repo count (since bytes requires GraphQL)
+    const langMap = {};
+    repoData.forEach(repo => {
+      if (repo.language) langMap[repo.language] = (langMap[repo.language] || 0) + 1;
+    });
+    
+    const totalReposWithLangs = Object.values(langMap).reduce((a, b) => a + b, 0);
+    const langs = Object.entries(langMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([name, count]) => ({ name, pct: Math.round((count / totalReposWithLangs) * 100) }));
 
-    if (rR.status === "fulfilled" && rR.value.ok) {
-      const repos = await rR.value.json();
-      if (Array.isArray(repos)) {
-        stars = repos.reduce((s, r) => s + (r.stargazers_count || 0), 0);
-        const lc = {};
-        repos.forEach(r => { if (r.language) lc[r.language] = (lc[r.language] || 0) + 1; });
-        const tot = Object.values(lc).reduce((a, b) => a + b, 0);
-        if (tot > 0)
-          langs = Object.entries(lc).sort(([, a], [, b]) => b - a).slice(0, 4)
-            .map(([name, c]) => ({ name, pct: Math.round((c / tot) * 100) }));
-      }
-    }
-    if (pR.status === "fulfilled" && pR.value.ok) { const d = await pR.value.json(); prs = d.total_count ?? prs; }
-    if (iR.status === "fulfilled" && iR.value.ok) { const d = await iR.value.json(); issues = d.total_count ?? issues; }
-    if (cR.status === "fulfilled" && cR.value.ok) { const d = await cR.value.json(); commits = d.total_count ?? commits; }
-
-    return { stars, commits, prs, issues, langs };
-  } catch { return FALLBACK; }
+    return {
+      // If no token, we show public stats that don't get blocked by GitHub
+      labels: ["Total Stars", "Public Repos", "Followers", "Following"],
+      values: [stars, userData.public_repos, userData.followers, userData.following],
+      langs: langs.length > 0 ? langs : [{name: "Python", pct: 100}]
+    };
+  } catch (e) {
+    // Ultimate failsafe so your image never breaks
+    return {
+      labels: ["Total Stars", "Commits", "Pull Requests", "Issues"],
+      values: [4, 28, 6, 8],
+      langs: [{ name: "Python", pct: 50 }, { name: "CSS", pct: 50 }]
+    };
+  }
 }
 
 export default async function handler() {
   const [ff, stats] = await Promise.all([loadFonts(), fetchStats()]);
-  const { stars, commits, prs, issues, langs } = stats;
-
+  
   const W = 900, H = 415;
 
-  const STAT_ROWS = [
-    ["Total Stars",   stars],
-    ["Commits 2026",  commits],
-    ["Pull Requests", prs],
-    ["Issues",        issues],
-  ];
-
-  const statsRowsSVG = STAT_ROWS.map(([label, val], i) => {
+  const statsRowsSVG = stats.labels.map((label, i) => {
+    const val = stats.values[i];
     const ry = 78 + i * 30;
     const sep = i < 3
       ? `<line x1="498" y1="${ry + 9}" x2="858" y2="${ry + 9}" stroke="rgba(212,175,55,0.07)" stroke-width="0.5"/>`
@@ -128,7 +151,7 @@ export default async function handler() {
   }).join("");
 
   const BAR_X = 138, BAR_W = 716;
-  const langBarsSVG = langs.map(({ name, pct }, i) => {
+  const langBarsSVG = stats.langs.map(({ name, pct }, i) => {
     const ry = 292 + i * 30;
     const fw = Math.round((pct / 100) * BAR_W);
     const delay = (0.2 + i * 0.12).toFixed(2);
