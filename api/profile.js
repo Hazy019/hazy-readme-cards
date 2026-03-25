@@ -156,7 +156,6 @@ export default async function handler() {
 
   ${Array.from({length:20}, (_, i) => `<line x1="0" y1="${i * 22}" x2="${W}" y2="${i * 22}" stroke="rgba(212,175,55,0.025)" stroke-width="0.5"/>`).join("")}
 
-  <!-- ── LEFT: ABOUT ──────────────────────────── -->
   <text x="24" y="44" font-family="'Orbitron',monospace" font-size="10" font-weight="900" letter-spacing="3" fill="rgba(212,175,55,0.38)">ABOUT</text>
   <line x1="24" y1="53" x2="74" y2="53" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" style="filter:drop-shadow(0 0 3px rgba(255,255,255,0.65))"/>
 
@@ -169,7 +168,6 @@ export default async function handler() {
   <text x="24" y="185" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  CyberSecurity Fundamentals</text>
   <text x="24" y="205" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Philippines · UTC+8</text>
 
-  <!-- ── RIGHT: GITHUB STATS CARD ──────────────── -->
   <rect x="476" y="18" width="400" height="196" rx="8" fill="rgba(10,8,0,0.82)" stroke="rgba(212,175,55,0.2)" stroke-width="1"/>
   <line x1="491" y1="18" x2="861" y2="18" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
 
@@ -178,10 +176,8 @@ export default async function handler() {
 
   ${statsRowsSVG}
 
-  <!-- ── SEPARATOR ──────────────────────────────── -->
   <line x1="24" y1="232" x2="${W - 24}" y2="232" stroke="rgba(212,175,55,0.07)" stroke-width="0.8"/>
 
-  <!-- ── TOP LANGUAGES ──────────────────────────── -->
   <text x="24" y="256" font-family="'Orbitron',monospace" font-size="10" font-weight="900" letter-spacing="3" fill="rgba(212,175,55,0.38)">TOP LANGUAGES</text>
   <line x1="24" y1="265" x2="84" y2="265" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" style="filter:drop-shadow(0 0 3px rgba(255,255,255,0.65))"/>
 
