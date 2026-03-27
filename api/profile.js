@@ -191,7 +191,8 @@ export default async function handler() {
   
   <text x="24" y="178" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Figma · UI Design · Responsive CSS</text>
   <text x="24" y="196" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Next.js · React · Flask · PostgreSQL</text>
-  <text x="24" y="214" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  CyberSecurity Fundamentals · UTC+8</text>
+  <text x="24" y="214" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  CyberSecurity Fundamentals</text>
+  <text x="24" y="205" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Philippines · UTC+8</text>
   
   <rect x="476" y="18" width="400" height="196" rx="8" fill="rgba(10,8,0,0.82)" stroke="rgba(212,175,55,0.2)" stroke-width="1"/>
   <line x1="491" y1="18" x2="861" y2="18" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
