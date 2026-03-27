@@ -182,12 +182,12 @@ export default async function handler() {
   <text x="24" y="44" font-family="'Orbitron',monospace" font-size="10" font-weight="900" letter-spacing="3" fill="rgba(212,175,55,0.38)">ABOUT</text>
   <line x1="24" y1="53" x2="74" y2="53" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" style="filter:drop-shadow(0 0 3px rgba(255,255,255,0.65))"/>
 
-  <text x="24" y="76" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" letter-spacing="0.4" fill="rgba(212,175,55,0.65)">I am a graduating Computer Science student and aspiring Software Engineer dedicated to</text>
-  <text x="24" y="91" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" letter-spacing="0.4" fill="rgba(212,175,55,0.65)">building secure, high-performance applications that bridge the gap between complex</text>
-  <text x="24" y="106" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" letter-spacing="0.4" fill="rgba(212,175,55,0.65)">backend logic and intentional UI design. Currently, I am expanding my technical</text>
-  <text x="24" y="121" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" letter-spacing="0.4" fill="rgba(212,175,55,0.65)">foundation by pursuing the Google Cybersecurity Professional Certificate, with a focus</text>
-  <text x="24" y="136" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" letter-spacing="0.4" fill="rgba(212,175,55,0.65)">on developing resilient and defensive digital frameworks. My experience ranges from</text>
-  <text x="24" y="151" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" letter-spacing="0.4" fill="rgba(212,175,55,0.65)">engineering systems for the DTI to competing in environments like Cyberthon.</text>
+  <text x="24" y="76" font-family="'Rajdhani',sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">I am a graduating Computer Science student and aspiring Software Engineer dedicated to</text>
+  <text x="24" y="91" font-family="'Rajdhani',sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">building secure, high-performance applications that bridge the gap between complex</text>
+  <text x="24" y="106" font-family="'Rajdhani',sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">backend logic and intentional UI design. Currently, I am expanding my technical</text>
+  <text x="24" y="121" font-family="'Rajdhani',sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">foundation by pursuing the Google Cybersecurity Professional Certificate, with a focus</text>
+  <text x="24" y="136" font-family="'Rajdhani',sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">on developing resilient and defensive digital frameworks. My experience ranges from</text>
+  <text x="24" y="151" font-family="'Rajdhani',sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">engineering systems for the DTI to competing in environments like Cyberthon.</text>
   
   <text x="24" y="145" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Figma · UI Design · Responsive CSS</text>
   <text x="24" y="165" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Next.js · React · Flask · PostgreSQL</text>
