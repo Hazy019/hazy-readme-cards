@@ -188,6 +188,7 @@ export default async function handler() {
   <text x="24" y="121" font-family="'Rajdhani',sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">foundation by pursuing the Google Cybersecurity Professional Certificate, with a focus</text>
   <text x="24" y="136" font-family="'Rajdhani',sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">on developing resilient and defensive digital frameworks. My experience ranges from</text>
   <text x="24" y="151" font-family="'Rajdhani',sans-serif" font-size="11.5" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">engineering systems for the DTI to competing in environments like Cyberthon.</text>
+
   
   <text x="24" y="145" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Figma · UI Design · Responsive CSS</text>
   <text x="24" y="165" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Next.js · React · Flask · PostgreSQL</text>
