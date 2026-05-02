@@ -1,5 +1,5 @@
 # hazy-readme-cards
-## 🚀 Features
+## Features
 - **Live GitHub Stats:** Real-time fetching of stars, commits, and PRs.
 - **Dynamic Language Bars:** Visual representation of repository language distribution.
 - **Auto-Theme Support:** Supports `prefers-color-scheme` for seamless Light/Dark mode transitions on GitHub.
