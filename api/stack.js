@@ -1,105 +1,71 @@
 export const config = { runtime: "edge" };
 
-function ab2b64(buf) {
-  const u = new Uint8Array(buf);
-  let s = "";
-  for (let i = 0; i < u.length; i += 32768)
-    s += String.fromCharCode(...u.subarray(i, Math.min(i + 32768, u.length)));
-  return btoa(s);
+function badgeWidth(label, fontSize = 9, hPad = 10) {
+  // Courier New char width estimator ~0.6 × fontSize
+  return Math.round(label.length * fontSize * 0.6) + hPad * 2;
 }
 
-async function loadFonts() {
-  try {
-    const [o, r] = await Promise.all([
-      fetch("https://fonts.gstatic.com/s/orbitron/v29/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nysimBoWgz.woff2").then(f => f.arrayBuffer()),
-      fetch("https://fonts.gstatic.com/s/rajdhani/v15/LDI2apCSOBg7S-QT7pasEcHqqpU.woff2").then(f => f.arrayBuffer()),
-    ]);
-    return `@font-face{font-family:'Orbitron';font-weight:900;src:url('data:font/woff2;base64,${ab2b64(o)}')format('woff2')}
-    @font-face{font-family:'Rajdhani';font-weight:600;src:url('data:font/woff2;base64,${ab2b64(r)}')format('woff2')}`;
-  } catch { return ""; }
+function layoutRow(items, startX, y, c, fontSize = 9, hPad = 10, gap = 8) {
+  let x = startX;
+  return items.map(label => {
+    const w  = badgeWidth(label, fontSize, hPad);
+    const h  = Math.round(fontSize * 2.2);
+    const ty = y + Math.round(h * 0.68);
+    const el = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${c.tagBg}" stroke="${c.border}" stroke-width="0.5"/>
+<text x="${x + w / 2}" y="${ty}" text-anchor="middle" font-family="'Courier New',monospace" font-size="${fontSize}" fill="${c.tagText}">${label}</text>`;
+    x += w + gap;
+    return el;
+  }).join("\n");
 }
 
-export default async function handler() {
-  const ff = await loadFonts();
-  const W = 900, H = 155;
+const STACK_ROW1 = ["Python", "HTML", "CSS", "JavaScript", "React", "Next.js", "Tailwind"];
+const STACK_ROW2 = ["Flask", "PostgreSQL", "PyQt6", "Figma", "Git"];
+const CONNECT    = ["GitHub · Hazy019", "LinkedIn · kyrell-santillan", "Discord · Hazy019", "Site · hazy.cosedevs.com"];
 
-  const MC = [
-    "ア","イ","ウ","エ","カ","キ","ク","サ","シ","ス","タ","チ","ツ","ナ","ニ","ノ",
-    "&lt;","&gt;","[","]","|","!","#","$","@","%","=","∆","Ω","Ψ","∞","√","≈","≠","◈","⬡","◫"
-  ];
-  const matrixCols = [18,38,58,78, 822,842,862,882].map((x, i) => {
-    const dur = (3.2 + i * 0.55).toFixed(1);
-    const delay = (i * 0.38).toFixed(1);
-    const chars = MC.slice(i % 5, (i % 5) + 5);
-    return `<g opacity="0" style="animation:mf ${dur}s linear ${delay}s infinite">
-      ${chars.map((c, j) => `<text x="${x}" y="${8 + j * 18}" font-family="monospace" font-size="9" fill="rgba(212,175,55,${j === 0 ? 0.32 : 0.08 + (4 - j) * 0.02})">${c}</text>`).join("")}
-    </g>`;
-  }).join("");
+export default async function handler(req) {
+  const dark = new URL(req.url).searchParams.get("theme") !== "light";
+
+  const c = dark
+    ? {
+        bg: "#0d1117", text: "#e6edf3", muted: "#8b949e",
+        dim: "#6e7681", border: "#30363d", accent: "#39d353",
+        tagBg: "#161b22", tagText: "#8b949e",
+        linkBg: "#0d2137", linkText: "#79c0ff", linkBorder: "#1f4e7a",
+      }
+    : {
+        bg: "#ffffff", text: "#1a1a1a", muted: "#57606a",
+        dim: "#8c959f", border: "#d0d7de", accent: "#1a7f37",
+        tagBg: "#f6f8fa", tagText: "#57606a",
+        linkBg: "#e8f4fd", linkText: "#0550ae", linkBorder: "#b6d4fb",
+      };
+
+  const W = 900, H = 192;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-<defs>
-  <style>
-    ${ff}
-    @keyframes mf{0%{opacity:0;transform:translateY(-22px)}8%{opacity:1}88%{opacity:.5}100%{opacity:0;transform:translateY(${H + 22}px)}}
-    @keyframes sf{0%{transform:translateX(-300px)}100%{transform:translateX(${W + 300}px)}}
-  </style>
-  <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
-    <stop offset="0%"   stop-color="#d4af37"><animate attributeName="stop-color" values="#d4af37;#f4d03f;#fffde0;#f4d03f;#d4af37" dur="6s" repeatCount="indefinite"/></stop>
-    <stop offset="40%"  stop-color="#f4d03f"><animate attributeName="stop-color" values="#f4d03f;#fffde0;#f4d03f;#d4af37;#f4d03f" dur="6s" repeatCount="indefinite"/></stop>
-    <stop offset="60%"  stop-color="#fffde0"><animate attributeName="stop-color" values="#fffde0;#f4d03f;#d4af37;#f4d03f;#fffde0" dur="6s" repeatCount="indefinite"/></stop>
-    <stop offset="100%" stop-color="#d4af37"><animate attributeName="stop-color" values="#d4af37;#d4af37;#f4d03f;#fffde0;#d4af37" dur="6s" repeatCount="indefinite"/></stop>
-  </linearGradient>
-  <radialGradient id="gl" cx="50%" cy="110%" r="70%">
-    <stop offset="0%" stop-color="#d4af37" stop-opacity="0.14"/>
-    <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
-  </radialGradient>
-  <linearGradient id="sc" x1="0%" y1="0%" x2="100%" y2="0%">
-    <stop offset="0%" stop-color="#ffd700" stop-opacity="0"/>
-    <stop offset="50%" stop-color="#ffd700" stop-opacity="0.045"/>
-    <stop offset="100%" stop-color="#ffd700" stop-opacity="0"/>
-  </linearGradient>
-  <clipPath id="hc"><rect width="${W}" height="${H}" rx="10"/></clipPath>
-</defs>
-<g clip-path="url(#hc)">
-  <rect width="${W}" height="${H}" fill="#050400"/>
+<defs><clipPath id="stc"><rect width="${W}" height="${H}"/></clipPath></defs>
+<g clip-path="url(#stc)">
+  <rect width="${W}" height="${H}" fill="${c.bg}"/>
+  <rect width="${W}" height="0.5" fill="${c.border}"/>
 
-  ${Array.from({length:8}, (_, i) => `<line x1="0" y1="${i*22}" x2="${W}" y2="${i*22}" stroke="rgba(212,175,55,0.04)" stroke-width="0.5"/>`).join("")}
-  ${Array.from({length:9}, (_, i) => `<line x1="${i*112+24}" y1="0" x2="${i*112+24}" y2="${H}" stroke="rgba(212,175,55,0.035)" stroke-width="0.5"/>`).join("")}
+  <!-- Tech Stack -->
+  <text x="24" y="24" font-family="'Courier New',monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// TECH STACK</text>
+  <line x1="24" y1="32" x2="${W - 24}" y2="32" stroke="${c.border}" stroke-width="0.5"/>
 
-  <ellipse cx="${W/2}" cy="${H * 1.3}" rx="520" ry="170" fill="url(#gl)"/>
+  ${layoutRow(STACK_ROW1, 24, 42, c)}
+  ${layoutRow(STACK_ROW2, 24, 64, c)}
 
-  ${matrixCols}
+  <!-- Separator -->
+  <line x1="24" y1="96" x2="${W - 24}" y2="96" stroke="${c.border}" stroke-width="0.5"/>
 
-  <rect x="-300" y="0" width="300" height="${H}" fill="url(#sc)">
-    <animateTransform attributeName="transform" type="translate" from="0 0" to="${W + 300} 0" dur="8s" repeatCount="indefinite"/>
-  </rect>
+  <!-- Connect -->
+  <text x="24" y="118" font-family="'Courier New',monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// CONNECT</text>
+  <line x1="24" y1="126" x2="${W - 24}" y2="126" stroke="${c.border}" stroke-width="0.5"/>
 
-  <line x1="90" y1="0" x2="${W - 90}" y2="0" stroke="rgba(212,175,55,0.6)" stroke-width="1"/>
+  ${layoutRow(CONNECT, 24, 136, { ...c, tagBg: c.linkBg, tagText: c.linkText, border: c.linkBorder }, 9, 12, 10)}
 
-  <polyline points="0,20 0,0 20,0"                  fill="none" stroke="rgba(212,175,55,0.65)" stroke-width="1.5"/>
-  <polyline points="${W-20},0 ${W},0 ${W},20"        fill="none" stroke="rgba(212,175,55,0.65)" stroke-width="1.5"/>
-  <polyline points="0,${H-20} 0,${H} 20,${H}"       fill="none" stroke="rgba(212,175,55,0.65)" stroke-width="1.5"/>
-  <polyline points="${W-20},${H} ${W},${H} ${W},${H-20}" fill="none" stroke="rgba(212,175,55,0.65)" stroke-width="1.5"/>
-
-  <line x1="0"  y1="68" x2="10"     y2="68" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
-  <line x1="${W}" y1="68" x2="${W-10}" y2="68" stroke="rgba(212,175,55,0.3)" stroke-width="1"/>
-
-  <circle cx="${W - 58}" cy="18" r="3.5" fill="#d4af37">
-    <animate attributeName="opacity" values="0.35;1;0.35" dur="2s" repeatCount="indefinite"/>
-  </circle>
-  <text x="${W - 50}" y="22" font-family="'Orbitron',monospace" font-size="9" font-weight="900" letter-spacing="2.5" fill="rgba(247,205,68,0.9)">LIVE</text>
-
-  <text x="${W/2}" y="27" text-anchor="middle" font-family="'Orbitron',monospace" font-size="8" font-weight="900" letter-spacing="3.5" fill="rgba(212,175,55,0.28)">◈ CREATIVE PORTFOLIO · FRONTEND ENGINEER · CYBERSECURITY ◈</text>
-
-  <text x="${W/2}" y="95" text-anchor="middle" font-family="'Orbitron',monospace" font-size="68" font-weight="900" letter-spacing="8" fill="url(#g1)">HAZY019</text>
-
-  <line x1="${W/2 - 30}" y1="108" x2="${W/2 + 30}" y2="108" stroke="rgba(255,255,255,0.88)" stroke-width="1.5" style="filter:drop-shadow(0 0 5px rgba(255,255,255,0.75))"/>
-
-  <text x="${W/2}" y="127" text-anchor="middle" font-family="'Rajdhani',sans-serif" font-size="14" font-weight="600" letter-spacing="2.5" fill="rgba(212,175,55,0.6)">Kyrell Santillan  ·  Web Designer  ·  Developer  ·  Cybersecurity</text>
-
-  <text x="${W/2}" y="147" text-anchor="middle" font-family="'Orbitron',monospace" font-size="9" font-weight="900" letter-spacing="3" fill="rgba(212,175,55,0.28)">PHT · UTC+8  ·  Philippines  ·  Open for Work</text>
-
-  <line x1="0" y1="${H - 1}" x2="${W}" y2="${H - 1}" stroke="rgba(212,175,55,0.06)" stroke-width="0.8"/>
+  <!-- Footer -->
+  <line x1="0" y1="${H - 20}" x2="${W}" y2="${H - 20}" stroke="${c.border}" stroke-width="0.5"/>
+  <text x="${W / 2}" y="${H - 7}" text-anchor="middle" font-family="'Courier New',monospace" font-size="9" fill="${c.dim}">© Hazy019 · Kyrell Santillan · Open for Work</text>
 </g>
 </svg>`;
 
