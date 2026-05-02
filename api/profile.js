@@ -10,203 +10,181 @@ function ab2b64(buf) {
   return btoa(s);
 }
 
-async function loadFonts() {
-  try {
-    const [o, r] = await Promise.all([
-      fetch("https://fonts.gstatic.com/s/orbitron/v29/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1nysimBoWgz.woff2").then(f => f.arrayBuffer()),
-      fetch("https://fonts.gstatic.com/s/rajdhani/v15/LDI2apCSOBg7S-QT7pasEcHqqpU.woff2").then(f => f.arrayBuffer()),
-    ]);
-    return `@font-face{font-family:'Orbitron';font-weight:900;src:url('data:font/woff2;base64,${ab2b64(o)}')format('woff2')}
-    @font-face{font-family:'Rajdhani';font-weight:600;src:url('data:font/woff2;base64,${ab2b64(r)}')format('woff2')}`;
-  } catch { return ""; }
-}
+const FALLBACK = {
+  stars: 4, commits: 265, prs: 0, issues: 0,
+  langs: [
+    { name: "TypeScript", pct: 41 },
+    { name: "Python",     pct: 36 },
+    { name: "CSS",        pct: 11 },
+    { name: "JavaScript", pct: 7  },
+  ],
+};
 
 async function fetchStats() {
-  const token = (typeof process !== "undefined") ? process.env.GITHUB_TOKEN : null;
+  const token = typeof process !== "undefined" ? process.env.GITHUB_TOKEN : undefined;
+  const base = { "User-Agent": "hazy-readme/2.0", "Accept": "application/vnd.github.v3+json" };
+  const hdrs = token ? { ...base, Authorization: `Bearer ${token}` } : base;
 
-  // ==========================================
-  // PATH 1: HAS TOKEN (Fully Dynamic Pro Stats)
-  // ==========================================
   if (token) {
-    const query = `
-      query {
-        user(login: "${USERNAME}") {
-          repositories(first: 100, ownerAffiliations: OWNER, isFork: false) {
-            nodes {
-              stargazerCount
-              languages(first: 5, orderBy: {field: SIZE, direction: DESC}) {
-                edges { size node { name } }
-              }
-            }
-          }
-          contributionsCollection {
-            totalCommitContributions
-            totalPullRequestContributions
-            totalIssueContributions
-          }
-        }
+    const q = `{user(login:"${USERNAME}"){
+      repositories(first:100,ownerAffiliations:OWNER,isFork:false){nodes{
+        stargazerCount
+        languages(first:8,orderBy:{field:SIZE,direction:DESC}){edges{size node{name}}}
+      }}
+      contributionsCollection(from:"2026-01-01T00:00:00Z"){
+        totalCommitContributions totalPullRequestContributions totalIssueContributions
       }
-    `;
-
+    }}`;
     try {
       const res = await fetch("https://api.github.com/graphql", {
         method: "POST",
-        headers: { 
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ query }),
+        headers: { ...hdrs, "Content-Type": "application/json" },
+        body: JSON.stringify({ query: q }),
       });
-
       const { data } = await res.json();
-      const user = data.user;
-
-      // Calculate Stars
-      const stars = user.repositories.nodes.reduce((acc, repo) => acc + repo.stargazerCount, 0);
-
-      // Calculate Languages by actual byte size
-      const langMap = {};
-      user.repositories.nodes.forEach(repo => {
-        repo.languages.edges.forEach(edge => {
-          langMap[edge.node.name] = (langMap[edge.node.name] || 0) + edge.size;
-        });
-      });
-
-      const totalBytes = Object.values(langMap).reduce((a, b) => a + b, 0);
-      const langs = Object.entries(langMap)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 4)
-        .map(([name, bytes]) => ({ name, pct: Math.round((bytes / totalBytes) * 100) }));
-
+      const u = data.user;
+      const stars = u.repositories.nodes.reduce((s, r) => s + r.stargazerCount, 0);
+      const lm = {};
+      u.repositories.nodes.forEach(r =>
+        r.languages.edges.forEach(({ size, node }) => { lm[node.name] = (lm[node.name] || 0) + size; })
+      );
+      const tot = Object.values(lm).reduce((a, b) => a + b, 0);
+      const langs = Object.entries(lm).sort(([, a], [, b]) => b - a).slice(0, 4)
+        .map(([name, b]) => ({ name, pct: Math.round((b / tot) * 100) }));
       return {
-        labels: ["Total Stars", "Commits (Year)", "Pull Requests", "Issues"],
-        values: [
-          stars, 
-          user.contributionsCollection.totalCommitContributions, 
-          user.contributionsCollection.totalPullRequestContributions, 
-          user.contributionsCollection.totalIssueContributions
-        ],
-        langs: langs.length > 0 ? langs : [{name: "Python", pct: 100}]
+        stars, langs,
+        commits: u.contributionsCollection.totalCommitContributions,
+        prs:     u.contributionsCollection.totalPullRequestContributions,
+        issues:  u.contributionsCollection.totalIssueContributions,
       };
-    } catch (e) {
-      console.error("GraphQL Failed, dropping to REST API", e);
-    }
+    } catch { /* fall through */ }
   }
 
-  // ==========================================
-  // PATH 2: NO TOKEN (Dynamic Public Fallback)
-  // ==========================================
   try {
-    const userRes = await fetch(`https://api.github.com/users/${USERNAME}`);
-    const repoRes = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100`);
-    
-    const userData = await userRes.json();
-    const repoData = await repoRes.json();
+    const [rR, pR, iR, cR] = await Promise.allSettled([
+      fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&type=owner`, { headers: hdrs }),
+      fetch(`https://api.github.com/search/issues?q=author:${USERNAME}+type:pr&per_page=1`, { headers: hdrs }),
+      fetch(`https://api.github.com/search/issues?q=author:${USERNAME}+type:issue&per_page=1`, { headers: hdrs }),
+      fetch(`https://api.github.com/search/commits?q=author:${USERNAME}+committer-date:2026-01-01..2026-12-31&per_page=1`, {
+        headers: { ...hdrs, Accept: "application/vnd.github.cloak-preview+json" },
+      }),
+    ]);
 
-    const stars = repoData.reduce((acc, repo) => acc + (repo.stargazers_count || 0), 0);
-    
-    // Calculate simple languages based on repo count (since bytes requires GraphQL)
-    const langMap = {};
-    repoData.forEach(repo => {
-      if (repo.language) langMap[repo.language] = (langMap[repo.language] || 0) + 1;
-    });
-    
-    const totalReposWithLangs = Object.values(langMap).reduce((a, b) => a + b, 0);
-    const langs = Object.entries(langMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 4)
-      .map(([name, count]) => ({ name, pct: Math.round((count / totalReposWithLangs) * 100) }));
+    let { stars, langs, prs, issues, commits } = FALLBACK;
 
-    return {
-      // If no token, we show public stats that don't get blocked by GitHub
-      labels: ["Total Stars", "Public Repos", "Followers", "Following"],
-      values: [stars, userData.public_repos, userData.followers, userData.following],
-      langs: langs.length > 0 ? langs : [{name: "Python", pct: 100}]
-    };
-  } catch (e) {
-    // Ultimate failsafe so your image never breaks
-    return {
-      labels: ["Total Stars", "Commits", "Pull Requests", "Issues"],
-      values: [4, 28, 6, 8],
-      langs: [{ name: "Python", pct: 50 }, { name: "CSS", pct: 50 }]
-    };
-  }
+    if (rR.status === "fulfilled" && rR.value.ok) {
+      const repos = await rR.value.json();
+      if (Array.isArray(repos)) {
+        stars = repos.reduce((s, r) => s + (r.stargazers_count || 0), 0);
+        const lc = {};
+        repos.forEach(r => { if (r.language) lc[r.language] = (lc[r.language] || 0) + 1; });
+        const tot = Object.values(lc).reduce((a, b) => a + b, 0);
+        if (tot > 0)
+          langs = Object.entries(lc).sort(([, a], [, b]) => b - a).slice(0, 4)
+            .map(([name, c]) => ({ name, pct: Math.round((c / tot) * 100) }));
+      }
+    }
+    if (pR.status === "fulfilled" && pR.value.ok) { const d = await pR.value.json(); prs = d.total_count ?? prs; }
+    if (iR.status === "fulfilled" && iR.value.ok) { const d = await iR.value.json(); issues = d.total_count ?? issues; }
+    if (cR.status === "fulfilled" && cR.value.ok) { const d = await cR.value.json(); commits = d.total_count ?? commits; }
+
+    return { stars, commits, prs, issues, langs };
+  } catch { return FALLBACK; }
 }
 
-export default async function handler() {
-  const [ff, stats] = await Promise.all([loadFonts(), fetchStats()]);
-  
-  const W = 900, H = 415;
+export default async function handler(req) {
+  const dark = new URL(req.url).searchParams.get("theme") !== "light";
 
-  const statsRowsSVG = stats.labels.map((label, i) => {
-    const val = stats.values[i];
-    const ry = 78 + i * 30;
-    const sep = i < 3
-      ? `<line x1="498" y1="${ry + 9}" x2="858" y2="${ry + 9}" stroke="rgba(212,175,55,0.07)" stroke-width="0.5"/>`
-      : "";
+  const c = dark
+    ? {
+        bg: "#0d1117", bg2: "#161b22", text: "#e6edf3",
+        muted: "#8b949e", dim: "#6e7681", border: "#30363d",
+        border2: "#21262d", accent: "#39d353", statVal: "#79c0ff",
+      }
+    : {
+        bg: "#ffffff", bg2: "#f6f8fa", text: "#1a1a1a",
+        muted: "#57606a", dim: "#8c959f", border: "#d0d7de",
+        border2: "#d0d7de", accent: "#1a7f37", statVal: "#0550ae",
+      };
+
+  const stats = await fetchStats();
+  const { stars, commits, prs, issues, langs } = stats;
+
+  const W = 900, H = 440;
+
+  // Stats rows (right panel)
+  const STAT_ROWS = [
+    ["Total Stars",    stars],
+    ["Commits (2026)", commits],
+    ["Pull Requests",  prs],
+    ["Issues",         issues],
+  ];
+  const statsRowsSVG = STAT_ROWS.map(([label, val], i) => {
+    const ry = 78 + i * 34;
     return `
-  <text x="498" y="${ry}" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" letter-spacing="0.8" fill="rgba(212,175,55,0.5)">${label}</text>
-  <text x="858" y="${ry}" text-anchor="end" font-family="'Orbitron',monospace" font-size="15" font-weight="900" fill="rgba(212,175,55,0.9)">${val}</text>
-  ${sep}`;
+  <text x="498" y="${ry}" font-family="'Courier New',monospace" font-size="12" fill="${c.muted}">${label}</text>
+  <text x="858" y="${ry}" text-anchor="end" font-family="'Courier New',monospace" font-size="14" font-weight="700" fill="${c.statVal}">${val}</text>
+  ${i < 3 ? `<line x1="498" y1="${ry + 8}" x2="858" y2="${ry + 8}" stroke="${c.border2}" stroke-width="0.5"/>` : ""}`;
   }).join("");
 
-  const BAR_X = 138, BAR_W = 716;
-  const langBarsSVG = stats.langs.map(({ name, pct }, i) => {
-    const ry = 292 + i * 30;
+  // Language bars (full-width bottom)
+  const BAR_X = 140, BAR_W = 710;
+  const LANG_COLORS = ["#3178c6", "#3572A5", "#563d7c", "#e8d44d"];
+  const langBarsSVG = langs.map(({ name, pct }, i) => {
+    const ry = 298 + i * 30;
     const fw = Math.round((pct / 100) * BAR_W);
-    const delay = (0.2 + i * 0.12).toFixed(2);
     return `
-  <text x="24" y="${ry}" font-family="'Orbitron',monospace" font-size="10" font-weight="900" letter-spacing="1" fill="rgba(212,175,55,0.65)">${name}</text>
-  <rect x="${BAR_X}" y="${ry - 11}" width="${BAR_W}" height="5" rx="2.5" fill="rgba(212,175,55,0.07)"/>
-  <rect x="${BAR_X}" y="${ry - 11}" width="0" height="5" rx="2.5" fill="url(#bg)">
-    <animate attributeName="width" from="0" to="${fw}" dur="1.1s" begin="${delay}s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1"/>
-  </rect>
-  <text x="${BAR_X + BAR_W + 14}" y="${ry}" text-anchor="end" font-family="'Orbitron',monospace" font-size="9" font-weight="900" fill="rgba(212,175,55,0.4)">${pct}%</text>`;
+  <text x="24" y="${ry}" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">${name}</text>
+  <rect x="${BAR_X}" y="${ry - 11}" width="${BAR_W}" height="5" rx="2.5" fill="${c.border2}"/>
+  <rect x="${BAR_X}" y="${ry - 11}" width="${fw}" height="5" rx="2.5" fill="${LANG_COLORS[i] || c.accent}"/>
+  <text x="${BAR_X + BAR_W + 14}" y="${ry}" text-anchor="end" font-family="'Courier New',monospace" font-size="10" fill="${c.dim}">${pct}%</text>`;
   }).join("");
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-<defs>
-  <style>${ff}</style>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%"   stop-color="#d4af37"/>
-    <stop offset="55%"  stop-color="#f4d03f"/>
-    <stop offset="100%" stop-color="#d4af37"/>
-  </linearGradient>
-  <clipPath id="pc"><rect width="${W}" height="${H}"/></clipPath>
-</defs>
+<defs><clipPath id="pc"><rect width="${W}" height="${H}"/></clipPath></defs>
 <g clip-path="url(#pc)">
-  <rect width="${W}" height="${H}" fill="#050400"/>
+  <rect width="${W}" height="${H}" fill="${c.bg}"/>
 
-  ${Array.from({length:20}, (_, i) => `<line x1="0" y1="${i * 22}" x2="${W}" y2="${i * 22}" stroke="rgba(212,175,55,0.025)" stroke-width="0.5"/>`).join("")}
+  <!-- ── LEFT: ABOUT ──────────────────────────── -->
+  <text x="24" y="26" font-family="'Courier New',monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// ABOUT</text>
+  <line x1="24" y1="34" x2="452" y2="34" stroke="${c.border}" stroke-width="0.5"/>
 
-  <text x="24" y="44" font-family="'Orbitron',monospace" font-size="10" font-weight="900" letter-spacing="3" fill="rgba(212,175,55,0.38)">ABOUT</text>
-  <line x1="24" y1="53" x2="74" y2="53" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" style="filter:drop-shadow(0 0 3px rgba(255,255,255,0.65))"/>
+  <!-- Tagline -->
+  <text x="24" y="58" font-family="'Courier New',monospace" font-size="13" font-weight="700" fill="${c.text}">I build systems the way architects design buildings —</text>
+  <text x="24" y="74" font-family="'Courier New',monospace" font-size="13" font-weight="700" fill="${c.text}">failure modes first, elegance second.</text>
 
-  <text x="24" y="76" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">I am a graduating Computer Science student and aspiring</text>
-  <text x="24" y="91" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">Software Engineer dedicated to building secure, high-</text>
-  <text x="24" y="106" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">performance apps that bridge the gap between complex</text>
-  <text x="24" y="121" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">logic and intentional UI. Currently, I am pursuing the</text>
-  <text x="24" y="136" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">Google Cybersecurity Cert, focusing on resilient frameworks.</text>
-  <text x="24" y="151" font-family="'Rajdhani',sans-serif" font-size="11" font-weight="600" letter-spacing="0.3" fill="rgba(212,175,55,0.65)">Experience includes DTI systems and Cyberthon competition.</text>
+  <!-- Paragraph 1 -->
+  <text x="24" y="98" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">Currently finishing my CS degree in the Philippines, with</text>
+  <text x="24" y="114" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">production deployments already in the field. I gravitate</text>
+  <text x="24" y="130" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">toward problems with real consequences — government</text>
+  <text x="24" y="146" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">systems people depend on, tools that run unattended,</text>
+  <text x="24" y="162" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">interfaces used by people who never asked for them.</text>
 
-  <text x="24" y="178" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Figma · UI Design · Responsive CSS</text>
-  <text x="24" y="196" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  Next.js · React · Flask · PostgreSQL</text>
-  <text x="24" y="214" font-family="'Rajdhani',sans-serif" font-size="12" font-weight="600" fill="rgba(212,175,55,0.5)"><tspan fill="rgba(212,175,55,0.35)">›</tspan>  CyberSecurity Fundamentals · UTC+8</text>
-  
-  <rect x="476" y="18" width="400" height="196" rx="8" fill="rgba(10,8,0,0.82)" stroke="rgba(212,175,55,0.2)" stroke-width="1"/>
-  <line x1="491" y1="18" x2="861" y2="18" stroke="rgba(212,175,55,0.5)" stroke-width="1"/>
+  <!-- Paragraph 2 -->
+  <text x="24" y="182" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">Security mindset first: every input hostile, every</text>
+  <text x="24" y="198" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">permission a liability, every data store a target.</text>
+  <text x="24" y="214" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">Pursuing Google's Professional Cybersecurity cert alongside</text>
+  <text x="24" y="230" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">UX design — how systems fail and how people think are</text>
+  <text x="24" y="246" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">the two most useful things a developer can know.</text>
 
-  <text x="498" y="46" font-family="'Orbitron',monospace" font-size="10" font-weight="900" letter-spacing="2" fill="rgba(212,175,55,0.38)">GITHUB STATS</text>
-  <line x1="498" y1="56" x2="858" y2="56" stroke="rgba(212,175,55,0.1)" stroke-width="0.5"/>
+  <!-- Bullets -->
+  <text x="24" y="268" font-family="'Courier New',monospace" font-size="11" fill="${c.dim}">›  Figma · UI Design · Responsive CSS</text>
+  <text x="24" y="284" font-family="'Courier New',monospace" font-size="11" fill="${c.dim}">›  Next.js · React · Flask · PostgreSQL · Python</text>
 
+  <!-- ── RIGHT: GITHUB STATS CARD ──────────────── -->
+  <rect x="476" y="18" width="400" height="222" rx="6" fill="${c.bg2}" stroke="${c.border}" stroke-width="0.5"/>
+  <text x="498" y="46" font-family="'Courier New',monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// GITHUB STATS</text>
+  <line x1="498" y1="54" x2="858" y2="54" stroke="${c.border}" stroke-width="0.5"/>
   ${statsRowsSVG}
 
-  <line x1="24" y1="232" x2="${W - 24}" y2="232" stroke="rgba(212,175,55,0.07)" stroke-width="0.8"/>
+  <!-- ── SEPARATOR ──────────────────────────────── -->
+  <line x1="24" y1="260" x2="${W - 24}" y2="260" stroke="${c.border}" stroke-width="0.5"/>
 
-  <text x="24" y="256" font-family="'Orbitron',monospace" font-size="10" font-weight="900" letter-spacing="3" fill="rgba(212,175,55,0.38)">TOP LANGUAGES</text>
-  <line x1="24" y1="265" x2="84" y2="265" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" style="filter:drop-shadow(0 0 3px rgba(255,255,255,0.65))"/>
-
+  <!-- ── TOP LANGUAGES ──────────────────────────── -->
+  <text x="24" y="278" font-family="'Courier New',monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// TOP LANGUAGES</text>
   ${langBarsSVG}
+
+  <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
 </g>
 </svg>`;
 
