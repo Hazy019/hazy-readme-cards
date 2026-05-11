@@ -1,4 +1,3 @@
-
 # Hazy Readme Cards
 
 A high-performance, dynamic SVG card generator designed to showcase real-time GitHub repository analytics on your profile.
