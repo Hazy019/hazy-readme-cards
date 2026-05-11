@@ -23,3 +23,4 @@ Specializations
 Cybersecurity: Security-first development, pursuing Google Cybersecurity Certification
 
 AI Integration: Experience with Gemini Veo and Grok Imagine APIs for visual content automation
+
