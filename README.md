@@ -40,3 +40,4 @@ To use these cards in your own README, use the following Markdown:
 
 ---
 **Contributor:** Developed with ❤️ by **Kyrell Santillan** ([Hazy019](https://github.com/Hazy019))
+
