@@ -1,10 +1,10 @@
-# 🚀 Hazy Readme Cards
+# Hazy Readme Cards
 
 A high-performance, dynamic SVG card generator designed to showcase real-time GitHub repository analytics on your profile.
 
 ---
 
-### ✨ Features
+### Features
 * **Live GitHub Stats:** Real-time fetching and rendering of repository metrics including stars, forks, commits, and open pull requests.
 * **Dynamic Language Distribution:** Visualized bars showing the exact language breakdown of your projects.
 * **Intelligent Auto-Theming:** Native support for `prefers-color-scheme` for seamless Light/Dark mode transitions.
@@ -13,7 +13,7 @@ A high-performance, dynamic SVG card generator designed to showcase real-time Gi
 
 ---
 
-### 🛠️ Tech Stack
+### Tech Stack
 
 #### **Frontend & Design**
 * **Core:** React, Next.js (App Router), TypeScript
@@ -27,13 +27,13 @@ A high-performance, dynamic SVG card generator designed to showcase real-time Gi
 
 ---
 
-### 🛡️ Specializations
+### Specializations
 * **Cybersecurity:** Focused on security-first development; pursuing Google Cybersecurity Certification.
 * **AI Integration:** Expert in building automated workflows using Gemini Veo and Grok Imagine APIs.
 
 ---
 
-### 🚀 Quick Start
+### Quick Start
 To use these cards in your own README, use the following Markdown:
 
 `![Hazy Card](https://hazy-readme-cards.vercel.app/api/pin?repo=hazy-readme-cards)`
