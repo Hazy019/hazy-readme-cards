@@ -10,14 +10,13 @@ export default async function handler(req) {
         muted: "#8b949e",
         dim: "#6e7681",
         border: "#30363d",
-        accent: "#39d353",
-        sceneBg: "#010409",
-        monitorBlue: "#58a6ff",
-        monitorGreen: "#39d353",
+        sceneBg: "#06090e",
+        deskShadow: "#0a0d13",
         linkBg: "#161b22",
         linkText: "#79c0ff",
         linkBorder: "#30363d",
-        deskShadow: "#090d13",
+        neonPurple: "#b026ff",
+        phosphorGreen: "#39d353",
       }
     : {
         bg: "#ffffff",
@@ -25,17 +24,16 @@ export default async function handler(req) {
         muted: "#57606a",
         dim: "#8c959f",
         border: "#d0d7de",
-        accent: "#1a7f37",
-        sceneBg: "#f6f8fa",
-        monitorBlue: "#0550ae",
-        monitorGreen: "#1a7f37",
+        sceneBg: "#06090e",
+        deskShadow: "#0a0d13",
         linkBg: "#f6f8fa",
         linkText: "#0550ae",
         linkBorder: "#d0d7de",
-        deskShadow: "#e1e4e8",
+        neonPurple: "#b026ff",
+        phosphorGreen: "#39d353",
       };
 
-  const W = 900, H = 280;
+  const W = 900, H = 380;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
@@ -43,214 +41,195 @@ export default async function handler(req) {
 </defs>
 
 <style>
-  /* Native CSS animations (Safe for GitHub READMEs) */
-  @keyframes flickerBlue {
-    0%, 100% { opacity: 0.15; }
-    30% { opacity: 0.1; }
-    50% { opacity: 0.2; }
-    70% { opacity: 0.12; }
-  }
-  @keyframes flickerGreen {
+  @keyframes crtFlicker {
     0%, 100% { opacity: 0.1; }
-    40% { opacity: 0.15; }
-    80% { opacity: 0.08; }
+    30% { opacity: 0.15; }
+    70% { opacity: 0.08; }
   }
-  @keyframes blinkCursor {
+  @keyframes neonPulse {
+    0%, 100% { filter: drop-shadow(0 0 10px #b026ff); opacity: 0.9; }
+    50% { filter: drop-shadow(0 0 20px #b026ff); opacity: 1; }
+  }
+  @keyframes blink {
     0%, 49% { opacity: 1; }
     50%, 100% { opacity: 0; }
   }
-  @keyframes ambientLight {
-    0%, 100% { opacity: 0.03; }
-    50% { opacity: 0.06; }
-  }
-  @keyframes hoverRobot {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-  }
   
-  /* Programmer Action Toggles */
-  @keyframes toggleTyping {
-    0%, 45% { opacity: 1; }
-    50%, 95% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  @keyframes toggleReading {
-    0%, 45% { opacity: 0; }
-    50%, 95% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-  @keyframes typingArms {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    25% { transform: translateY(2px) rotate(-1deg); }
-    50% { transform: translateY(0) rotate(1deg); }
-    75% { transform: translateY(-1px) rotate(0deg); }
-  }
-  
-  .blue-glow { animation: flickerBlue 3s infinite; }
-  .green-glow { animation: flickerGreen 4s infinite; }
-  .blink { animation: blinkCursor 1s infinite; }
-  .ambient { animation: ambientLight 5s ease-in-out infinite; }
-  
-  .hover-robot { animation: hoverRobot 4s ease-in-out infinite; }
-  .action-typing { animation: toggleTyping 14s infinite; }
-  .action-reading { animation: toggleReading 14s infinite; }
-  .typing-arms { animation: typingArms 0.2s infinite; transform-origin: 30px 55px; }
+  .crt-glow { animation: crtFlicker 3s infinite; }
+  .neon-x { animation: neonPulse 4s infinite; }
+  .blink { animation: blink 1s infinite; }
 </style>
 
 <g clip-path="url(#fc)">
-  <!-- Main Background -->
+  <!-- Main Structural Background -->
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
 
   <!-- ========================================== -->
-  <!-- SECTION A: ANIMATED PIXEL ART PANEL (Top)  -->
+  <!-- SECTION A: MASSIVE PIXEL ART DESK SCENE    -->
   <!-- ========================================== -->
   <g id="pixel-art-scene">
-    <!-- Dark room background for the scene -->
-    <rect x="0" y="0" width="${W}" height="190" fill="${c.sceneBg}"/>
+    <!-- Dark Cyber-Noir Room Wall -->
+    <rect x="0" y="0" width="${W}" height="280" fill="${c.sceneBg}"/>
     
-    <!-- Ambient room glow from monitors -->
-    <ellipse cx="380" cy="110" rx="150" ry="80" fill="${c.monitorBlue}" class="ambient"/>
-
-    <!-- Desk Surface & Accessories -->
-    <rect x="120" y="160" width="660" height="8" fill="${dark ? "#161b22" : "#d0d7de"}"/>
-    <rect x="120" y="168" width="660" height="22" fill="${c.deskShadow}"/>
-    
-    <!-- Desk details: Papers/Notepads -->
-    <rect x="180" y="156" width="30" height="4" fill="${dark ? "#30363d" : "#afb8c1"}"/>
-    <rect x="185" y="154" width="20" height="2" fill="${dark ? "#8b949e" : "#e1e4e8"}"/>
-    
-    <!-- Desk detail: Coffee Mug -->
-    <rect x="230" y="148" width="12" height="12" rx="2" fill="${dark ? "#21262d" : "#57606a"}"/>
-    <path d="M242,150 A4,4 0 0,1 242,158" fill="none" stroke="${dark ? "#21262d" : "#57606a"}" stroke-width="2"/>
-
-    <!-- External Monitor (Ocean Blue Glow) -->
-    <g id="main-monitor" transform="translate(290, 60)">
-      <!-- Stand -->
-      <rect x="35" y="80" width="10" height="20" fill="${dark ? "#21262d" : "#8c959f"}"/>
-      <rect x="25" y="100" width="30" height="4" fill="${dark ? "#30363d" : "#6e7681"}"/>
-      <!-- Bezel -->
-      <rect x="0" y="0" width="80" height="80" rx="4" fill="${dark ? "#30363d" : "#57606a"}"/>
-      <rect x="4" y="4" width="72" height="72" rx="2" fill="${dark ? "#010409" : "#1b1f24"}"/>
-      <!-- Screen Glow Overlay -->
-      <rect x="4" y="4" width="72" height="72" fill="${c.monitorBlue}" class="blue-glow"/>
-      <!-- Terminal UI Lines -->
-      <rect x="10" y="12" width="45" height="3" fill="${c.monitorBlue}"/>
-      <rect x="10" y="20" width="35" height="3" fill="${c.monitorBlue}" opacity="0.8"/>
-      <rect x="10" y="28" width="55" height="3" fill="${c.monitorBlue}" opacity="0.6"/>
-      <rect x="10" y="36" width="25" height="3" fill="${c.monitorBlue}"/>
-      <rect x="10" y="44" width="60" height="3" fill="${c.monitorBlue}" opacity="0.7"/>
-      <!-- Blinking Cursor -->
-      <rect x="38" y="35" width="4" height="5" fill="${c.monitorBlue}" class="blink"/>
+    <!-- Neon Purple 'X' Logo on Wall -->
+    <g transform="translate(420, 20) scale(0.7)" class="neon-x">
+      <path d="M 0,20 L 20,0 L 50,30 L 80,0 L 100,20 L 70,50 L 100,80 L 80,100 L 50,70 L 20,100 L 0,80 L 30,50 Z" fill="${c.neonPurple}"/>
     </g>
 
-    <!-- Laptop (Green Phosphor Glow) -->
-    <g id="laptop" transform="translate(410, 115)">
-      <!-- Laptop Screen Back (Angled) -->
-      <polygon points="5,45 15,0 75,0 85,45" fill="${dark ? "#21262d" : "#6e7681"}"/>
-      <!-- Laptop Screen (Inner) -->
-      <polygon points="10,42 18,4 72,4 80,42" fill="${dark ? "#010409" : "#1b1f24"}"/>
-      <!-- Screen Glow Overlay -->
-      <polygon points="10,42 18,4 72,4 80,42" fill="${c.monitorGreen}" class="green-glow"/>
-      <!-- Laptop Base -->
-      <rect x="-10" y="45" width="110" height="5" rx="2" fill="${dark ? "#30363d" : "#57606a"}"/>
-      <rect x="0" y="45" width="90" height="2" fill="${dark ? "#161b22" : "#8c959f"}"/>
+    <!-- Room Ambient Glow -->
+    <ellipse cx="450" cy="120" rx="200" ry="100" fill="${c.neonPurple}" opacity="0.05"/>
+
+    <!-- The Desk -->
+    <rect x="0" y="220" width="${W}" height="60" fill="${c.deskShadow}"/>
+    <rect x="0" y="220" width="${W}" height="6" fill="#161b22"/>
+
+    <!-- Multi-legged Squid Entity (Right side) -->
+    <g transform="translate(750, 110)">
+      <!-- Head/Mantle -->
+      <path d="M25,0 Q45,30 40,70 L10,70 Q5,30 25,0 Z" fill="#b081b8"/>
+      <!-- Mask/Eye Band -->
+      <path d="M5,70 L45,70 L45,85 L5,85 Z" fill="#1b1f27"/>
+      <!-- Eyes -->
+      <circle cx="17" cy="77" r="4" fill="#ffffff"/>
+      <circle cx="33" cy="77" r="4" fill="#ffffff"/>
+      <circle cx="17" cy="77" r="1.5" fill="#010409"/>
+      <circle cx="33" cy="77" r="1.5" fill="#010409"/>
+      <!-- Tentacles -->
+      <path d="M10,85 Q-5,125 10,145" fill="none" stroke="#b081b8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M20,85 Q15,120 25,140" fill="none" stroke="#b081b8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M30,85 Q35,120 25,145" fill="none" stroke="#b081b8" stroke-width="7" stroke-linecap="round"/>
+      <path d="M40,85 Q55,125 40,140" fill="none" stroke="#b081b8" stroke-width="7" stroke-linecap="round"/>
     </g>
 
-    <!-- Stylized Robot Companion -->
-    <g id="robot-companion" transform="translate(250, 110)" class="hover-robot">
-      <!-- Antenna -->
-      <line x1="20" y1="10" x2="20" y2="0" stroke="${dark ? "#8c959f" : "#57606a"}" stroke-width="2"/>
-      <circle cx="20" cy="0" r="3" fill="#ff5f57" class="blink"/>
-      <!-- Head -->
-      <rect x="10" y="10" width="20" height="16" rx="3" fill="${dark ? "#21262d" : "#6e7681"}"/>
-      <!-- Glowing Eyes -->
-      <rect x="14" y="15" width="4" height="4" fill="${c.monitorBlue}" class="blue-glow"/>
-      <rect x="22" y="15" width="4" height="4" fill="${c.monitorBlue}" class="blue-glow"/>
-      <!-- Body -->
-      <rect x="12" y="29" width="16" height="18" rx="2" fill="${dark ? "#30363d" : "#57606a"}"/>
-      <!-- Neck -->
-      <rect x="16" y="26" width="8" height="3" fill="${dark ? "#8c959f" : "#d0d7de"}"/>
-      <!-- Hover Thruster Base -->
-      <path d="M12,47 Q20,53 28,47 Z" fill="${dark ? "#8c959f" : "#d0d7de"}"/>
-      <ellipse cx="20" cy="49" rx="6" ry="2" fill="${c.monitorBlue}" class="blue-glow"/>
+    <!-- Small Desktop Robot (Next to squid) -->
+    <g transform="translate(680, 175)">
+      <rect x="5" y="0" width="16" height="12" rx="2" fill="#8c959f"/>
+      <rect x="8" y="3" width="10" height="4" fill="#010409"/>
+      <circle cx="10" cy="5" r="1" fill="#ff5f57" class="blink"/>
+      <circle cx="16" cy="5" r="1" fill="#ff5f57" class="blink"/>
+      <rect x="7" y="12" width="12" height="14" rx="2" fill="#57606a"/>
+      <path d="M7,26 L19,26 L16,35 L10,35 Z" fill="#30363d"/>
     </g>
 
-    <!-- The Programmer / Character Silhouette -->
-    <g id="programmer" transform="translate(530, 70)">
+    <!-- Left Stacked Monitors -->
+    <g transform="translate(180, 50)">
+      <!-- Top Monitor -->
+      <rect x="0" y="0" width="80" height="70" rx="4" fill="#1b222c"/>
+      <rect x="5" y="5" width="70" height="60" rx="2" fill="#020804"/>
+      <rect x="5" y="5" width="70" height="60" fill="${c.phosphorGreen}" class="crt-glow"/>
+      <rect x="10" y="15" width="20" height="2" fill="${c.phosphorGreen}"/>
+      <rect x="10" y="20" width="30" height="2" fill="${c.phosphorGreen}"/>
+      
+      <!-- Bottom Monitor -->
+      <rect x="-10" y="75" width="90" height="80" rx="4" fill="#161b22"/>
+      <rect x="-5" y="80" width="80" height="70" rx="2" fill="#020804"/>
+      <rect x="-5" y="80" width="80" height="70" fill="${c.phosphorGreen}" class="crt-glow"/>
+      <rect x="0" y="90" width="40" height="2" fill="${c.phosphorGreen}"/>
+      <rect x="0" y="95" width="30" height="2" fill="${c.phosphorGreen}"/>
+      <rect x="0" y="100" width="50" height="2" fill="${c.phosphorGreen}"/>
+      <rect x="0" y="105" width="20" height="2" fill="${c.phosphorGreen}"/>
+    </g>
+
+    <!-- Main Center Monitor (Dashboard UI) -->
+    <g transform="translate(290, 80)">
+      <rect x="80" y="120" width="30" height="20" fill="#161b22"/> <!-- Stand -->
+      <rect x="40" y="140" width="110" height="5" fill="#21262d"/>
+      <rect x="0" y="0" width="190" height="125" rx="6" fill="#1b222c"/>
+      <rect x="6" y="6" width="178" height="113" rx="2" fill="#020804"/>
+      <rect x="6" y="6" width="178" height="113" fill="${c.phosphorGreen}" class="crt-glow"/>
+      
+      <!-- Screen Content (Kyrell) -->
+      <text x="16" y="26" font-family="Consolas, 'Courier New', monospace" font-size="14" font-weight="bold" fill="#ffffff">Kyrell</text>
+      <!-- Code lines mock -->
+      <rect x="16" y="40" width="120" height="2" fill="${c.phosphorGreen}" opacity="0.8"/>
+      <rect x="16" y="46" width="100" height="2" fill="${c.phosphorGreen}" opacity="0.6"/>
+      <!-- Status bars -->
+      <rect x="16" y="60" width="140" height="4" fill="#161b22"/>
+      <rect x="16" y="60" width="100" height="4" fill="${c.phosphorGreen}"/>
+      <rect x="16" y="68" width="140" height="4" fill="#161b22"/>
+      <rect x="16" y="68" width="80" height="4" fill="${c.phosphorGreen}"/>
+      <rect x="16" y="76" width="140" height="4" fill="#161b22"/>
+      <rect x="16" y="76" width="110" height="4" fill="${c.phosphorGreen}"/>
+      <!-- Terminal prompt -->
+      <text x="16" y="105" font-family="Consolas, 'Courier New', monospace" font-size="8" fill="${c.phosphorGreen}">> connect · collaborate · build <tspan class="blink">█</tspan></text>
+    </g>
+
+    <!-- Right Monitor (MARIO) -->
+    <g transform="translate(500, 110)">
+      <rect x="40" y="90" width="20" height="15" fill="#161b22"/> <!-- Stand -->
+      <rect x="0" y="0" width="100" height="95" rx="4" fill="#161b22"/>
+      <rect x="5" y="5" width="90" height="85" rx="2" fill="#020804"/>
+      <rect x="5" y="5" width="90" height="85" fill="#ffffff" opacity="0.05" class="crt-glow"/>
+      <text x="50" y="45" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="14" font-weight="bold" fill="#ffffff">Kyrell</text>
+      <text x="50" y="65" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="bold" fill="#ffffff">MARIO</text>
+    </g>
+
+    <!-- The Developer Character (Center Right) -->
+    <g id="programmer" transform="translate(550, 130)">
       <!-- Chair Back -->
-      <rect x="60" y="40" width="20" height="90" rx="6" fill="${dark ? "#0d1117" : "#424a53"}"/>
-      
-      <!-- Body / Hoodie Back -->
-      <path d="M20,110 Q10,40 50,40 Q65,40 65,110 Z" fill="${dark ? "#161b22" : "#57606a"}"/>
-      
-      <!-- Head / Hood -->
-      <rect x="28" y="10" width="34" height="40" rx="16" fill="${dark ? "#0d1117" : "#424a53"}"/>
-      
-      <!-- ACTION: Typing at the Laptop (Visible 0-45%) -->
-      <g class="action-typing">
-        <!-- Arms reaching out to keyboard -->
-        <g class="typing-arms">
-          <!-- Right arm -->
-          <path d="M30,55 Q5,80 -25,75" fill="none" stroke="${dark ? "#161b22" : "#57606a"}" stroke-width="12" stroke-linecap="round"/>
-          <!-- Left arm (slightly offset) -->
-          <path d="M35,65 Q10,90 -20,85" fill="none" stroke="${dark ? "#0d1117" : "#424a53"}" stroke-width="10" stroke-linecap="round"/>
-        </g>
-      </g>
-
-      <!-- ACTION: Reading a Book (Visible 50-95%) -->
-      <g class="action-reading">
-        <!-- Arms bent upwards holding book -->
-        <path d="M30,55 Q20,90 -5,75" fill="none" stroke="${dark ? "#161b22" : "#57606a"}" stroke-width="12" stroke-linecap="round"/>
-        <path d="M35,65 Q25,100 0,85" fill="none" stroke="${dark ? "#0d1117" : "#424a53"}" stroke-width="10" stroke-linecap="round"/>
-        
-        <!-- The Book -->
-        <g transform="translate(-20, 58)">
-          <!-- Book Cover Backing -->
-          <path d="M-5,-5 L15,0 L15,15 L-5,10 Z" fill="${dark ? "#8c959f" : "#d0d7de"}"/>
-          <path d="M35,-5 L15,0 L15,15 L35,10 Z" fill="${dark ? "#8c959f" : "#d0d7de"}"/>
-          <!-- Book Pages -->
-          <path d="M-2,-2 L15,2 L15,13 L-2,9 Z" fill="${dark ? "#e6edf3" : "#ffffff"}"/>
-          <path d="M32,-2 L15,2 L15,13 L32,9 Z" fill="${dark ? "#e6edf3" : "#ffffff"}"/>
-          <!-- Text lines on pages -->
-          <line x1="2" y1="2" x2="12" y2="4" stroke="${dark ? "#0d1117" : "#57606a"}" stroke-width="1"/>
-          <line x1="2" y1="5" x2="10" y2="7" stroke="${dark ? "#0d1117" : "#57606a"}" stroke-width="1"/>
-          <line x1="18" y1="4" x2="28" y2="2" stroke="${dark ? "#0d1117" : "#57606a"}" stroke-width="1"/>
-          <line x1="18" y1="7" x2="26" y2="5" stroke="${dark ? "#0d1117" : "#57606a"}" stroke-width="1"/>
-        </g>
-      </g>
+      <rect x="60" y="70" width="40" height="90" rx="10" fill="#0d1117"/>
+      <!-- Body / Shirt -->
+      <path d="M15,150 Q10,60 50,60 Q75,60 85,150 Z" fill="#1c2536"/>
+      <!-- Head / Hair -->
+      <path d="M25,20 Q20,-5 40,5 Q45,-15 60,-5 Q75,-10 75,10 Q85,15 75,30 Q80,50 65,60 Q40,65 30,50 Z" fill="#523223"/>
+      <!-- Face profile -->
+      <path d="M25,30 L20,35 L22,40 L18,45 L22,55 Q35,65 50,60 Z" fill="#d4a373"/>
+      <!-- Eye -->
+      <rect x="28" y="32" width="4" height="4" fill="#ffffff"/>
+      <rect x="28" y="33" width="2" height="2" fill="#000000"/>
+      <!-- Arm extending to keyboard -->
+      <path d="M45,75 Q20,110 -40,95" fill="none" stroke="#d4a373" stroke-width="14" stroke-linecap="round"/>
+      <path d="M45,75 Q20,110 -40,95" fill="none" stroke="#1c2536" stroke-width="16" stroke-dasharray="80 100" stroke-linecap="round"/>
     </g>
+    
+    <!-- Keyboard -->
+    <rect x="420" y="222" width="90" height="6" rx="2" fill="#21262d" transform="rotate(-5 420 222)"/>
   </g>
 
   <!-- ========================================== -->
   <!-- SECTION B: INFO & LINKS ROW (Bottom)       -->
   <!-- ========================================== -->
   
-  <!-- Divider Lines & Section Title -->
-  <line x1="24" y1="205" x2="${W - 24}" y2="205" stroke="${c.border}" stroke-width="0.5"/>
-  <text x="24" y="225" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// connect · collaborate · build</text>
-  <line x1="24" y1="233" x2="${W - 24}" y2="233" stroke="${c.border}" stroke-width="0.5"/>
+  <g transform="translate(0, 285)">
+    <!-- Title and Dividers -->
+    <line x1="24" y1="0" x2="${W - 24}" y2="0" stroke="${c.border}" stroke-width="0.5"/>
+    <text x="24" y="20" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// connect · collaborate · build</text>
+    <line x1="24" y1="28" x2="${W - 24}" y2="28" stroke="${c.border}" stroke-width="0.5"/>
 
-  <!-- Live Anchor Text Links (Pill Style from original) -->
-  <g transform="translate(24, 245)">
-    <!-- GitHub -->
-    <rect x="0" y="0" width="130" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-    <text x="65" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">GitHub · Hazy019</text>
-    
-    <!-- LinkedIn -->
-    <rect x="138" y="0" width="190" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-    <text x="233" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">LinkedIn · kyrell-santillan</text>
-    
-    <!-- Discord -->
-    <rect x="336" y="0" width="135" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-    <text x="403.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Discord · Hazy019</text>
-    
-    <!-- Site -->
-    <rect x="479" y="0" width="165" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-    <text x="561.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Site · hazy.cosedevs.com</text>
+    <!-- Live Anchor Text Links -->
+    <g transform="translate(24, 40)">
+      <!-- GitHub -->
+      <rect x="0" y="0" width="130" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+      <text x="65" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">GitHub · Hazy019</text>
+      
+      <!-- LinkedIn -->
+      <rect x="138" y="0" width="190" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+      <text x="233" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">LinkedIn · kyrell-santillan</text>
+      
+      <!-- Discord -->
+      <rect x="336" y="0" width="135" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+      <text x="403.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Discord · Hazy019</text>
+      
+      <!-- Site -->
+      <rect x="479" y="0" width="165" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+      <text x="561.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Site · hazy.cosedevs.com</text>
+    </g>
+
+    <!-- Final Branding & Timestamp -->
+    <!-- Purple X Logo Mini -->
+    <g transform="translate(${W - 190}, 42) scale(0.12)" class="neon-x">
+      <path d="M 0,20 L 20,0 L 50,30 L 80,0 L 100,20 L 70,50 L 100,80 L 80,100 L 50,70 L 20,100 L 0,80 L 30,50 Z" fill="${c.neonPurple}"/>
+    </g>
+    <text x="${W - 170}" y="54" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="bold" fill="${c.text}">Kyrell Santillan</text>
+
+    <!-- OFW Indicator -->
+    <circle cx="${W - 80}" cy="50" r="4" fill="${c.phosphorGreen}"/>
+    <circle cx="${W - 80}" cy="50" r="4" fill="${c.phosphorGreen}" class="neon" opacity="0.6"/>
+    <text x="${W - 70}" y="54" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="bold" fill="${c.phosphorGreen}">OFW</text>
+
+    <!-- Timestamp -->
+    <text x="${W - 24}" y="54" text-anchor="end" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="${c.muted}">1:45 PM</text>
   </g>
-
-  <!-- Copyright -->
-  <text x="${W - 24}" y="259" text-anchor="end" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="${c.muted}">© ${new Date().getFullYear()} Hazy019 · Kyrell Santillan</text>
 
   <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
 </g>
