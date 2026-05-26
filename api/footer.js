@@ -5,239 +5,192 @@ export default async function handler(req) {
 
   const c = dark
     ? {
-        bg: "#0d1117",
-        text: "#e6edf3",
-        muted: "#8b949e",
-        dim: "#6e7681",
-        border: "#30363d",
-        sceneBg: "#06090e",
-        deskShadow: "#0a0d13",
-        linkBg: "#161b22",
-        linkText: "#79c0ff",
+        bg:         "#0d1117",
+        text:       "#e6edf3",
+        muted:      "#8b949e",
+        dim:        "#6e7681",
+        border:     "#30363d",
+        accent:     "#39d353",
+        panelBg:    "#0b0e14",
+        linkBg:     "#161b22",
+        linkText:   "#79c0ff",
         linkBorder: "#30363d",
-        neonPink: "#ff0055",
-        phosphorGreen: "#00ff66",
-        cyberCyan: "#00e5ff"
       }
     : {
-        bg: "#ffffff",
-        text: "#1a1a1a",
-        muted: "#57606a",
-        dim: "#8c959f",
-        border: "#d0d7de",
-        sceneBg: "#06090e", // Kept dark for contrast in scene
-        deskShadow: "#0a0d13",
-        linkBg: "#f6f8fa",
-        linkText: "#0550ae",
+        bg:         "#ffffff",
+        text:       "#1a1a1a",
+        muted:      "#57606a",
+        dim:        "#8c959f",
+        border:     "#d0d7de",
+        accent:     "#1a7f37",
+        panelBg:    "#f0f2f5",
+        linkBg:     "#f6f8fa",
+        linkText:   "#0550ae",
         linkBorder: "#d0d7de",
-        neonPink: "#ff0055",
-        phosphorGreen: "#00ff66",
-        cyberCyan: "#00e5ff"
       };
 
-  const W = 900, H = 380;
+  const W = 900;
+
+  // ── Row 1: pixel art panel dimensions ────────────────────────────────────
+  const PANEL_X      = 24;
+  const PANEL_Y      = 12;
+  const PANEL_W      = W - 48;   // 852px
+  const PANEL_H      = 180;
+  const PANEL_BOTTOM = PANEL_Y + PANEL_H;
+
+  // ── Row 2: info & links section ──────────────────────────────────────────
+  const ROW2_TOP = PANEL_BOTTOM + 20;   // 212
+  const H        = ROW2_TOP + 64;       // 276
+
+  // ── Link pills layout ────────────────────────────────────────────────────
+  const LINKS = [
+    { label: "GitHub · Hazy019",          w: 130 },
+    { label: "LinkedIn · kyrell-santillan", w: 192 },
+    { label: "Discord · Hazy019",          w: 136 },
+    { label: "Site · hazy.cosedevs.com",   w: 170 },
+  ];
+  const LINK_GAP  = 10;
+  const LINK_H    = 22;
+  const LINK_Y    = ROW2_TOP + 34;
+
+  let lx = 24;
+  const linkPills = LINKS.map(({ label, w }) => {
+    const el = `
+  <rect x="${lx}" y="${LINK_Y}" width="${w}" height="${LINK_H}" rx="11"
+        fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+  <text x="${lx + w / 2}" y="${LINK_Y + 14.5}" text-anchor="middle"
+        font-family="'Courier New', Consolas, monospace" font-size="9"
+        font-weight="700" fill="${c.linkText}">${label}</text>`;
+    lx += w + LINK_GAP;
+    return el;
+  }).join("");
+
+  // Right-side branding x anchor
+  const BRAND_X   = W - 24;
+  const BRAND_Y   = LINK_Y + 14;
+  const OFW_DOT_X = W - 132;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
   <clipPath id="fc"><rect width="${W}" height="${H}" rx="8"/></clipPath>
 </defs>
 
+<!-- ═══════════════════════════════════════════════════════════════════
+     ANIMATION CLASSES
+     Attach these directly to <image> or <g> elements in the pixel art
+     panel to animate them natively without JavaScript.
+
+     .crt-flicker   — smooth, non-intrusive screen-refresh pulse
+     .terminal-cursor — sharp blinking block cursor █
+     .subtle-glow   — slow breathing glow for brand / neon elements
+════════════════════════════════════════════════════════════════════ -->
 <style>
-  @keyframes crtFlicker {
-    0%, 100% { opacity: 0.1; }
-    30% { opacity: 0.15; }
-    70% { opacity: 0.08; }
+  /* Screen-refresh pulse: subtle opacity oscillation */
+  @keyframes crtFlickerKF {
+    0%   { opacity: 0.94; }
+    8%   { opacity: 1;    }
+    16%  { opacity: 0.96; }
+    40%  { opacity: 1;    }
+    58%  { opacity: 0.95; }
+    80%  { opacity: 1;    }
+    92%  { opacity: 0.97; }
+    100% { opacity: 0.94; }
   }
-  @keyframes neonPulse {
-    0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 10px #ff0055); }
-    50% { opacity: 1; filter: drop-shadow(0 0 20px #ff0055); }
+  .crt-flicker {
+    animation: crtFlickerKF 5s ease-in-out infinite;
   }
-  @keyframes blink {
-    0%, 49% { opacity: 1; }
+
+  /* Terminal block cursor — sharp step-end blink */
+  @keyframes termCursorKF {
+    0%,  49% { opacity: 1; }
     50%, 100% { opacity: 0; }
   }
-  @keyframes ambientPulse {
-    0%, 100% { opacity: 0.05; }
-    50% { opacity: 0.15; }
+  .terminal-cursor {
+    animation: termCursorKF 1s step-end infinite;
   }
-  
-  .crt-glow { animation: crtFlicker 3s infinite; }
-  .neon-x { animation: neonPulse 4s infinite; }
-  .blink { animation: blink 1s infinite; }
-  .zone-pulse { animation: ambientPulse 6s ease-in-out infinite; }
+
+  /* Slow breathing glow for brand / neon elements */
+  @keyframes subtleGlowKF {
+    0%, 100% { opacity: 0.75; filter: drop-shadow(0 0 4px #39d353); }
+    50%      { opacity: 1;    filter: drop-shadow(0 0 9px #39d353);  }
+  }
+  .subtle-glow {
+    animation: subtleGlowKF 4s ease-in-out infinite;
+  }
 </style>
 
 <g clip-path="url(#fc)">
-  <!-- Main Structural Background -->
+
+  <!-- Canvas -->
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
+  <rect width="${W}" height="0.5" fill="${c.border}"/>
 
-  <!-- ========================================== -->
-  <!-- SECTION A: INFO & LINKS ROW (Top)          -->
-  <!-- ========================================== -->
-  <g transform="translate(0, 10)">
-    <!-- Title and Dividers -->
-    <line x1="24" y1="0" x2="${W - 24}" y2="0" stroke="${c.border}" stroke-width="0.5"/>
-    <text x="24" y="20" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// connect · collaborate · build</text>
-    <line x1="24" y1="28" x2="${W - 24}" y2="28" stroke="${c.border}" stroke-width="0.5"/>
+  <!-- ══════════════════════════════════════════════════════
+       ROW 1 — PIXEL ART IMAGE CONTAINER
+       Replace the href value with your Base64 PNG string.
+       The container is ${PANEL_W}×${PANEL_H}px.
+  ══════════════════════════════════════════════════════ -->
 
-    <!-- Live Anchor Text Links -->
-    <g transform="translate(24, 40)">
-      <!-- GitHub -->
-      <rect x="0" y="0" width="130" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-      <text x="65" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">GitHub · Hazy019</text>
-      
-      <!-- LinkedIn -->
-      <rect x="138" y="0" width="190" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-      <text x="233" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">LinkedIn · kyrell-santillan</text>
-      
-      <!-- Discord -->
-      <rect x="336" y="0" width="135" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-      <text x="403.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Discord · Hazy019</text>
-      
-      <!-- Site -->
-      <rect x="479" y="0" width="165" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-      <text x="561.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Site · hazy.cosedevs.com</text>
-    </g>
+  <!-- Bordered panel background -->
+  <rect x="${PANEL_X}" y="${PANEL_Y}" width="${PANEL_W}" height="${PANEL_H}" rx="6"
+        fill="${c.panelBg}" stroke="${c.border}" stroke-width="1"/>
 
-    <!-- Final Branding & Timestamp -->
-    <g transform="translate(${W - 190}, 42) scale(0.12)" class="neon-x">
-      <path d="M 0,20 L 20,0 L 50,30 L 80,0 L 100,20 L 70,50 L 100,80 L 80,100 L 50,70 L 20,100 L 0,80 L 30,50 Z" fill="${c.neonPink}"/>
-    </g>
-    <text x="${W - 170}" y="54" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="bold" fill="${c.text}">Kyrell Santillan</text>
+  <!-- Pixel art image slot — swap href for your Base64 encoded PNG -->
+  <image
+    class="crt-flicker"
+    href="YOUR_BASE64_IMAGE_STRING_HERE"
+    x="${PANEL_X}" y="${PANEL_Y}"
+    width="${PANEL_W}" height="${PANEL_H}"
+    preserveAspectRatio="xMidYMid meet"
+    clip-path="url(#imgClip)"
+  />
+  <!-- Inner clip so the image respects the panel's rounded corners -->
+  <defs>
+    <clipPath id="imgClip">
+      <rect x="${PANEL_X}" y="${PANEL_Y}" width="${PANEL_W}" height="${PANEL_H}" rx="6"/>
+    </clipPath>
+  </defs>
 
-    <!-- OFW Indicator -->
-    <circle cx="${W - 80}" cy="50" r="4" fill="${c.phosphorGreen}"/>
-    <circle cx="${W - 80}" cy="50" r="4" fill="${c.phosphorGreen}" filter="drop-shadow(0 0 4px ${c.phosphorGreen})" opacity="0.8"/>
-    <text x="${W - 70}" y="54" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="bold" fill="${c.phosphorGreen}">OFW</text>
+  <!-- Placeholder label (remove once image is loaded) -->
+  <text x="${PANEL_X + PANEL_W / 2}" y="${PANEL_Y + PANEL_H / 2 - 6}" text-anchor="middle"
+        font-family="'Courier New', Consolas, monospace" font-size="11" fill="${c.dim}">
+    // pixel art panel
+  </text>
+  <text x="${PANEL_X + PANEL_W / 2}" y="${PANEL_Y + PANEL_H / 2 + 14}" text-anchor="middle"
+        font-family="'Courier New', Consolas, monospace" font-size="10" fill="${c.muted}">
+    replace href="YOUR_BASE64_IMAGE_STRING_HERE"
+  </text>
 
-    <!-- Timestamp -->
-    <text x="${W - 24}" y="54" text-anchor="end" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="${c.muted}">1:45 PM</text>
-  </g>
+  <!-- ══════════════════════════════════════════════════════
+       ROW 2 — SYSTEM INFO & LINKS
+  ══════════════════════════════════════════════════════ -->
 
-  <!-- ========================================== -->
-  <!-- SECTION B: MASSIVE PIXEL ART DESK SCENE    -->
-  <!-- ========================================== -->
-  <g id="pixel-art-scene" transform="translate(0, 100)">
-    <!-- Dark Cyber-Noir Room Wall -->
-    <rect x="0" y="0" width="${W}" height="280" fill="${c.sceneBg}"/>
-    
-    <!-- Neon Pink 'X' Logo on Wall -->
-    <g transform="translate(420, 20) scale(0.7)" class="neon-x">
-      <path d="M 0,20 L 20,0 L 50,30 L 80,0 L 100,20 L 70,50 L 100,80 L 80,100 L 50,70 L 20,100 L 0,80 L 30,50 Z" fill="${c.neonPink}"/>
-    </g>
+  <!-- Dividers + section label -->
+  <line x1="24" y1="${ROW2_TOP}" x2="${W - 24}" y2="${ROW2_TOP}"
+        stroke="${c.border}" stroke-width="0.5"/>
+  <text x="24" y="${ROW2_TOP + 18}"
+        font-family="'Courier New', Consolas, monospace" font-size="10"
+        font-weight="700" letter-spacing="1.5" fill="${c.dim}">// connect · collaborate · build</text>
+  <line x1="24" y1="${ROW2_TOP + 25}" x2="${W - 24}" y2="${ROW2_TOP + 25}"
+        stroke="${c.border}" stroke-width="0.5"/>
 
-    <!-- Room Ambient Glow -->
-    <ellipse cx="450" cy="120" rx="200" ry="100" fill="${c.neonPink}" opacity="0.05"/>
+  <!-- Link pills -->
+  ${linkPills}
 
-    <!-- The Desk -->
-    <rect x="0" y="220" width="${W}" height="60" fill="${c.deskShadow}"/>
-    <rect x="0" y="220" width="${W}" height="6" fill="#161b22"/>
+  <!-- OFW dot (subtle-glow animation ready) -->
+  <circle cx="${OFW_DOT_X}" cy="${BRAND_Y - 4}" r="4"
+          fill="${c.accent}" class="subtle-glow"/>
+  <text x="${OFW_DOT_X + 10}" y="${BRAND_Y}"
+        font-family="'Courier New', Consolas, monospace" font-size="9"
+        font-weight="700" fill="${c.accent}">OFW</text>
 
-    <!-- Multi-legged Squid Entity (Right side) -->
-    <g transform="translate(750, 110)">
-      <!-- Head/Mantle -->
-      <path d="M25,0 Q45,30 40,70 L10,70 Q5,30 25,0 Z" fill="#b081b8"/>
-      <!-- Mask/Eye Band -->
-      <path d="M5,70 L45,70 L45,85 L5,85 Z" fill="#1b1f27"/>
-      <!-- Eyes -->
-      <circle cx="17" cy="77" r="4" fill="#ffffff"/>
-      <circle cx="33" cy="77" r="4" fill="#ffffff"/>
-      <circle cx="17" cy="77" r="1.5" fill="#010409"/>
-      <circle cx="33" cy="77" r="1.5" fill="#010409"/>
-      <!-- Tentacles -->
-      <path d="M10,85 Q-5,125 10,145" fill="none" stroke="#b081b8" stroke-width="7" stroke-linecap="round"/>
-      <path d="M20,85 Q15,120 25,140" fill="none" stroke="#b081b8" stroke-width="7" stroke-linecap="round"/>
-      <path d="M30,85 Q35,120 25,145" fill="none" stroke="#b081b8" stroke-width="7" stroke-linecap="round"/>
-      <path d="M40,85 Q55,125 40,140" fill="none" stroke="#b081b8" stroke-width="7" stroke-linecap="round"/>
-    </g>
+  <!-- Brand name -->
+  <text x="${BRAND_X}" y="${BRAND_Y}" text-anchor="end"
+        font-family="'Courier New', Consolas, monospace" font-size="10"
+        font-weight="700" fill="${c.text}">Kyrell Santillan</text>
 
-    <!-- Small Desktop Robot (Next to squid) -->
-    <g transform="translate(680, 175)">
-      <rect x="5" y="0" width="16" height="12" rx="2" fill="#8c959f"/>
-      <rect x="8" y="3" width="10" height="4" fill="#010409"/>
-      <circle cx="10" cy="5" r="1" fill="#ff5f57" class="blink"/>
-      <circle cx="16" cy="5" r="1" fill="#ff5f57" class="blink"/>
-      <rect x="7" y="12" width="12" height="14" rx="2" fill="#57606a"/>
-      <path d="M7,26 L19,26 L16,35 L10,35 Z" fill="#30363d"/>
-    </g>
-
-    <!-- Left Stacked Monitors -->
-    <g transform="translate(180, 50)">
-      <!-- Top Monitor -->
-      <rect x="0" y="0" width="80" height="70" rx="4" fill="#1b222c"/>
-      <rect x="5" y="5" width="70" height="60" rx="2" fill="#020804"/>
-      <rect x="5" y="5" width="70" height="60" fill="${c.phosphorGreen}" class="crt-glow"/>
-      <rect x="10" y="15" width="20" height="2" fill="${c.phosphorGreen}"/>
-      <rect x="10" y="20" width="30" height="2" fill="${c.phosphorGreen}"/>
-      
-      <!-- Bottom Monitor -->
-      <rect x="-10" y="75" width="90" height="80" rx="4" fill="#161b22"/>
-      <rect x="-5" y="80" width="80" height="70" rx="2" fill="#020804"/>
-      <rect x="-5" y="80" width="80" height="70" fill="${c.phosphorGreen}" class="crt-glow"/>
-      <rect x="0" y="90" width="40" height="2" fill="${c.phosphorGreen}"/>
-      <rect x="0" y="95" width="30" height="2" fill="${c.phosphorGreen}"/>
-      <rect x="0" y="100" width="50" height="2" fill="${c.phosphorGreen}"/>
-      <rect x="0" y="105" width="20" height="2" fill="${c.phosphorGreen}"/>
-    </g>
-
-    <!-- Main Center Monitor (Dashboard UI) -->
-    <g transform="translate(290, 80)">
-      <rect x="80" y="120" width="30" height="20" fill="#161b22"/> <!-- Stand -->
-      <rect x="40" y="140" width="110" height="5" fill="#21262d"/>
-      <rect x="0" y="0" width="190" height="125" rx="6" fill="#1b222c"/>
-      <rect x="6" y="6" width="178" height="113" rx="2" fill="#020804"/>
-      <rect x="6" y="6" width="178" height="113" fill="${c.phosphorGreen}" class="crt-glow"/>
-      
-      <!-- Screen Content (Kyrell) -->
-      <text x="16" y="26" font-family="Consolas, 'Courier New', monospace" font-size="14" font-weight="bold" fill="#ffffff">Kyrell</text>
-      <!-- Code lines mock -->
-      <rect x="16" y="40" width="120" height="2" fill="${c.phosphorGreen}" opacity="0.8"/>
-      <rect x="16" y="46" width="100" height="2" fill="${c.phosphorGreen}" opacity="0.6"/>
-      <!-- Status bars -->
-      <rect x="16" y="60" width="140" height="4" fill="#161b22"/>
-      <rect x="16" y="60" width="100" height="4" fill="${c.phosphorGreen}"/>
-      <rect x="16" y="68" width="140" height="4" fill="#161b22"/>
-      <rect x="16" y="68" width="80" height="4" fill="${c.phosphorGreen}"/>
-      <rect x="16" y="76" width="140" height="4" fill="#161b22"/>
-      <rect x="16" y="76" width="110" height="4" fill="${c.phosphorGreen}"/>
-      <!-- Terminal prompt -->
-      <text x="16" y="105" font-family="Consolas, 'Courier New', monospace" font-size="8" fill="${c.phosphorGreen}">> connect · collaborate · build <tspan class="blink">█</tspan></text>
-    </g>
-
-    <!-- Right Monitor (MARIO) -->
-    <g transform="translate(500, 110)">
-      <rect x="40" y="90" width="20" height="15" fill="#161b22"/> <!-- Stand -->
-      <rect x="0" y="0" width="100" height="95" rx="4" fill="#161b22"/>
-      <rect x="5" y="5" width="90" height="85" rx="2" fill="#020804"/>
-      <rect x="5" y="5" width="90" height="85" fill="${c.phosphorGreen}" class="crt-glow"/>
-      <text x="50" y="45" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="14" font-weight="bold" fill="#ffffff">Kyrell</text>
-      <text x="50" y="65" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="bold" fill="#ffffff">MARIO</text>
-    </g>
-
-    <!-- The Developer Character (Center Right) -->
-    <g id="programmer" transform="translate(550, 130)">
-      <!-- Chair Back -->
-      <rect x="60" y="70" width="40" height="90" rx="10" fill="#0d1117"/>
-      <!-- Body / Shirt -->
-      <path d="M15,150 Q10,60 50,60 Q75,60 85,150 Z" fill="#1c2536"/>
-      <!-- Head / Hair -->
-      <path d="M25,20 Q20,-5 40,5 Q45,-15 60,-5 Q75,-10 75,10 Q85,15 75,30 Q80,50 65,60 Q40,65 30,50 Z" fill="#523223"/>
-      <!-- Face profile -->
-      <path d="M25,30 L20,35 L22,40 L18,45 L22,55 Q35,65 50,60 Z" fill="#d4a373"/>
-      <!-- Eye -->
-      <rect x="28" y="32" width="4" height="4" fill="#ffffff"/>
-      <rect x="28" y="33" width="2" height="2" fill="#000000"/>
-      <!-- Arm extending to keyboard -->
-      <path d="M45,75 Q20,110 -40,95" fill="none" stroke="#d4a373" stroke-width="14" stroke-linecap="round"/>
-      <path d="M45,75 Q20,110 -40,95" fill="none" stroke="#1c2536" stroke-width="16" stroke-dasharray="80 100" stroke-linecap="round"/>
-    </g>
-    
-    <!-- Keyboard -->
-    <rect x="420" y="222" width="90" height="6" rx="2" fill="#21262d" transform="rotate(-5 420 222)"/>
-
-    <!-- Entire Zone Subtle Ambient Pulse -->
-    <rect x="0" y="0" width="${W}" height="280" fill="${c.neonPink}" class="zone-pulse" style="pointer-events: none; mix-blend-mode: screen;"/>
-  </g>
+  <!-- Bottom rule -->
+  <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
 
 </g>
 </svg>`;
