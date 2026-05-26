@@ -15,8 +15,9 @@ export default async function handler(req) {
         linkBg: "#161b22",
         linkText: "#79c0ff",
         linkBorder: "#30363d",
-        neonPurple: "#b026ff",
-        phosphorGreen: "#39d353",
+        neonPink: "#ff0055",
+        phosphorGreen: "#00ff66",
+        cyberCyan: "#00e5ff"
       }
     : {
         bg: "#ffffff",
@@ -24,13 +25,14 @@ export default async function handler(req) {
         muted: "#57606a",
         dim: "#8c959f",
         border: "#d0d7de",
-        sceneBg: "#06090e",
+        sceneBg: "#06090e", // Kept dark for contrast in scene
         deskShadow: "#0a0d13",
         linkBg: "#f6f8fa",
         linkText: "#0550ae",
         linkBorder: "#d0d7de",
-        neonPurple: "#b026ff",
-        phosphorGreen: "#39d353",
+        neonPink: "#ff0055",
+        phosphorGreen: "#00ff66",
+        cyberCyan: "#00e5ff"
       };
 
   const W = 900, H = 380;
@@ -47,17 +49,22 @@ export default async function handler(req) {
     70% { opacity: 0.08; }
   }
   @keyframes neonPulse {
-    0%, 100% { filter: drop-shadow(0 0 10px #b026ff); opacity: 0.9; }
-    50% { filter: drop-shadow(0 0 20px #b026ff); opacity: 1; }
+    0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 10px #ff0055); }
+    50% { opacity: 1; filter: drop-shadow(0 0 20px #ff0055); }
   }
   @keyframes blink {
     0%, 49% { opacity: 1; }
     50%, 100% { opacity: 0; }
   }
+  @keyframes ambientPulse {
+    0%, 100% { opacity: 0.05; }
+    50% { opacity: 0.15; }
+  }
   
   .crt-glow { animation: crtFlicker 3s infinite; }
   .neon-x { animation: neonPulse 4s infinite; }
   .blink { animation: blink 1s infinite; }
+  .zone-pulse { animation: ambientPulse 6s ease-in-out infinite; }
 </style>
 
 <g clip-path="url(#fc)">
@@ -65,19 +72,62 @@ export default async function handler(req) {
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
 
   <!-- ========================================== -->
-  <!-- SECTION A: MASSIVE PIXEL ART DESK SCENE    -->
+  <!-- SECTION A: INFO & LINKS ROW (Top)          -->
   <!-- ========================================== -->
-  <g id="pixel-art-scene">
+  <g transform="translate(0, 10)">
+    <!-- Title and Dividers -->
+    <line x1="24" y1="0" x2="${W - 24}" y2="0" stroke="${c.border}" stroke-width="0.5"/>
+    <text x="24" y="20" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// connect · collaborate · build</text>
+    <line x1="24" y1="28" x2="${W - 24}" y2="28" stroke="${c.border}" stroke-width="0.5"/>
+
+    <!-- Live Anchor Text Links -->
+    <g transform="translate(24, 40)">
+      <!-- GitHub -->
+      <rect x="0" y="0" width="130" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+      <text x="65" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">GitHub · Hazy019</text>
+      
+      <!-- LinkedIn -->
+      <rect x="138" y="0" width="190" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+      <text x="233" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">LinkedIn · kyrell-santillan</text>
+      
+      <!-- Discord -->
+      <rect x="336" y="0" width="135" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+      <text x="403.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Discord · Hazy019</text>
+      
+      <!-- Site -->
+      <rect x="479" y="0" width="165" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+      <text x="561.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Site · hazy.cosedevs.com</text>
+    </g>
+
+    <!-- Final Branding & Timestamp -->
+    <g transform="translate(${W - 190}, 42) scale(0.12)" class="neon-x">
+      <path d="M 0,20 L 20,0 L 50,30 L 80,0 L 100,20 L 70,50 L 100,80 L 80,100 L 50,70 L 20,100 L 0,80 L 30,50 Z" fill="${c.neonPink}"/>
+    </g>
+    <text x="${W - 170}" y="54" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="bold" fill="${c.text}">Kyrell Santillan</text>
+
+    <!-- OFW Indicator -->
+    <circle cx="${W - 80}" cy="50" r="4" fill="${c.phosphorGreen}"/>
+    <circle cx="${W - 80}" cy="50" r="4" fill="${c.phosphorGreen}" filter="drop-shadow(0 0 4px ${c.phosphorGreen})" opacity="0.8"/>
+    <text x="${W - 70}" y="54" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="bold" fill="${c.phosphorGreen}">OFW</text>
+
+    <!-- Timestamp -->
+    <text x="${W - 24}" y="54" text-anchor="end" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="${c.muted}">1:45 PM</text>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- SECTION B: MASSIVE PIXEL ART DESK SCENE    -->
+  <!-- ========================================== -->
+  <g id="pixel-art-scene" transform="translate(0, 100)">
     <!-- Dark Cyber-Noir Room Wall -->
     <rect x="0" y="0" width="${W}" height="280" fill="${c.sceneBg}"/>
     
-    <!-- Neon Purple 'X' Logo on Wall -->
+    <!-- Neon Pink 'X' Logo on Wall -->
     <g transform="translate(420, 20) scale(0.7)" class="neon-x">
-      <path d="M 0,20 L 20,0 L 50,30 L 80,0 L 100,20 L 70,50 L 100,80 L 80,100 L 50,70 L 20,100 L 0,80 L 30,50 Z" fill="${c.neonPurple}"/>
+      <path d="M 0,20 L 20,0 L 50,30 L 80,0 L 100,20 L 70,50 L 100,80 L 80,100 L 50,70 L 20,100 L 0,80 L 30,50 Z" fill="${c.neonPink}"/>
     </g>
 
     <!-- Room Ambient Glow -->
-    <ellipse cx="450" cy="120" rx="200" ry="100" fill="${c.neonPurple}" opacity="0.05"/>
+    <ellipse cx="450" cy="120" rx="200" ry="100" fill="${c.neonPink}" opacity="0.05"/>
 
     <!-- The Desk -->
     <rect x="0" y="220" width="${W}" height="60" fill="${c.deskShadow}"/>
@@ -159,7 +209,7 @@ export default async function handler(req) {
       <rect x="40" y="90" width="20" height="15" fill="#161b22"/> <!-- Stand -->
       <rect x="0" y="0" width="100" height="95" rx="4" fill="#161b22"/>
       <rect x="5" y="5" width="90" height="85" rx="2" fill="#020804"/>
-      <rect x="5" y="5" width="90" height="85" fill="#ffffff" opacity="0.05" class="crt-glow"/>
+      <rect x="5" y="5" width="90" height="85" fill="${c.phosphorGreen}" class="crt-glow"/>
       <text x="50" y="45" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="14" font-weight="bold" fill="#ffffff">Kyrell</text>
       <text x="50" y="65" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="bold" fill="#ffffff">MARIO</text>
     </g>
@@ -184,54 +234,11 @@ export default async function handler(req) {
     
     <!-- Keyboard -->
     <rect x="420" y="222" width="90" height="6" rx="2" fill="#21262d" transform="rotate(-5 420 222)"/>
+
+    <!-- Entire Zone Subtle Ambient Pulse -->
+    <rect x="0" y="0" width="${W}" height="280" fill="${c.neonPink}" class="zone-pulse" style="pointer-events: none; mix-blend-mode: screen;"/>
   </g>
 
-  <!-- ========================================== -->
-  <!-- SECTION B: INFO & LINKS ROW (Bottom)       -->
-  <!-- ========================================== -->
-  
-  <g transform="translate(0, 285)">
-    <!-- Title and Dividers -->
-    <line x1="24" y1="0" x2="${W - 24}" y2="0" stroke="${c.border}" stroke-width="0.5"/>
-    <text x="24" y="20" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// connect · collaborate · build</text>
-    <line x1="24" y1="28" x2="${W - 24}" y2="28" stroke="${c.border}" stroke-width="0.5"/>
-
-    <!-- Live Anchor Text Links -->
-    <g transform="translate(24, 40)">
-      <!-- GitHub -->
-      <rect x="0" y="0" width="130" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-      <text x="65" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">GitHub · Hazy019</text>
-      
-      <!-- LinkedIn -->
-      <rect x="138" y="0" width="190" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-      <text x="233" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">LinkedIn · kyrell-santillan</text>
-      
-      <!-- Discord -->
-      <rect x="336" y="0" width="135" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-      <text x="403.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Discord · Hazy019</text>
-      
-      <!-- Site -->
-      <rect x="479" y="0" width="165" height="22" rx="11" fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-      <text x="561.5" y="14.5" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="700" fill="${c.linkText}">Site · hazy.cosedevs.com</text>
-    </g>
-
-    <!-- Final Branding & Timestamp -->
-    <!-- Purple X Logo Mini -->
-    <g transform="translate(${W - 190}, 42) scale(0.12)" class="neon-x">
-      <path d="M 0,20 L 20,0 L 50,30 L 80,0 L 100,20 L 70,50 L 100,80 L 80,100 L 50,70 L 20,100 L 0,80 L 30,50 Z" fill="${c.neonPurple}"/>
-    </g>
-    <text x="${W - 170}" y="54" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="bold" fill="${c.text}">Kyrell Santillan</text>
-
-    <!-- OFW Indicator -->
-    <circle cx="${W - 80}" cy="50" r="4" fill="${c.phosphorGreen}"/>
-    <circle cx="${W - 80}" cy="50" r="4" fill="${c.phosphorGreen}" class="neon" opacity="0.6"/>
-    <text x="${W - 70}" y="54" font-family="Consolas, 'Courier New', monospace" font-size="9" font-weight="bold" fill="${c.phosphorGreen}">OFW</text>
-
-    <!-- Timestamp -->
-    <text x="${W - 24}" y="54" text-anchor="end" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="${c.muted}">1:45 PM</text>
-  </g>
-
-  <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
 </g>
 </svg>`;
 
