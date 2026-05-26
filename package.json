@@ -1,1 +1,6 @@
-{ "name": "hazy-readme-cards", "version": "2.0.0", "private": true }
+{
+  "name": "hazy-readme-cards",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module"
+}
