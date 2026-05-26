@@ -15,6 +15,7 @@ export default async function handler(req) {
         sceneBg: "#06090e",
         neonPink: "#ff0055",
         phosphorGreen: "#00ff66",
+        cyberCyan: "#00e5ff",
         cityGlow: "#0f4c81"
       }
     : {
@@ -25,9 +26,10 @@ export default async function handler(req) {
         dim: "#8c959f",
         border: "#d0d7de",
         accent: "#1a7f37",
-        sceneBg: "#06090e", // Scene stays dark for contrast
+        sceneBg: "#06090e",
         neonPink: "#ff0055",
         phosphorGreen: "#00ff66",
+        cyberCyan: "#00e5ff",
         cityGlow: "#0f4c81"
       };
 
@@ -47,6 +49,10 @@ export default async function handler(req) {
     0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 8px #ff0055); }
     50% { opacity: 1; filter: drop-shadow(0 0 15px #ff0055); }
   }
+  @keyframes cyanPulse {
+    0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 8px #00e5ff); }
+    50% { opacity: 1; filter: drop-shadow(0 0 15px #00e5ff); }
+  }
   @keyframes crtFlicker {
     0%, 100% { opacity: 0.15; }
     30% { opacity: 0.1; }
@@ -58,13 +64,24 @@ export default async function handler(req) {
     80% { opacity: 0.6; }
     100% { transform: translateY(-40px); opacity: 0; }
   }
+  @keyframes ambientPulse {
+    0%, 100% { opacity: 0.05; }
+    50% { opacity: 0.15; }
+  }
+  @keyframes typingArms {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(2px); }
+  }
   
   .blink { animation: blink 1s infinite; }
   .neon { animation: neonPulse 3s infinite; }
+  .cyan { animation: cyanPulse 4s infinite; }
   .crt-glow { animation: crtFlicker 4s infinite; }
   .dust1 { animation: floatDust 8s linear infinite; }
   .dust2 { animation: floatDust 12s linear infinite 4s; }
   .dust3 { animation: floatDust 10s linear infinite 2s; }
+  .zone-pulse { animation: ambientPulse 6s ease-in-out infinite; }
+  .typing { animation: typingArms 0.2s infinite; }
 </style>
 
 <g clip-path="url(#hc)">
@@ -109,7 +126,7 @@ export default async function handler(req) {
     <rect x="530" y="50" width="4" height="4" fill="${c.cityGlow}" opacity="0.6"/>
     <rect x="530" y="60" width="4" height="4" fill="${c.cityGlow}" opacity="0.6"/>
     <rect x="545" y="75" width="4" height="4" fill="${c.neonPink}" opacity="0.4"/>
-    <rect x="680" y="40" width="4" height="4" fill="${c.phosphorGreen}" opacity="0.5"/>
+    <rect x="680" y="40" width="4" height="4" fill="${c.cyberCyan}" opacity="0.8"/>
     <rect x="695" y="80" width="4" height="4" fill="${c.cityGlow}" opacity="0.6"/>
     <!-- Window Rain lines -->
     <line x1="480" y1="20" x2="475" y2="40" stroke="#1b2533" stroke-width="1"/>
@@ -121,13 +138,13 @@ export default async function handler(req) {
     <rect x="0" y="0" width="${W}" height="180" fill="url(#windowGlow)" opacity="0.2"/>
     <defs>
       <linearGradient id="windowGlow" x1="1" y1="0" x2="0" y2="0">
-        <stop offset="0%" stop-color="#0f4c81"/>
+        <stop offset="0%" stop-color="${c.cyberCyan}"/>
         <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
       </linearGradient>
     </defs>
 
     <!-- Pulsing Neon-Pink Cross Logo -->
-    <g transform="translate(140, 35) scale(0.6)" class="neon">
+    <g transform="translate(380, 20) scale(0.6)" class="neon">
       <path d="M 0,20 L 20,0 L 50,30 L 80,0 L 100,20 L 70,50 L 100,80 L 80,100 L 50,70 L 20,100 L 0,80 L 30,50 Z" fill="${c.neonPink}"/>
     </g>
 
@@ -135,8 +152,22 @@ export default async function handler(req) {
     <rect x="40" y="150" width="820" height="30" fill="#0a0d13"/>
     <rect x="40" y="150" width="820" height="4" fill="#161b22"/>
 
+    <!-- The Developer Character (Typing) -->
+    <g id="programmer" transform="translate(100, 60)">
+      <path d="M15,100 Q10,20 50,20 Q75,20 85,100 Z" fill="#161b22"/> <!-- Hoodie -->
+      <rect x="25" y="-10" width="34" height="40" rx="16" fill="#0d1117"/> <!-- Head -->
+      <!-- Typing Arms -->
+      <g class="typing">
+        <path d="M45,30 Q20,70 -10,55" fill="none" stroke="#161b22" stroke-width="14" stroke-linecap="round"/>
+        <path d="M40,40 Q15,80 -20,65" fill="none" stroke="#0d1117" stroke-width="10" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <!-- Keyboard -->
+    <rect x="60" y="145" width="60" height="5" rx="1" fill="#21262d" transform="rotate(-5 60 145)"/>
+
     <!-- Green Phosphor CRT Monitor -->
-    <g transform="translate(260, 45)">
+    <g transform="translate(200, 45)">
       <!-- Stand -->
       <rect x="60" y="85" width="20" height="20" fill="#161b22"/>
       <rect x="30" y="102" width="80" height="5" fill="#21262d"/>
@@ -149,21 +180,24 @@ export default async function handler(req) {
       
       <!-- Screen Content (Open for Work & Cursor) -->
       <circle cx="20" cy="20" r="4" fill="${c.phosphorGreen}"/>
-      <circle cx="20" cy="20" r="4" fill="${c.phosphorGreen}" class="neon" opacity="0.6"/>
+      <circle cx="20" cy="20" r="4" fill="${c.phosphorGreen}" filter="drop-shadow(0 0 4px ${c.phosphorGreen})" opacity="0.8"/>
       <text x="32" y="24" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="bold" fill="${c.phosphorGreen}">OPEN FOR WORK</text>
       
       <text x="14" y="44" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="${c.phosphorGreen}">> init system</text>
       <text x="14" y="58" font-family="Consolas, 'Courier New', monospace" font-size="9" fill="${c.phosphorGreen}">> loading... <tspan class="blink">█</tspan></text>
       <!-- Scanlines -->
-      <line x1="6" y1="18" x2="134" y2="18" stroke="#00ff66" stroke-width="1" opacity="0.1"/>
-      <line x1="6" y1="38" x2="134" y2="38" stroke="#00ff66" stroke-width="1" opacity="0.1"/>
-      <line x1="6" y1="58" x2="134" y2="58" stroke="#00ff66" stroke-width="1" opacity="0.1"/>
+      <line x1="6" y1="18" x2="134" y2="18" stroke="${c.phosphorGreen}" stroke-width="1" opacity="0.1"/>
+      <line x1="6" y1="38" x2="134" y2="38" stroke="${c.phosphorGreen}" stroke-width="1" opacity="0.1"/>
+      <line x1="6" y1="58" x2="134" y2="58" stroke="${c.phosphorGreen}" stroke-width="1" opacity="0.1"/>
     </g>
-
+    
     <!-- Floating Dust Motes -->
-    <circle cx="200" cy="140" r="1.5" fill="#8c959f" class="dust1"/>
-    <circle cx="350" cy="120" r="2" fill="#8c959f" class="dust2"/>
-    <circle cx="100" cy="130" r="1" fill="#8c959f" class="dust3"/>
+    <circle cx="200" cy="140" r="1.5" fill="${c.cyberCyan}" class="dust1"/>
+    <circle cx="350" cy="120" r="2" fill="${c.cyberCyan}" class="dust2"/>
+    <circle cx="100" cy="130" r="1" fill="${c.cyberCyan}" class="dust3"/>
+
+    <!-- Entire Zone Subtle Ambient Pulse -->
+    <rect x="0" y="0" width="${W}" height="180" fill="${c.neonPink}" class="zone-pulse" style="pointer-events: none; mix-blend-mode: screen;"/>
   </g>
 
   <!-- Bottom Border -->
