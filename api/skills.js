@@ -5,30 +5,26 @@ export default async function handler(req) {
 
   const c = dark
     ? {
-        bg: "#080b10",
-        text: "#f0f6fc",
+        bg: "#0d1117",
+        text: "#e6edf3",
         muted: "#8b949e",
-        dim: "#00ff66", // Phosphor green
-        border: "#1f293d",
-        border2: "#121824",
-        accent: "#00ff66",
-        tagBg: "rgba(0, 255, 102, 0.06)",
-        tagText: "#00ff66",
-        tagBorder: "rgba(0, 255, 102, 0.35)",
-        percentText: "#ff0055", // Neon pink
+        dim: "#6e7681",
+        border: "#30363d",
+        border2: "#21262d",
+        accent: "#39d353",
+        tagBg: "#161b22",
+        tagText: "#8b949e",
       }
     : {
         bg: "#ffffff",
         text: "#1a1a1a",
         muted: "#57606a",
-        dim: "#1a7f37",
+        dim: "#8c959f",
         border: "#d0d7de",
         border2: "#eaecef",
         accent: "#1a7f37",
         tagBg: "#f6f8fa",
         tagText: "#57606a",
-        tagBorder: "#d0d7de",
-        percentText: "#0550ae",
       };
 
   const skills = [
@@ -52,8 +48,8 @@ export default async function handler(req) {
     return `
   <text x="166" y="${y + 14}" text-anchor="end" font-family="Consolas, 'Courier New', monospace" font-size="11.5" font-weight="700" fill="${c.text}">${s.label}</text>
   <rect x="${BAR_X}" y="${y + 8}" width="${BAR_W}" height="6" rx="3" fill="${c.border2}"/>
-  <rect x="${BAR_X}" y="${y + 8}" width="${fw}" height="6" rx="3" fill="url(#skillGrad)"/>
-  <text x="${BAR_X + BAR_W + 12}" y="${y + 14}" font-family="Consolas, 'Courier New', monospace" font-size="11" font-weight="700" fill="${c.percentText}">${s.pct}%</text>`;
+  <rect x="${BAR_X}" y="${y + 8}" width="${fw}" height="6" rx="3" fill="${c.accent}"/>
+  <text x="${BAR_X + BAR_W + 12}" y="${y + 14}" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.dim}">${s.pct}%</text>`;
   }).join("");
 
   const tags = [
@@ -74,8 +70,8 @@ export default async function handler(req) {
     const x   = 24 + col * (TAG_W + TAG_GAP);
     const ty  = TAGS_Y + row * 32;
     return `
-  <rect x="${x}" y="${ty}" width="${TAG_W}" height="${TAG_H}" rx="11" fill="${c.tagBg}" stroke="${c.tagBorder}" stroke-width="0.5"/>
-  <text x="${x + TAG_W / 2}" y="${ty + 14}" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9.5" font-weight="700" fill="${c.tagText}">${t}</text>`;
+  <rect x="${x}" y="${ty}" width="${TAG_W}" height="${TAG_H}" rx="11" fill="${c.tagBg}" stroke="${c.border}" stroke-width="0.5"/>
+  <text x="${x + TAG_W / 2}" y="${ty + 14}" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9.5" fill="${c.tagText}">${t}</text>`;
   }).join("");
 
   const W = 900;
@@ -83,43 +79,21 @@ export default async function handler(req) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
   <clipPath id="sc"><rect width="${W}" height="${H}"/></clipPath>
-  ${dark ? `
-  <pattern id="scanlines" width="4" height="4" patternUnits="userSpaceOnUse">
-    <line x1="0" y1="0" x2="4" y2="0" stroke="#00ff66" stroke-width="0.5" stroke-opacity="0.04" />
-  </pattern>
-  <filter id="neon-glow-small" x="-10%" y="-10%" width="120%" height="120%">
-    <feGaussianBlur stdDeviation="1.5" result="blur" />
-    <feMerge>
-      <feMergeNode in="blur" />
-      <feMergeNode in="SourceGraphic" />
-    </feMerge>
-  </filter>
-  <linearGradient id="skillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-    <stop offset="0%" stop-color="#00e5ff" />
-    <stop offset="100%" stop-color="#00ff66" />
-  </linearGradient>
-  ` : `
-  <linearGradient id="skillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-    <stop offset="0%" stop-color="#0550ae" />
-    <stop offset="100%" stop-color="#1a7f37" />
-  </linearGradient>
-  `}
 </defs>
 <g clip-path="url(#sc)">
   <!-- Background -->
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
-  ${dark ? `<rect width="${W}" height="${H}" fill="url(#scanlines)"/>` : ""}
   <rect width="${W}" height="0.5" fill="${c.border}"/>
 
   <!-- Header -->
-  <text x="24" y="28" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${dark ? c.dim : c.muted}" ${dark ? 'filter="url(#neon-glow-small)"' : ""}>// SKILLS &amp; STACK</text>
+  <text x="24" y="28" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// SKILLS &amp; STACK</text>
   <line x1="24" y1="36" x2="${W - 24}" y2="36" stroke="${c.border}" stroke-width="0.5"/>
 
   ${bars}
 
   <!-- Technologies section -->
   <line x1="24" y1="${SEP_Y}" x2="${W - 24}" y2="${SEP_Y}" stroke="${c.border}" stroke-width="0.5"/>
-  <text x="24" y="${LABEL_Y}" font-family="Consolas, 'Courier New', monospace" font-size="10" letter-spacing="1.5" fill="${dark ? c.dim : c.muted}" ${dark ? 'filter="url(#neon-glow-small)"' : ""}>// TECHNOLOGIES</text>
+  <text x="24" y="${LABEL_Y}" font-family="Consolas, 'Courier New', monospace" font-size="10" letter-spacing="1.5" fill="${c.dim}">// TECHNOLOGIES</text>
   ${tagEls}
 
   <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
