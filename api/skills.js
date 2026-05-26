@@ -5,28 +5,29 @@ export default async function handler(req) {
 
   const c = dark
     ? {
-        bg: "#0d1117",
-        text: "#e6edf3",
-        muted: "#8b949e",
-        dim: "#6e7681",
-        border: "#30363d",
+        bg:      "#0d1117",
+        text:    "#e6edf3",
+        muted:   "#8b949e",
+        dim:     "#6e7681",
+        border:  "#30363d",
         border2: "#21262d",
-        accent: "#39d353",
-        tagBg: "#161b22",
+        accent:  "#39d353",
+        tagBg:   "#161b22",
         tagText: "#8b949e",
       }
     : {
-        bg: "#ffffff",
-        text: "#1a1a1a",
-        muted: "#57606a",
-        dim: "#8c959f",
-        border: "#d0d7de",
+        bg:      "#ffffff",
+        text:    "#1a1a1a",
+        muted:   "#57606a",
+        dim:     "#8c959f",
+        border:  "#d0d7de",
         border2: "#eaecef",
-        accent: "#1a7f37",
-        tagBg: "#f6f8fa",
+        accent:  "#1a7f37",
+        tagBg:   "#f6f8fa",
         tagText: "#57606a",
       };
 
+  // ── Skill bars ────────────────────────────────────────────────────────────
   const skills = [
     { label: "CSS / Tailwind", pct: 88 },
     { label: "Figma / UI",     pct: 80 },
@@ -39,64 +40,95 @@ export default async function handler(req) {
     { label: "CyberSec",       pct: 45 },
   ];
 
-  const BAR_X = 180, BAR_W = 620;
-  const ROW_H = 28, START_Y = 72;
+  const W       = 900;
+  const LEFT_X  = 24;
+  const LABEL_W = 148;   // right edge of label column
+  const BAR_X   = LABEL_W + 16;
+  const BAR_W   = W - BAR_X - 80;  // leaves room for pct text
+  const PCT_X   = BAR_X + BAR_W + 12;
+  const ROW_H   = 26;
+  const START_Y = 60;
 
   const bars = skills.map((s, i) => {
-    const y = START_Y + i * ROW_H;
+    const y  = START_Y + i * ROW_H;
     const fw = Math.round((s.pct / 100) * BAR_W);
     return `
-  <text x="166" y="${y + 14}" text-anchor="end" font-family="Consolas, 'Courier New', monospace" font-size="11.5" font-weight="700" fill="${c.text}">${s.label}</text>
-  <rect x="${BAR_X}" y="${y + 8}" width="${BAR_W}" height="6" rx="3" fill="${c.border2}"/>
-  <rect x="${BAR_X}" y="${y + 8}" width="${fw}" height="6" rx="3" fill="${c.accent}"/>
-  <text x="${BAR_X + BAR_W + 12}" y="${y + 14}" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.dim}">${s.pct}%</text>`;
+  <text x="${LABEL_W}" y="${y + 10}" text-anchor="end"
+        font-family="'Courier New', Consolas, monospace" font-size="11.5" font-weight="700"
+        fill="${c.text}">${s.label}</text>
+  <rect x="${BAR_X}" y="${y + 4}" width="${BAR_W}" height="6" rx="3" fill="${c.border2}"/>
+  <rect x="${BAR_X}" y="${y + 4}" width="${fw}"  height="6" rx="3" fill="${c.accent}"/>
+  <text x="${PCT_X}" y="${y + 10}"
+        font-family="'Courier New', Consolas, monospace" font-size="10"
+        fill="${c.dim}">${s.pct}%</text>`;
   }).join("");
 
+  // ── Technology badge grid ─────────────────────────────────────────────────
   const tags = [
     "Python", "HTML", "CSS", "JavaScript", "React",
     "Next.js", "Tailwind", "Flask", "PostgreSQL", "PyQt6",
     "Figma", "Git", "CyberSec",
   ];
-  const TAG_W = 100, TAG_H = 22, TAG_GAP = 8, PER_ROW = 8;
+  // Distribute 13 badges: row1 = 7, row2 = 6
+  const PER_ROW = 7;
+  const TAG_H   = 22;
+  const TAG_GAP = 8;
+  // Auto-compute tag widths so rows span the full canvas minus margin
+  const TAGS_AREA_W = W - LEFT_X * 2;
 
-  const SEP_Y    = START_Y + skills.length * ROW_H + 20;
-  const LABEL_Y  = SEP_Y + 22;
-  const TAGS_Y   = LABEL_Y + 16;
-  const H        = TAGS_Y + Math.ceil(tags.length / PER_ROW) * 32 + 32;
+  const SEP_Y   = START_Y + skills.length * ROW_H + 20;
+  const LABEL_Y = SEP_Y + 22;
+  const TAGS_Y  = LABEL_Y + 16;
+  const H       = TAGS_Y + 2 * (TAG_H + TAG_GAP) + 20;
 
-  const tagEls = tags.map((t, i) => {
-    const col = i % PER_ROW;
-    const row = Math.floor(i / PER_ROW);
-    const x   = 24 + col * (TAG_W + TAG_GAP);
-    const ty  = TAGS_Y + row * 32;
-    return `
-  <rect x="${x}" y="${ty}" width="${TAG_W}" height="${TAG_H}" rx="11" fill="${c.tagBg}" stroke="${c.border}" stroke-width="0.5"/>
-  <text x="${x + TAG_W / 2}" y="${ty + 14}" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9.5" fill="${c.tagText}">${t}</text>`;
-  }).join("");
+  function tagRow(items, baseY) {
+    const n       = items.length;
+    const totalGap = TAG_GAP * (n - 1);
+    const tagW    = Math.floor((TAGS_AREA_W - totalGap) / n);
+    return items.map((t, i) => {
+      const x = LEFT_X + i * (tagW + TAG_GAP);
+      return `
+  <rect x="${x}" y="${baseY}" width="${tagW}" height="${TAG_H}" rx="11"
+        fill="${c.tagBg}" stroke="${c.border}" stroke-width="0.5"/>
+  <text x="${x + tagW / 2}" y="${baseY + 14.5}" text-anchor="middle"
+        font-family="'Courier New', Consolas, monospace" font-size="9.5"
+        fill="${c.tagText}">${t}</text>`;
+    }).join("");
+  }
 
-  const W = 900;
+  const row1 = tags.slice(0, PER_ROW);
+  const row2 = tags.slice(PER_ROW);
+  const tagEls = tagRow(row1, TAGS_Y) + tagRow(row2, TAGS_Y + TAG_H + TAG_GAP);
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
   <clipPath id="sc"><rect width="${W}" height="${H}"/></clipPath>
 </defs>
 <g clip-path="url(#sc)">
-  <!-- Background -->
+
+  <!-- Canvas -->
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
   <rect width="${W}" height="0.5" fill="${c.border}"/>
 
-  <!-- Header -->
-  <text x="24" y="28" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// SKILLS &amp; STACK</text>
-  <line x1="24" y1="36" x2="${W - 24}" y2="36" stroke="${c.border}" stroke-width="0.5"/>
+  <!-- Section header -->
+  <text x="${LEFT_X}" y="24" font-family="'Courier New', Consolas, monospace"
+        font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// SKILLS &amp; STACK</text>
+  <line x1="${LEFT_X}" y1="32" x2="${W - LEFT_X}" y2="32"
+        stroke="${c.border}" stroke-width="0.5"/>
 
   ${bars}
 
-  <!-- Technologies section -->
-  <line x1="24" y1="${SEP_Y}" x2="${W - 24}" y2="${SEP_Y}" stroke="${c.border}" stroke-width="0.5"/>
-  <text x="24" y="${LABEL_Y}" font-family="Consolas, 'Courier New', monospace" font-size="10" letter-spacing="1.5" fill="${c.dim}">// TECHNOLOGIES</text>
+  <!-- Technologies separator -->
+  <line x1="${LEFT_X}" y1="${SEP_Y}" x2="${W - LEFT_X}" y2="${SEP_Y}"
+        stroke="${c.border}" stroke-width="0.5"/>
+  <text x="${LEFT_X}" y="${LABEL_Y}" font-family="'Courier New', Consolas, monospace"
+        font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// TECHNOLOGIES</text>
+
   ${tagEls}
 
+  <!-- Bottom rule -->
   <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
+
 </g>
 </svg>`;
 
