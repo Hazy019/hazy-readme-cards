@@ -2,14 +2,6 @@ export const config = { runtime: "edge" };
 
 const USERNAME = "Hazy019";
 
-function ab2b64(buf) {
-  const u = new Uint8Array(buf);
-  let s = "";
-  for (let i = 0; i < u.length; i += 32768)
-    s += String.fromCharCode(...u.subarray(i, Math.min(i + 32768, u.length)));
-  return btoa(s);
-}
-
 const FALLBACK = {
   stars: 4, commits: 265, prs: 0, issues: 0,
   langs: [
@@ -97,95 +89,144 @@ export default async function handler(req) {
 
   const c = dark
     ? {
-        bg: "#0d1117", bg2: "#161b22", text: "#e6edf3",
-        muted: "#8b949e", dim: "#6e7681", border: "#30363d",
-        border2: "#21262d", accent: "#39d353", statVal: "#79c0ff",
+        bg: "#080b10",
+        bg2: "#0d131f",
+        text: "#f0f6fc",
+        muted: "#8b949e",
+        dim: "#00ff66",
+        border: "#1f293d",
+        border2: "#2d3748",
+        accent: "#00ff66",
+        statVal: "#ff0055", // Neon pink
       }
     : {
-        bg: "#ffffff", bg2: "#f6f8fa", text: "#1a1a1a",
-        muted: "#57606a", dim: "#8c959f", border: "#d0d7de",
-        border2: "#d0d7de", accent: "#1a7f37", statVal: "#0550ae",
+        bg: "#ffffff",
+        bg2: "#f6f8fa",
+        text: "#1a1a1a",
+        muted: "#57606a",
+        dim: "#1a7f37",
+        border: "#d0d7de",
+        border2: "#d0d7de",
+        accent: "#1a7f37",
+        statVal: "#0550ae",
       };
 
   const stats = await fetchStats();
   const { stars, commits, prs, issues, langs } = stats;
 
-  const W = 900, H = 440;
+  const W = 900, H = 460;
 
   // Stats rows (right panel)
   const STAT_ROWS = [
-    ["Total Stars", stars],
+    ["Total Stars",    stars],
     ["Commits (2026)", commits],
-    ["Pull Requests", prs],
-    ["Issues", issues],
+    ["Pull Requests",  prs],
+    ["Issues",         issues],
   ];
-  
   const statsRowsSVG = STAT_ROWS.map(([label, val], i) => {
-    const ry = 78 + i * 34;
+    const ry = 92 + i * 36;
     return `
-      <text x="498" y="${ry}" font-family="'Courier New',monospace" font-size="12" fill="${c.muted}">${label}</text>
-      <text x="858" y="${ry}" text-anchor="end" font-family="'Courier New',monospace" font-size="14" font-weight="700" fill="${c.statVal}">${val}</text>
-      ${i < 3 ? `<line x1="498" y1="${ry + 8}" x2="858" y2="${ry + 8}" stroke="${c.border2}" stroke-width="0.5"/>` : ""}`;
+  <text x="498" y="${ry}" font-family="Consolas, 'Courier New', monospace" font-size="12" fill="${c.muted}">${label}</text>
+  <text x="858" y="${ry}" text-anchor="end" font-family="Consolas, 'Courier New', monospace" font-size="14" font-weight="700" fill="${c.statVal}">${val}</text>
+  ${i < 3 ? `<line x1="498" y1="${ry + 10}" x2="858" y2="${ry + 10}" stroke="${c.border2}" stroke-width="0.5"/>` : ""}`;
   }).join("");
 
-  // Spacing variables
-  const bulletY = 265;
-  const separatorY = 300;
-  const languagesHeaderY = 325;
-  const barsStartY = 350;
-
   // Language bars (full-width bottom)
-  const BAR_X = 140, BAR_W = 710;
-  const LANG_COLORS = ["#3178c6", "#3572A5", "#563d7c", "#e8d44d"];
+  const BAR_X = 140, BAR_W = 700;
+  // Sleek cyber gradients or flat vibrant tones
+  const LANG_GRADIENTS = [
+    { start: "#ff0055", end: "#ff5f8f" }, // Neon Pink
+    { start: "#00ff66", end: "#55ff99" }, // Phosphor Green
+    { start: "#00e5ff", end: "#55efff" }, // Cyan
+    { start: "#bf00ff", end: "#df55ff" }, // Purple/Violet
+  ];
+
   const langBarsSVG = langs.map(({ name, pct }, i) => {
-    const ry = barsStartY + i * 22; 
+    const ry = 318 + i * 30;
     const fw = Math.round((pct / 100) * BAR_W);
+    const gradId = `langGrad${i}`;
     return `
-      <text x="24" y="${ry}" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">${name}</text>
-      <rect x="${BAR_X}" y="${ry - 11}" width="${BAR_W}" height="5" rx="2.5" fill="${c.border2}"/>
-      <rect x="${BAR_X}" y="${ry - 11}" width="${fw}" height="5" rx="2.5" fill="${LANG_COLORS[i] || c.accent}"/>
-      <text x="${BAR_X + BAR_W + 14}" y="${ry}" text-anchor="end" font-family="'Courier New',monospace" font-size="10" fill="${c.dim}">${pct}%</text>`;
+  <text x="24" y="${ry}" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">${name}</text>
+  <rect x="${BAR_X}" y="${ry - 11}" width="${BAR_W}" height="6" rx="3" fill="${dark ? "#121824" : c.border2}"/>
+  <rect x="${BAR_X}" y="${ry - 11}" width="${fw}" height="6" rx="3" fill="url(#${gradId})"/>
+  <text x="${BAR_X + BAR_W + 14}" y="${ry}" text-anchor="end" font-family="Consolas, 'Courier New', monospace" font-size="10" fill="${dark ? c.dim : c.muted}" ${dark ? 'filter="url(#neon-glow-small)"' : ""}>${pct}%</text>`;
   }).join("");
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-<defs><clipPath id="pc"><rect width="${W}" height="${H}"/></clipPath></defs>
+<defs>
+  <clipPath id="pc"><rect width="${W}" height="${H}"/></clipPath>
+  ${dark ? `
+  <pattern id="scanlines" width="4" height="4" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="0" x2="4" y2="0" stroke="#00ff66" stroke-width="0.5" stroke-opacity="0.04" />
+  </pattern>
+  <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="3" result="blur" />
+    <feMerge>
+      <feMergeNode in="blur" />
+      <feMergeNode in="SourceGraphic" />
+    </feMerge>
+  </filter>
+  <filter id="neon-glow-small" x="-10%" y="-10%" width="120%" height="120%">
+    <feGaussianBlur stdDeviation="1.5" result="blur" />
+    <feMerge>
+      <feMergeNode in="blur" />
+      <feMergeNode in="SourceGraphic" />
+    </feMerge>
+  </filter>
+  ` : ""}
+  ${LANG_GRADIENTS.map((g, i) => `
+  <linearGradient id="langGrad${i}" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="${dark ? g.start : g.start}" />
+    <stop offset="100%" stop-color="${dark ? g.end : g.start}" />
+  </linearGradient>`).join("")}
+</defs>
 <g clip-path="url(#pc)">
+  <!-- Background -->
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
+  ${dark ? `<rect width="${W}" height="${H}" fill="url(#scanlines)"/>` : ""}
 
-  <!-- LEFT: ABOUT -->
-  <text x="24" y="26" font-family="'Courier New',monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// ABOUT</text>
+  <!-- ── LEFT: ABOUT ──────────────────────────── -->
+  <text x="24" y="26" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${dark ? c.dim : c.muted}" ${dark ? 'filter="url(#neon-glow-small)"' : ""}>// ABOUT</text>
   <line x1="24" y1="34" x2="452" y2="34" stroke="${c.border}" stroke-width="0.5"/>
 
-  <text x="24" y="58" font-family="'Courier New',monospace" font-size="13" font-weight="700" fill="${c.text}">I build systems the way architects design buildings —</text>
-  <text x="24" y="74" font-family="'Courier New',monospace" font-size="13" font-weight="700" fill="${c.text}">failure modes first, elegance second.</text>
+  <!-- Tagline -->
+  <text x="24" y="58" font-family="Consolas, 'Courier New', monospace" font-size="12" font-weight="700" fill="${c.text}">I build systems the way architects design buildings —</text>
+  <text x="24" y="74" font-family="Consolas, 'Courier New', monospace" font-size="12" font-weight="700" fill="${dark ? "#00e5ff" : c.text}">failure modes first, elegance second.</text>
 
-  <text x="24" y="98" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">Currently finishing my CS degree in the Philippines, with</text>
-  <text x="24" y="114" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">production deployments already in the field. I gravitate</text>
-  <text x="24" y="130" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">toward problems with real consequences — government</text>
-  <text x="24" y="146" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">systems people depend on, tools that run unattended,</text>
-  <text x="24" y="162" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">interfaces used by people who never asked for them.</text>
+  <!-- Paragraph 1 -->
+  <text x="24" y="98" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">Currently finishing my CS degree in the Philippines, with</text>
+  <text x="24" y="114" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">production deployments already in the field. I gravitate</text>
+  <text x="24" y="130" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">toward problems with real consequences — government</text>
+  <text x="24" y="146" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">systems people depend on, tools that run unattended,</text>
+  <text x="24" y="162" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">interfaces used by people who never asked for them.</text>
 
-  <text x="24" y="182" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">Security mindset first: every input hostile, every</text>
-  <text x="24" y="198" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">permission a liability, every data store a target.</text>
-  <text x="24" y="214" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">Pursuing Google's Professional Cybersecurity cert alongside</text>
-  <text x="24" y="230" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">UX design — how systems fail and how people think are</text>
-  <text x="24" y="246" font-family="'Courier New',monospace" font-size="11" fill="${c.muted}">the two most useful things a developer can know.</text>
+  <!-- Paragraph 2 -->
+  <text x="24" y="184" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">Security mindset first: every input hostile, every</text>
+  <text x="24" y="200" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">permission a liability, every data store a target.</text>
+  <text x="24" y="216" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">Pursuing Google's Professional Cybersecurity cert alongside</text>
+  <text x="24" y="232" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">UX design — how systems fail and how people think are</text>
+  <text x="24" y="248" font-family="Consolas, 'Courier New', monospace" font-size="11" fill="${c.muted}">the two most useful things a developer can know.</text>
 
-  <!-- Bullets -->
-  <text x="24" y="${bulletY}" font-family="'Courier New',monospace" font-size="11" fill="${c.dim}">› Figma · UI Design · Responsive CSS</text>
-  <text x="24" y="${bulletY + 16}" font-family="'Courier New',monospace" font-size="11" fill="${c.dim}">› Next.js · React · Flask · PostgreSQL · Python</text>
-
-  <!-- RIGHT: GITHUB STATS CARD -->
-  <rect x="476" y="18" width="400" height="222" rx="6" fill="${c.bg2}" stroke="${c.border}" stroke-width="0.5"/>
-  <text x="498" y="46" font-family="'Courier New',monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// GITHUB STATS</text>
+  <!-- ── RIGHT: GITHUB STATS CARD ──────────────── -->
+  <!-- Neon drop-shadow rect behind card for glowing effect in dark mode -->
+  ${dark ? `<rect x="477" y="19" width="400" height="236" rx="6" fill="none" stroke="${c.dim}" stroke-opacity="0.3" stroke-width="2" filter="url(#neon-glow)"/>` : ""}
+  <rect x="476" y="18" width="400" height="236" rx="6" fill="${c.bg2}" stroke="${c.border}" stroke-width="0.5"/>
+  <text x="498" y="46" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${dark ? c.dim : c.muted}" ${dark ? 'filter="url(#neon-glow-small)"' : ""}>// GITHUB STATS</text>
   <line x1="498" y1="54" x2="858" y2="54" stroke="${c.border}" stroke-width="0.5"/>
   ${statsRowsSVG}
 
-  <!-- SEPARATOR -->
-  <line x1="24" y1="${separatorY}" x2="${W - 24}" y2="${separatorY}" stroke="${c.border}" stroke-width="0.5"/>
+  <!-- Quick stats tag row to balance column height -->
+  <rect x="498" y="214" width="80" height="20" rx="4" fill="${dark ? "rgba(0,229,255,0.08)" : "#e8f4fd"}" stroke="${dark ? "#00e5ff" : "none"}" stroke-width="0.5"/>
+  <text x="538" y="227" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9.5" font-weight="700" fill="${dark ? "#00e5ff" : "#0550ae"}">CS Student</text>
 
-  <!-- TOP LANGUAGES -->
-  <text x="24" y="${languagesHeaderY}" font-family="'Courier New',monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${c.dim}">// TOP LANGUAGES</text>
+  <rect x="586" y="214" width="85" height="20" rx="4" fill="${dark ? "rgba(255,0,85,0.08)" : "#ffeef0"}" stroke="${dark ? "#ff0055" : "none"}" stroke-width="0.5"/>
+  <text x="628.5" y="227" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="9.5" font-weight="700" fill="${dark ? "#ff0055" : "#cf222e"}">UTC+8 (PH)</text>
+
+  <!-- ── SEPARATOR ──────────────────────────────── -->
+  <line x1="24" y1="274" x2="${W - 24}" y2="274" stroke="${c.border}" stroke-width="0.5"/>
+
+  <!-- ── TOP LANGUAGES ──────────────────────────── -->
+  <text x="24" y="294" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700" letter-spacing="1.5" fill="${dark ? c.dim : c.muted}" ${dark ? 'filter="url(#neon-glow-small)"' : ""}>// TOP LANGUAGES</text>
   ${langBarsSVG}
 
   <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
