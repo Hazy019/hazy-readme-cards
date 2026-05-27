@@ -26,7 +26,7 @@ export default async function handler(req) {
       aBg: "#dcfce7",
     };
 
-  const W = 900, H = 156;
+  const W = 900, H = 196;
   const BAR_H = 32;
   const PAD_X = 28;
   const STRIP_W = 3; // left accent strip — visual rhyme anchor across all cards
@@ -36,6 +36,27 @@ export default async function handler(req) {
   const ROLE_Y = NAME_Y + 24;
   const BADGE_Y = ROLE_Y + 12;
 
+  // Typing row
+  const TYPE_Y = H - 32; // baseline of the typing prompt separator line
+
+  // Typing lines — rotate through these with CSS animation
+  const LINES = [
+    `&gt;_Staging: Web Designer | Frontend Engineer | Next.js`,
+    `&gt;_Pipeline: Building real products since 2024`,
+    `&gt;_Target: CyberSecurity | Open for Work &middot; PHT UTC+8`,
+  ];
+  const LINE_DUR = 4; // seconds each line is visible
+  const TOTAL   = LINES.length * LINE_DUR;
+
+  const linesSVG = LINES.map((line, i) => {
+    const start  = i * LINE_DUR;
+    const kf = `0%{opacity:0}${(start / TOTAL * 100).toFixed(1)}%{opacity:0}${((start + 0.3) / TOTAL * 100).toFixed(1)}%{opacity:1}${((start + LINE_DUR - 0.3) / TOTAL * 100).toFixed(1)}%{opacity:1}${((start + LINE_DUR) / TOTAL * 100).toFixed(1)}%{opacity:0}100%{opacity:0}`;
+    return `<text x="${PAD_X + 4}" y="${TYPE_Y + 13}"
+      font-family="'Courier New',Consolas,monospace" font-size="12" font-weight="600"
+      fill="${c.accent}" opacity="0"
+      style="animation:line${i} ${TOTAL}s steps(1,end) infinite">${line}<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;${(start/TOTAL).toFixed(3)};${((start+0.3)/TOTAL).toFixed(3)};${((start+LINE_DUR-0.3)/TOTAL).toFixed(3)};${((start+LINE_DUR)/TOTAL).toFixed(3)};1" dur="${TOTAL}s" repeatCount="indefinite"/></text>`;
+  }).join("\n  ");
+
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
   <clipPath id="hc"><rect width="${W}" height="${H}" rx="8"/></clipPath>
@@ -43,6 +64,11 @@ export default async function handler(req) {
   <linearGradient id="hBarGrad" x1="0" y1="0" x2="1" y2="0">
     <stop offset="0%"   stop-color="${c.bar}"/>
     <stop offset="100%" stop-color="${c.bg}"/>
+  </linearGradient>
+  <!-- Typing row background gradient: darker strip at bottom -->
+  <linearGradient id="typeBarGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%"   stop-color="${c.bar}" stop-opacity="0.6"/>
+    <stop offset="100%" stop-color="${c.bar}" stop-opacity="0.9"/>
   </linearGradient>
 </defs>
 <g clip-path="url(#hc)">
@@ -86,6 +112,18 @@ export default async function handler(req) {
         font-family="'Courier New', Consolas, monospace"
         font-size="9.5" font-weight="700"
         fill="${c.accent}" letter-spacing="0.5">OPEN FOR WORK</text>
+
+  <!-- ── TYPING ANIMATION ROW ─────────────────────────────────────────── -->
+  <rect x="0" y="${TYPE_Y - 8}" width="${W}" height="40" fill="url(#typeBarGrad)"/>
+  <line x1="0" y1="${TYPE_Y - 8}" x2="${W}" y2="${TYPE_Y - 8}" stroke="${c.border}" stroke-width="0.5" opacity="0.8"/>
+
+  <!-- Blinking cursor dot (visual rhyme: same accent green everywhere) -->
+  <rect x="${PAD_X}" y="${TYPE_Y + 3}" width="7" height="11" rx="1" fill="${c.accent}" opacity="0.85">
+    <animate attributeName="opacity" values="0.85;0.1;0.85" dur="1.1s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Rotating typing lines (SVG SMIL animation — no JS, works on GitHub) -->
+  ${linesSVG}
 
   <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
   <rect x="0" y="0" width="${STRIP_W}" height="${H}" fill="${c.accent}" opacity="0.7"/>
