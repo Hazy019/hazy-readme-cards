@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>hazy-readme-cards — Design Preview</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #060810;
+      --surface: #0e1117;
+      --border:  #1e2530;
+      --text:    #e6edf3;
+      --muted:   #8b949e;
+      --accent:  #39d353;
+      --mid:     #79c0ff;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 48px 32px 80px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: #0f2a18;
+      border: 1px solid #1a4a2a;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card-group {
+      max-width: 1900px;
+      margin: 0 auto 52px;
+    }
+
+    .card-group h2 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      padding-left: 4px;
+    }
+
+    .card-group h2::before { content: "// "; color: var(--accent); }
+
+    .theme-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .theme-col { display: flex; flex-direction: column; gap: 8px; }
+
+    .theme-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .dark-label  { color: #39d353; }
+    .light-label { color: #1a7f37; }
+
+    .svg-wrap {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .svg-wrap svg { display: block; width: 100%; height: auto; }
+
+    .dark-bg  { background: #0d1117; }
+    .light-bg { background: #ffffff; }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 52px;
+    }
+
+    footer-note {
+      display: block;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">DESIGN PREVIEW · v24</div>
+  <h1>hazy-readme-cards</h1>
+  <p>Light &amp; Dark · Both themes · All 4 cards</p>
+</header>
+
+
+  <section class="card-group">
+    <h2>Header</h2>
+    <div class="theme-row">
+      <div class="theme-col">
+        <span class="theme-label dark-label">◉ DARK MODE</span>
+        <div class="svg-wrap dark-bg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="156" viewBox="0 0 900 156">
+<defs>
+  <clipPath id="hc"><rect width="900" height="156" rx="8"/></clipPath>
+  <!-- Gradient on title bar: solid left → fades to bg right (depth) -->
+  <linearGradient id="hBarGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%"   stop-color="#12151b"/>
+    <stop offset="100%" stop-color="#0a0c10"/>
+  </linearGradient>
+</defs>
+<g clip-path="url(#hc)">
+
+  <!-- Base background -->
+  <rect width="900" height="156" fill="#0a0c10"/>
+
+  <!-- ── TITLE BAR ──────────────────────────────────────────────────────── -->
+  <rect width="900" height="32" fill="url(#hBarGrad)"/>
+  <rect y="31.5" width="900" height="0.5" fill="#30363d" opacity="0.6"/>
+
+  <!-- Mac traffic-light dots (visual rhyme: also in footer) -->
+  <circle cx="22" cy="16" r="4.5" fill="#ff5f57"/>
+  <circle cx="38" cy="16" r="4.5" fill="#febc2e"/>
+  <circle cx="54" cy="16" r="4.5" fill="#28c840"/>
+  <text x="74" y="20.5"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" font-weight="600"
+        fill="#6e7681" letter-spacing="0.5">~/kyrell-santillan — zsh</text>
+
+  <!-- ── HERO NAME (star typography moment) ────────────────────────────── -->
+  <text x="28" y="80"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="34" font-weight="900"
+        fill="#e6edf3" letter-spacing="-0.5">Kyrell Santillan</text>
+
+  <!-- Accent underline under name (depth: makes name feel grounded) -->
+  <rect x="28" y="85" width="248" height="2" rx="1"
+        fill="#39d353" opacity="0.35"/>
+
+  <!-- ── ROLE LINE ──────────────────────────────────────────────────────── -->
+  <text x="28" y="104"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" fill="#8b949e" letter-spacing="0.5">Web Designer  ·  Frontend Engineer  ·  Cybersecurity  ·  Philippines  ·  UTC+8</text>
+
+  <!-- ── OPEN FOR WORK BADGE ───────────────────────────────────────────── -->
+  <rect x="28" y="116" width="122" height="18" rx="9" fill="#0f2a18"/>
+  <!-- Dot bullet (visual rhyme: same motif in footer link pills + profile bullets) -->
+  <circle cx="41" cy="125" r="3.5" fill="#39d353"/>
+  <text x="53" y="128.5"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="9.5" font-weight="700"
+        fill="#39d353" letter-spacing="0.5">OPEN FOR WORK</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
+  <rect x="0" y="0" width="3" height="156" fill="#39d353" opacity="0.7"/>
+
+  <!-- Card border -->
+  <rect y="0" width="900" height="1" fill="#30363d"/>
+  <rect x="899" y="0" width="1" height="156" fill="#30363d"/>
+  <rect y="155" width="900" height="1" fill="#30363d"/>
+
+</g>
+</svg>
+        </div>
+      </div>
+      <div class="theme-col">
+        <span class="theme-label light-label">◉ LIGHT MODE</span>
+        <div class="svg-wrap light-bg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="156" viewBox="0 0 900 156">
+<defs>
+  <clipPath id="hc"><rect width="900" height="156" rx="8"/></clipPath>
+  <!-- Gradient on title bar: solid left → fades to bg right (depth) -->
+  <linearGradient id="hBarGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%"   stop-color="#f5f2eb"/>
+    <stop offset="100%" stop-color="#fcfbf9"/>
+  </linearGradient>
+</defs>
+<g clip-path="url(#hc)">
+
+  <!-- Base background -->
+  <rect width="900" height="156" fill="#fcfbf9"/>
+
+  <!-- ── TITLE BAR ──────────────────────────────────────────────────────── -->
+  <rect width="900" height="32" fill="url(#hBarGrad)"/>
+  <rect y="31.5" width="900" height="0.5" fill="#e5e1d8" opacity="0.6"/>
+
+  <!-- Mac traffic-light dots (visual rhyme: also in footer) -->
+  <circle cx="22" cy="16" r="4.5" fill="#ff5f57"/>
+  <circle cx="38" cy="16" r="4.5" fill="#febc2e"/>
+  <circle cx="54" cy="16" r="4.5" fill="#28c840"/>
+  <text x="74" y="20.5"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" font-weight="600"
+        fill="#8c959f" letter-spacing="0.5">~/kyrell-santillan — zsh</text>
+
+  <!-- ── HERO NAME (star typography moment) ────────────────────────────── -->
+  <text x="28" y="80"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="34" font-weight="900"
+        fill="#1a1a1a" letter-spacing="-0.5">Kyrell Santillan</text>
+
+  <!-- Accent underline under name (depth: makes name feel grounded) -->
+  <rect x="28" y="85" width="248" height="2" rx="1"
+        fill="#16a34a" opacity="0.35"/>
+
+  <!-- ── ROLE LINE ──────────────────────────────────────────────────────── -->
+  <text x="28" y="104"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" fill="#57606a" letter-spacing="0.5">Web Designer  ·  Frontend Engineer  ·  Cybersecurity  ·  Philippines  ·  UTC+8</text>
+
+  <!-- ── OPEN FOR WORK BADGE ───────────────────────────────────────────── -->
+  <rect x="28" y="116" width="122" height="18" rx="9" fill="#dcfce7"/>
+  <!-- Dot bullet (visual rhyme: same motif in footer link pills + profile bullets) -->
+  <circle cx="41" cy="125" r="3.5" fill="#16a34a"/>
+  <text x="53" y="128.5"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="9.5" font-weight="700"
+        fill="#16a34a" letter-spacing="0.5">OPEN FOR WORK</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
+  <rect x="0" y="0" width="3" height="156" fill="#16a34a" opacity="0.7"/>
+
+  <!-- Card border -->
+  <rect y="0" width="900" height="1" fill="#e5e1d8"/>
+  <rect x="899" y="0" width="1" height="156" fill="#e5e1d8"/>
+  <rect y="155" width="900" height="1" fill="#e5e1d8"/>
+
+</g>
+</svg>
+        </div>
+      </div>
+    </div>
+  </section>
+<hr class='divider'/>
+
+  <section class="card-group">
+    <h2>Profile / Stats</h2>
+    <div class="theme-row">
+      <div class="theme-col">
+        <span class="theme-label dark-label">◉ DARK MODE</span>
+        <div class="svg-wrap dark-bg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="418" viewBox="0 0 900 418">
+<defs>
+  <clipPath id="pc"><rect width="900" height="418"/></clipPath>
+  <!-- Number glow filter (depth — only applied in dark mode) -->
+  <filter id="numGlow" x="-40%" y="-60%" width="180%" height="220%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+    <feMerge>
+      <feMergeNode in="blur"/>
+      <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+  </filter>
+  <!-- Column divider gradient: solid top → transparent bottom (depth) -->
+  <linearGradient id="divGrad" x1="0" y1="0" x2="0" y2="1"
+                  gradientUnits="userSpaceOnUse"
+                  y1="24" y2="294">
+    <stop offset="0%"   stop-color="#39d353" stop-opacity="0.6"/>
+    <stop offset="100%" stop-color="#39d353" stop-opacity="0"/>
+  </linearGradient>
+</defs>
+<g clip-path="url(#pc)">
+
+  <rect width="900" height="418" fill="#0a0c10"/>
+  <rect width="900" height="0.5" fill="#30363d"/>
+
+  <!-- ── LEFT: ABOUT ──────────────────────────────────────────────────── -->
+  <!-- Section label (// prefix — visual rhyme across all cards) -->
+  <text x="24" y="16"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#6e7681">// ABOUT</text>
+  <line x1="24" y1="24" x2="436" y2="24"
+        stroke="#30363d" stroke-width="0.5"/>
+
+  <text x="24" y="44"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="12.5" font-weight="700"
+      fill="#e6edf3">I build systems the way architects design buildings —</text>
+<text x="24" y="59"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="12.5" font-weight="700"
+      fill="#e6edf3">failure modes first, elegance second.</text>
+
+<text x="24" y="89"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">Currently finishing my CS degree in the Philippines,</text>
+<text x="24" y="104"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">with production deployments already in the field. I</text>
+<text x="24" y="119"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">gravitate toward problems with real consequences —</text>
+<text x="24" y="134"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">government systems, tools that run unattended,</text>
+<text x="24" y="149"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">interfaces used by people who never asked for them.</text>
+
+<text x="24" y="179"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">Security mindset first: every input hostile, every</text>
+<text x="24" y="194"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">permission a liability, every data store a target.</text>
+<text x="24" y="209"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">Pursuing Google's Professional Cybersecurity cert</text>
+<text x="24" y="224"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">alongside UX design — how systems fail and how</text>
+<text x="24" y="239"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#8b949e">people think are a developer's sharpest edges.</text>
+
+  <!-- Divider + bullet list below about text -->
+  <line x1="24" y1="262" x2="436" y2="262"
+        stroke="#21262d" stroke-width="0.5"/>
+
+  <!-- Dot bullet (visual rhyme — same dot used in badge, footer links, legend) -->
+  <circle cx="29" cy="269" r="2.5" fill="#39d353" opacity="0.75"/>
+  <text x="40" y="274"
+        font-family="'Courier New',Consolas,monospace" font-size="11" fill="#6e7681">Figma · UI Design · Responsive CSS</text>
+
+  <circle cx="29" cy="285" r="2.5" fill="#39d353" opacity="0.75"/>
+  <text x="40" y="290"
+        font-family="'Courier New',Consolas,monospace" font-size="11" fill="#6e7681">Next.js · React · Flask · PostgreSQL · Python</text>
+
+  <!-- ── COLUMN DIVIDER (gradient fade — depth) ───────────────────────── -->
+  <rect x="456" y="24" width="1" height="270"
+        fill="url(#divGrad)"/>
+
+  <!-- ── RIGHT: GITHUB STATS ───────────────────────────────────────────── -->
+  <!-- Tinted card background (depth layer — elevation panel) -->
+  <rect x="456" y="0" width="444" height="306"
+        fill="#0d1015" opacity="0.6"/>
+
+  <!-- Section label -->
+  <text x="480" y="16"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#6e7681">// GITHUB STATS</text>
+  <line x1="480" y1="24" x2="876" y2="24"
+        stroke="#30363d" stroke-width="0.5"/>
+
+  
+  <!-- stat row 0 -->
+  <text x="480" y="52"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#39d353">★</text>
+  <text x="496" y="52"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Total Stars</text>
+  <!-- Stat value with optional glow (depth — makes numbers feel luminous in dark) -->
+  <text x="876" y="52" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#39d353"
+        filter="url(#numGlow)">62</text>
+  <text x="876" y="52" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#39d353">62</text>
+  <!-- stat row 1 -->
+  <text x="480" y="98"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#39d353">↑</text>
+  <text x="496" y="98"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Commits (2026)</text>
+  <!-- Stat value with optional glow (depth — makes numbers feel luminous in dark) -->
+  <text x="876" y="98" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#39d353"
+        filter="url(#numGlow)">432</text>
+  <text x="876" y="98" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#39d353">432</text>
+  <!-- stat row 2 -->
+  <text x="480" y="144"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#39d353">⇄</text>
+  <text x="496" y="144"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Pull Requests</text>
+  <!-- Stat value with optional glow (depth — makes numbers feel luminous in dark) -->
+  <text x="876" y="144" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#39d353"
+        filter="url(#numGlow)">52</text>
+  <text x="876" y="144" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#39d353">52</text>
+  <!-- stat row 3 -->
+  <text x="480" y="190"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#39d353">!</text>
+  <text x="496" y="190"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Issues</text>
+  <!-- Stat value with optional glow (depth — makes numbers feel luminous in dark) -->
+  <text x="876" y="190" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#39d353"
+        filter="url(#numGlow)">2</text>
+  <text x="876" y="190" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#39d353">2</text>
+  
+  <rect x="690" y="232" width="88" height="20" rx="10"
+        fill="#0d2114" stroke="#30363d" stroke-width="0.5"/>
+  <text x="734" y="245" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9.5" font-weight="700" fill="#39d353">CS Student</text>
+  <rect x="788" y="232" width="88" height="20" rx="10"
+        fill="#1a1530" stroke="#30363d" stroke-width="0.5"/>
+  <text x="832" y="245" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9.5" font-weight="700" fill="#d2a8ff">UTC+8 · PH</text>
+
+  <!-- ── FULL-WIDTH SEPARATOR + LANGUAGES ──────────────────────────────── -->
+  <line x1="24" y1="306" x2="876" y2="306"
+        stroke="#30363d" stroke-width="0.5"/>
+  <text x="24" y="320"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#6e7681">// TOP LANGUAGES</text>
+
+  
+  <text x="160" y="338" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace" font-size="11" fill="#8b949e">Python</text>
+  <!-- Track -->
+  <rect x="170" y="328" width="674" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="170" y="328" width="479" height="8" rx="4" fill="#3572a5"/>
+  <!-- Sheen (depth — same treatment as skill bars) -->
+  <rect x="170" y="328" width="479" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="852" y="338" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace" font-size="10" fill="#6e7681">71%</text>
+  <text x="160" y="368" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace" font-size="11" fill="#8b949e">JavaScript</text>
+  <!-- Track -->
+  <rect x="170" y="358" width="674" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="170" y="358" width="195" height="8" rx="4" fill="#f1e05a"/>
+  <!-- Sheen (depth — same treatment as skill bars) -->
+  <rect x="170" y="358" width="195" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="852" y="368" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace" font-size="10" fill="#6e7681">29%</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
+  <rect x="0" y="0" width="3" height="418" fill="#39d353" opacity="0.7"/>
+
+  <rect y="417" width="900" height="1" fill="#30363d"/>
+</g>
+</svg>
+        </div>
+      </div>
+      <div class="theme-col">
+        <span class="theme-label light-label">◉ LIGHT MODE</span>
+        <div class="svg-wrap light-bg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="418" viewBox="0 0 900 418">
+<defs>
+  <clipPath id="pc"><rect width="900" height="418"/></clipPath>
+  <!-- Number glow filter (depth — only applied in dark mode) -->
+  <filter id="numGlow" x="-40%" y="-60%" width="180%" height="220%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+    <feMerge>
+      <feMergeNode in="blur"/>
+      <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+  </filter>
+  <!-- Column divider gradient: solid top → transparent bottom (depth) -->
+  <linearGradient id="divGrad" x1="0" y1="0" x2="0" y2="1"
+                  gradientUnits="userSpaceOnUse"
+                  y1="24" y2="294">
+    <stop offset="0%"   stop-color="#16a34a" stop-opacity="0.6"/>
+    <stop offset="100%" stop-color="#16a34a" stop-opacity="0"/>
+  </linearGradient>
+</defs>
+<g clip-path="url(#pc)">
+
+  <rect width="900" height="418" fill="#fcfbf9"/>
+  <rect width="900" height="0.5" fill="#e5e1d8"/>
+
+  <!-- ── LEFT: ABOUT ──────────────────────────────────────────────────── -->
+  <!-- Section label (// prefix — visual rhyme across all cards) -->
+  <text x="24" y="16"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#8c959f">// ABOUT</text>
+  <line x1="24" y1="24" x2="436" y2="24"
+        stroke="#e5e1d8" stroke-width="0.5"/>
+
+  <text x="24" y="44"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="12.5" font-weight="700"
+      fill="#1a1a1a">I build systems the way architects design buildings —</text>
+<text x="24" y="59"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="12.5" font-weight="700"
+      fill="#1a1a1a">failure modes first, elegance second.</text>
+
+<text x="24" y="89"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">Currently finishing my CS degree in the Philippines,</text>
+<text x="24" y="104"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">with production deployments already in the field. I</text>
+<text x="24" y="119"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">gravitate toward problems with real consequences —</text>
+<text x="24" y="134"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">government systems, tools that run unattended,</text>
+<text x="24" y="149"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">interfaces used by people who never asked for them.</text>
+
+<text x="24" y="179"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">Security mindset first: every input hostile, every</text>
+<text x="24" y="194"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">permission a liability, every data store a target.</text>
+<text x="24" y="209"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">Pursuing Google's Professional Cybersecurity cert</text>
+<text x="24" y="224"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">alongside UX design — how systems fail and how</text>
+<text x="24" y="239"
+      font-family="'Courier New',Consolas,monospace"
+      font-size="11" font-weight="400"
+      fill="#57606a">people think are a developer's sharpest edges.</text>
+
+  <!-- Divider + bullet list below about text -->
+  <line x1="24" y1="262" x2="436" y2="262"
+        stroke="#d4cdbc" stroke-width="0.5"/>
+
+  <!-- Dot bullet (visual rhyme — same dot used in badge, footer links, legend) -->
+  <circle cx="29" cy="269" r="2.5" fill="#16a34a" opacity="0.75"/>
+  <text x="40" y="274"
+        font-family="'Courier New',Consolas,monospace" font-size="11" fill="#8c959f">Figma · UI Design · Responsive CSS</text>
+
+  <circle cx="29" cy="285" r="2.5" fill="#16a34a" opacity="0.75"/>
+  <text x="40" y="290"
+        font-family="'Courier New',Consolas,monospace" font-size="11" fill="#8c959f">Next.js · React · Flask · PostgreSQL · Python</text>
+
+  <!-- ── COLUMN DIVIDER (gradient fade — depth) ───────────────────────── -->
+  <rect x="456" y="24" width="1" height="270"
+        fill="url(#divGrad)"/>
+
+  <!-- ── RIGHT: GITHUB STATS ───────────────────────────────────────────── -->
+  <!-- Tinted card background (depth layer — elevation panel) -->
+  <rect x="456" y="0" width="444" height="306"
+        fill="#f5f2eb" opacity="0.5"/>
+
+  <!-- Section label -->
+  <text x="480" y="16"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#8c959f">// GITHUB STATS</text>
+  <line x1="480" y1="24" x2="876" y2="24"
+        stroke="#e5e1d8" stroke-width="0.5"/>
+
+  
+  <!-- stat row 0 -->
+  <text x="480" y="52"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#16a34a">★</text>
+  <text x="496" y="52"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Total Stars</text>
+  <!-- Stat value with optional glow (depth — makes numbers feel luminous in dark) -->
+  
+  <text x="876" y="52" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#16a34a">62</text>
+  <!-- stat row 1 -->
+  <text x="480" y="98"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#16a34a">↑</text>
+  <text x="496" y="98"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Commits (2026)</text>
+  <!-- Stat value with optional glow (depth — makes numbers feel luminous in dark) -->
+  
+  <text x="876" y="98" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#16a34a">432</text>
+  <!-- stat row 2 -->
+  <text x="480" y="144"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#16a34a">⇄</text>
+  <text x="496" y="144"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Pull Requests</text>
+  <!-- Stat value with optional glow (depth — makes numbers feel luminous in dark) -->
+  
+  <text x="876" y="144" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#16a34a">52</text>
+  <!-- stat row 3 -->
+  <text x="480" y="190"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#16a34a">!</text>
+  <text x="496" y="190"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Issues</text>
+  <!-- Stat value with optional glow (depth — makes numbers feel luminous in dark) -->
+  
+  <text x="876" y="190" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="20" font-weight="700" fill="#16a34a">2</text>
+  
+  <rect x="690" y="232" width="88" height="20" rx="10"
+        fill="#dcfce7" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="734" y="245" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9.5" font-weight="700" fill="#16a34a">CS Student</text>
+  <rect x="788" y="232" width="88" height="20" rx="10"
+        fill="#f3e8ff" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="832" y="245" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9.5" font-weight="700" fill="#7e22ce">UTC+8 · PH</text>
+
+  <!-- ── FULL-WIDTH SEPARATOR + LANGUAGES ──────────────────────────────── -->
+  <line x1="24" y1="306" x2="876" y2="306"
+        stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="24" y="320"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#8c959f">// TOP LANGUAGES</text>
+
+  
+  <text x="160" y="338" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace" font-size="11" fill="#57606a">Python</text>
+  <!-- Track -->
+  <rect x="170" y="328" width="674" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="170" y="328" width="479" height="8" rx="4" fill="#3572a5"/>
+  <!-- Sheen (depth — same treatment as skill bars) -->
+  <rect x="170" y="328" width="479" height="3.5" rx="1.5" fill="white" opacity="0.30"/>
+  <text x="852" y="338" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace" font-size="10" fill="#8c959f">71%</text>
+  <text x="160" y="368" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace" font-size="11" fill="#57606a">JavaScript</text>
+  <!-- Track -->
+  <rect x="170" y="358" width="674" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="170" y="358" width="195" height="8" rx="4" fill="#f1e05a"/>
+  <!-- Sheen (depth — same treatment as skill bars) -->
+  <rect x="170" y="358" width="195" height="3.5" rx="1.5" fill="white" opacity="0.30"/>
+  <text x="852" y="368" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace" font-size="10" fill="#8c959f">29%</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
+  <rect x="0" y="0" width="3" height="418" fill="#16a34a" opacity="0.7"/>
+
+  <rect y="417" width="900" height="1" fill="#e5e1d8"/>
+</g>
+</svg>
+        </div>
+      </div>
+    </div>
+  </section>
+<hr class='divider'/>
+
+  <section class="card-group">
+    <h2>Skills & Stack</h2>
+    <div class="theme-row">
+      <div class="theme-col">
+        <span class="theme-label dark-label">◉ DARK MODE</span>
+        <div class="svg-wrap dark-bg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="448" viewBox="0 0 900 448">
+<defs>
+  <clipPath id="sc"><rect width="900" height="448"/></clipPath>
+</defs>
+<g clip-path="url(#sc)">
+
+  <rect width="900" height="448" fill="#0a0c10"/>
+  <rect width="900" height="0.5" fill="#30363d"/>
+
+  <!-- ── SECTION HEADER (// comment prefix — visual rhyme across all cards) -->
+  <text x="24" y="16"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#6e7681">// SKILLS &amp; STACK</text>
+  <line x1="24" y1="24" x2="876" y2="24"
+        stroke="#30363d" stroke-width="0.5"/>
+
+  <!-- Column headers (micro typography — opacity tier 3) -->
+  <text x="174" y="40" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" letter-spacing="1" fill="#6e7681">SKILL</text>
+  <text x="186" y="40"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" letter-spacing="1" fill="#6e7681">PROFICIENCY</text>
+
+  
+  <!-- CSS / Tailwind -->
+  <text x="174" y="62" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#e6edf3">CSS / Tailwind</text>
+  <!-- Track -->
+  <rect x="186" y="54" width="650" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="186" y="54" width="572" height="8" rx="4" fill="#39d353"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="54" width="572" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="844" y="62"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#6e7681">88%</text>
+  <!-- Figma / UI -->
+  <text x="174" y="90" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#e6edf3">Figma / UI</text>
+  <!-- Track -->
+  <rect x="186" y="82" width="650" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="186" y="82" width="520" height="8" rx="4" fill="#39d353"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="82" width="520" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="844" y="90"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#6e7681">80%</text>
+  <!-- React -->
+  <text x="174" y="118" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#e6edf3">React</text>
+  <!-- Track -->
+  <rect x="186" y="110" width="650" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="186" y="110" width="488" height="8" rx="4" fill="#39d353"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="110" width="488" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="844" y="118"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#6e7681">75%</text>
+  <!-- Python -->
+  <text x="174" y="146" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#e6edf3">Python</text>
+  <!-- Track -->
+  <rect x="186" y="138" width="650" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="186" y="138" width="468" height="8" rx="4" fill="#79c0ff"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="138" width="468" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="844" y="146"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#6e7681">72%</text>
+  <!-- Next.js -->
+  <text x="174" y="174" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#e6edf3">Next.js</text>
+  <!-- Track -->
+  <rect x="186" y="166" width="650" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="186" y="166" width="455" height="8" rx="4" fill="#79c0ff"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="166" width="455" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="844" y="174"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#6e7681">70%</text>
+  <!-- JavaScript -->
+  <text x="174" y="202" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#e6edf3">JavaScript</text>
+  <!-- Track -->
+  <rect x="186" y="194" width="650" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="186" y="194" width="442" height="8" rx="4" fill="#79c0ff"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="194" width="442" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="844" y="202"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#6e7681">68%</text>
+  <!-- Flask -->
+  <text x="174" y="230" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#e6edf3">Flask</text>
+  <!-- Track -->
+  <rect x="186" y="222" width="650" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="186" y="222" width="377" height="8" rx="4" fill="#79c0ff"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="222" width="377" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="844" y="230"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#6e7681">58%</text>
+  <!-- PostgreSQL -->
+  <text x="174" y="258" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#e6edf3">PostgreSQL</text>
+  <!-- Track -->
+  <rect x="186" y="250" width="650" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="186" y="250" width="338" height="8" rx="4" fill="#8b949e"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="250" width="338" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="844" y="258"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#6e7681">52%</text>
+  <!-- CyberSec -->
+  <text x="174" y="286" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#e6edf3">CyberSec</text>
+  <!-- Track -->
+  <rect x="186" y="278" width="650" height="8" rx="4" fill="#21262d"/>
+  <!-- Fill -->
+  <rect x="186" y="278" width="293" height="8" rx="4" fill="#8b949e"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="278" width="293" height="3.5" rx="1.5" fill="white" opacity="0.12"/>
+  <text x="844" y="286"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#6e7681">45%</text>
+
+  <!-- Tier legend -->
+  
+  <!-- Dot (circle rhymes with badge/bullet/OFW dots across all cards) -->
+  <circle cx="28" cy="309" r="4" fill="#39d353"/>
+  <text x="37" y="312"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" fill="#6e7681">Expert</text>
+  <!-- Dot (circle rhymes with badge/bullet/OFW dots across all cards) -->
+  <circle cx="128" cy="309" r="4" fill="#79c0ff"/>
+  <text x="137" y="312"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" fill="#6e7681">Strong</text>
+  <!-- Dot (circle rhymes with badge/bullet/OFW dots across all cards) -->
+  <circle cx="228" cy="309" r="4" fill="#8b949e"/>
+  <text x="237" y="312"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" fill="#6e7681">Growing</text>
+
+  <!-- ── TECHNOLOGIES section ──────────────────────────────────────────── -->
+  <line x1="24" y1="330" x2="876" y2="330"
+        stroke="#30363d" stroke-width="0.5"/>
+  <text x="24" y="350"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#6e7681">// TECHNOLOGIES</text>
+
+  
+  <rect x="24" y="364" width="114" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="81" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Python</text>
+  <rect x="146" y="364" width="114" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="203" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">HTML</text>
+  <rect x="268" y="364" width="114" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="325" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">CSS</text>
+  <rect x="390" y="364" width="114" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="447" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">JavaScript</text>
+  <rect x="512" y="364" width="114" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="569" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">React</text>
+  <rect x="634" y="364" width="114" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="691" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Next.js</text>
+  <rect x="756" y="364" width="114" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="813" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Tailwind</text>
+  <rect x="24" y="396" width="135" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="91.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Flask</text>
+  <rect x="167" y="396" width="135" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="234.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">PostgreSQL</text>
+  <rect x="310" y="396" width="135" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="377.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">PyQt6</text>
+  <rect x="453" y="396" width="135" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="520.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Figma</text>
+  <rect x="596" y="396" width="135" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="663.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">Git</text>
+  <rect x="739" y="396" width="135" height="24" rx="12"
+        fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+  <text x="806.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8b949e">CyberSec</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
+  <rect x="0" y="0" width="3" height="448" fill="#39d353" opacity="0.7"/>
+
+  <rect y="447" width="900" height="1" fill="#30363d"/>
+</g>
+</svg>
+        </div>
+      </div>
+      <div class="theme-col">
+        <span class="theme-label light-label">◉ LIGHT MODE</span>
+        <div class="svg-wrap light-bg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="448" viewBox="0 0 900 448">
+<defs>
+  <clipPath id="sc"><rect width="900" height="448"/></clipPath>
+</defs>
+<g clip-path="url(#sc)">
+
+  <rect width="900" height="448" fill="#fcfbf9"/>
+  <rect width="900" height="0.5" fill="#e5e1d8"/>
+
+  <!-- ── SECTION HEADER (// comment prefix — visual rhyme across all cards) -->
+  <text x="24" y="16"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#8c959f">// SKILLS &amp; STACK</text>
+  <line x1="24" y1="24" x2="876" y2="24"
+        stroke="#e5e1d8" stroke-width="0.5"/>
+
+  <!-- Column headers (micro typography — opacity tier 3) -->
+  <text x="174" y="40" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" letter-spacing="1" fill="#8c959f">SKILL</text>
+  <text x="186" y="40"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" letter-spacing="1" fill="#8c959f">PROFICIENCY</text>
+
+  
+  <!-- CSS / Tailwind -->
+  <text x="174" y="62" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">CSS / Tailwind</text>
+  <!-- Track -->
+  <rect x="186" y="54" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="54" width="572" height="8" rx="4" fill="#16a34a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="54" width="572" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="62"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">88%</text>
+  <!-- Figma / UI -->
+  <text x="174" y="90" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">Figma / UI</text>
+  <!-- Track -->
+  <rect x="186" y="82" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="82" width="520" height="8" rx="4" fill="#16a34a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="82" width="520" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="90"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">80%</text>
+  <!-- React -->
+  <text x="174" y="118" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">React</text>
+  <!-- Track -->
+  <rect x="186" y="110" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="110" width="488" height="8" rx="4" fill="#16a34a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="110" width="488" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="118"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">75%</text>
+  <!-- Python -->
+  <text x="174" y="146" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">Python</text>
+  <!-- Track -->
+  <rect x="186" y="138" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="138" width="468" height="8" rx="4" fill="#0550ae"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="138" width="468" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="146"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">72%</text>
+  <!-- Next.js -->
+  <text x="174" y="174" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">Next.js</text>
+  <!-- Track -->
+  <rect x="186" y="166" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="166" width="455" height="8" rx="4" fill="#0550ae"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="166" width="455" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="174"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">70%</text>
+  <!-- JavaScript -->
+  <text x="174" y="202" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">JavaScript</text>
+  <!-- Track -->
+  <rect x="186" y="194" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="194" width="442" height="8" rx="4" fill="#0550ae"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="194" width="442" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="202"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">68%</text>
+  <!-- Flask -->
+  <text x="174" y="230" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">Flask</text>
+  <!-- Track -->
+  <rect x="186" y="222" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="222" width="377" height="8" rx="4" fill="#0550ae"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="222" width="377" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="230"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">58%</text>
+  <!-- PostgreSQL -->
+  <text x="174" y="258" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">PostgreSQL</text>
+  <!-- Track -->
+  <rect x="186" y="250" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="250" width="338" height="8" rx="4" fill="#57606a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="250" width="338" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="258"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">52%</text>
+  <!-- CyberSec -->
+  <text x="174" y="286" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">CyberSec</text>
+  <!-- Track -->
+  <rect x="186" y="278" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="278" width="293" height="8" rx="4" fill="#57606a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="278" width="293" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="286"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">45%</text>
+
+  <!-- Tier legend -->
+  
+  <!-- Dot (circle rhymes with badge/bullet/OFW dots across all cards) -->
+  <circle cx="28" cy="309" r="4" fill="#16a34a"/>
+  <text x="37" y="312"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" fill="#8c959f">Expert</text>
+  <!-- Dot (circle rhymes with badge/bullet/OFW dots across all cards) -->
+  <circle cx="128" cy="309" r="4" fill="#0550ae"/>
+  <text x="137" y="312"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" fill="#8c959f">Strong</text>
+  <!-- Dot (circle rhymes with badge/bullet/OFW dots across all cards) -->
+  <circle cx="228" cy="309" r="4" fill="#57606a"/>
+  <text x="237" y="312"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" fill="#8c959f">Growing</text>
+
+  <!-- ── TECHNOLOGIES section ──────────────────────────────────────────── -->
+  <line x1="24" y1="330" x2="876" y2="330"
+        stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="24" y="350"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#8c959f">// TECHNOLOGIES</text>
+
+  
+  <rect x="24" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="81" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Python</text>
+  <rect x="146" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="203" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">HTML</text>
+  <rect x="268" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="325" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">CSS</text>
+  <rect x="390" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="447" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">JavaScript</text>
+  <rect x="512" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="569" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">React</text>
+  <rect x="634" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="691" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Next.js</text>
+  <rect x="756" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="813" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Tailwind</text>
+  <rect x="24" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="91.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Flask</text>
+  <rect x="167" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="234.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">PostgreSQL</text>
+  <rect x="310" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="377.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">PyQt6</text>
+  <rect x="453" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="520.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Figma</text>
+  <rect x="596" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="663.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Git</text>
+  <rect x="739" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="806.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">CyberSec</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
+  <rect x="0" y="0" width="3" height="448" fill="#16a34a" opacity="0.7"/>
+
+  <rect y="447" width="900" height="1" fill="#e5e1d8"/>
+</g>
+</svg>
+        </div>
+      </div>
+    </div>
+  </section>
+<hr class='divider'/>
+
+  <section class="card-group">
+    <h2>Footer</h2>
+    <div class="theme-row">
+      <div class="theme-col">
+        <span class="theme-label dark-label">◉ DARK MODE</span>
+        <div class="svg-wrap dark-bg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="92" viewBox="0 0 900 92">
+<defs>
+  <clipPath id="fc"><rect width="900" height="92" rx="8"/></clipPath>
+  <!-- Gradient on title bar: solid left → fades to bg right (depth — mirrors header) -->
+  <linearGradient id="fBarGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%"   stop-color="#12151b"/>
+    <stop offset="100%" stop-color="#0a0c10"/>
+  </linearGradient>
+</defs>
+<style>
+  @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+  .ofw-dot { animation: pulse 2.2s ease-in-out infinite; }
+</style>
+<g clip-path="url(#fc)">
+
+  <!-- Base background -->
+  <rect width="900" height="92" fill="#0a0c10"/>
+
+  <!-- ── TITLE BAR ──────────────────────────────────────────────────────── -->
+  <rect width="900" height="34" fill="url(#fBarGrad)"/>
+  <rect y="34" width="900" height="0.5" fill="#30363d" opacity="0.6"/>
+
+  <!-- Mac traffic-light dots (visual rhyme — mirrors header exactly) -->
+  <circle cx="22" cy="17" r="4.5" fill="#ff5f57"/>
+  <circle cx="38" cy="17" r="4.5" fill="#febc2e"/>
+  <circle cx="54" cy="17" r="4.5" fill="#28c840"/>
+  <text x="74" y="21"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" font-weight="600"
+        fill="#6e7681" letter-spacing="1">connect  ·  collaborate  ·  build</text>
+
+  <!-- ── LINK PILLS ────────────────────────────────────────────────────── -->
+  
+    <a href="https://linkedin.com/in/kyrell-santillan" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="35" y="52" width="87.6" height="26" rx="13"
+            fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="46" cy="65" r="2.5" fill="#39d353" opacity="0.65"/>
+      <text x="89.8" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#8b949e" letter-spacing="0.5">LinkedIn</text>
+    </a>
+    <a href="https://github.com/Hazy019" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="132.6" y="52" width="73.2" height="26" rx="13"
+            fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="143.6" cy="65" r="2.5" fill="#39d353" opacity="0.65"/>
+      <text x="180.2" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#8b949e" letter-spacing="0.5">GitHub</text>
+    </a>
+    <a href="https://discord.gg/Hazy019" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="215.8" y="52" width="80.4" height="26" rx="13"
+            fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="226.8" cy="65" r="2.5" fill="#39d353" opacity="0.65"/>
+      <text x="267" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#8b949e" letter-spacing="0.5">Discord</text>
+    </a>
+    <a href="https://hazy.codedevs.com" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="306.20000000000005" y="52" width="80.4" height="26" rx="13"
+            fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="317.20000000000005" cy="65" r="2.5" fill="#39d353" opacity="0.65"/>
+      <text x="357.40000000000003" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#8b949e" letter-spacing="0.5">Website</text>
+    </a>
+
+  <!-- ── OFW STATUS (pulsing dot — visual rhyme with badge dot in header) -->
+  <circle cx="410.6" cy="65" r="4" fill="#39d353" class="ofw-dot"/>
+  <text x="423.6" y="69"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="10.5" font-weight="700"
+        fill="#39d353" letter-spacing="1">OFW</text>
+
+  <!-- ── BRAND NAME (typography rhyme — mirrors hero name in header) ────── -->
+  <text x="871" y="69" text-anchor="end"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="12" font-weight="800"
+        fill="#e6edf3" letter-spacing="0.5">Kyrell Santillan</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ──────── -->
+  <rect x="0" y="0" width="3" height="92" fill="#39d353" opacity="0.7"/>
+
+  <!-- Card border -->
+  <rect x="899" y="0" width="1" height="92" fill="#30363d"/>
+  <rect y="0" width="900" height="1" fill="#30363d"/>
+  <rect y="91" width="900" height="1" fill="#30363d"/>
+
+</g>
+</svg>
+        </div>
+      </div>
+      <div class="theme-col">
+        <span class="theme-label light-label">◉ LIGHT MODE</span>
+        <div class="svg-wrap light-bg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="900" height="92" viewBox="0 0 900 92">
+<defs>
+  <clipPath id="fc"><rect width="900" height="92" rx="8"/></clipPath>
+  <!-- Gradient on title bar: solid left → fades to bg right (depth — mirrors header) -->
+  <linearGradient id="fBarGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%"   stop-color="#f5f2eb"/>
+    <stop offset="100%" stop-color="#fcfbf9"/>
+  </linearGradient>
+</defs>
+<style>
+  @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+  .ofw-dot { animation: pulse 2.2s ease-in-out infinite; }
+</style>
+<g clip-path="url(#fc)">
+
+  <!-- Base background -->
+  <rect width="900" height="92" fill="#fcfbf9"/>
+
+  <!-- ── TITLE BAR ──────────────────────────────────────────────────────── -->
+  <rect width="900" height="34" fill="url(#fBarGrad)"/>
+  <rect y="34" width="900" height="0.5" fill="#e5e1d8" opacity="0.6"/>
+
+  <!-- Mac traffic-light dots (visual rhyme — mirrors header exactly) -->
+  <circle cx="22" cy="17" r="4.5" fill="#ff5f57"/>
+  <circle cx="38" cy="17" r="4.5" fill="#febc2e"/>
+  <circle cx="54" cy="17" r="4.5" fill="#28c840"/>
+  <text x="74" y="21"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" font-weight="600"
+        fill="#8c959f" letter-spacing="1">connect  ·  collaborate  ·  build</text>
+
+  <!-- ── LINK PILLS ────────────────────────────────────────────────────── -->
+  
+    <a href="https://linkedin.com/in/kyrell-santillan" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="35" y="52" width="87.6" height="26" rx="13"
+            fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="46" cy="65" r="2.5" fill="#16a34a" opacity="0.65"/>
+      <text x="89.8" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#57606a" letter-spacing="0.5">LinkedIn</text>
+    </a>
+    <a href="https://github.com/Hazy019" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="132.6" y="52" width="73.2" height="26" rx="13"
+            fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="143.6" cy="65" r="2.5" fill="#16a34a" opacity="0.65"/>
+      <text x="180.2" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#57606a" letter-spacing="0.5">GitHub</text>
+    </a>
+    <a href="https://discord.gg/Hazy019" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="215.8" y="52" width="80.4" height="26" rx="13"
+            fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="226.8" cy="65" r="2.5" fill="#16a34a" opacity="0.65"/>
+      <text x="267" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#57606a" letter-spacing="0.5">Discord</text>
+    </a>
+    <a href="https://hazy.codedevs.com" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="306.20000000000005" y="52" width="80.4" height="26" rx="13"
+            fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="317.20000000000005" cy="65" r="2.5" fill="#16a34a" opacity="0.65"/>
+      <text x="357.40000000000003" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#57606a" letter-spacing="0.5">Website</text>
+    </a>
+
+  <!-- ── OFW STATUS (pulsing dot — visual rhyme with badge dot in header) -->
+  <circle cx="410.6" cy="65" r="4" fill="#16a34a" class="ofw-dot"/>
+  <text x="423.6" y="69"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="10.5" font-weight="700"
+        fill="#16a34a" letter-spacing="1">OFW</text>
+
+  <!-- ── BRAND NAME (typography rhyme — mirrors hero name in header) ────── -->
+  <text x="871" y="69" text-anchor="end"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="12" font-weight="800"
+        fill="#1a1a1a" letter-spacing="0.5">Kyrell Santillan</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ──────── -->
+  <rect x="0" y="0" width="3" height="92" fill="#16a34a" opacity="0.7"/>
+
+  <!-- Card border -->
+  <rect x="899" y="0" width="1" height="92" fill="#e5e1d8"/>
+  <rect y="0" width="900" height="1" fill="#e5e1d8"/>
+  <rect y="91" width="900" height="1" fill="#e5e1d8"/>
+
+</g>
+</svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<footer-note>
+  hazy-readme-cards — Kyrell Santillan · Hazy019
+</footer-note>
+
+</body>
+</html>
