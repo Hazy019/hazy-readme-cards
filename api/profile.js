@@ -276,7 +276,7 @@ export default async function handler(req) {
     </feMerge>
   </filter>
   <!-- Column divider gradient: solid top → transparent bottom (depth) -->
-  <linearGradient id="divGrad" x1="0" y1="0" x2="0" y2="1"
+  <linearGradient id="divGrad" x1="0" x2="0"
                   gradientUnits="userSpaceOnUse"
                   y1="${UND_Y}" y2="${SEP_Y - 12}">
     <stop offset="0%"   stop-color="${c.accent}" stop-opacity="0.6"/>
