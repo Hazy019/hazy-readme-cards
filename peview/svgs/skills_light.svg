@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="448" viewBox="0 0 900 448">
+<defs>
+  <clipPath id="sc"><rect width="900" height="448"/></clipPath>
+</defs>
+<g clip-path="url(#sc)">
+
+  <rect width="900" height="448" fill="#fcfbf9"/>
+  <rect width="900" height="0.5" fill="#e5e1d8"/>
+
+  <!-- ── SECTION HEADER (// comment prefix — visual rhyme across all cards) -->
+  <text x="24" y="16"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#8c959f">// SKILLS &amp; STACK</text>
+  <line x1="24" y1="24" x2="876" y2="24"
+        stroke="#e5e1d8" stroke-width="0.5"/>
+
+  <!-- Column headers (micro typography — opacity tier 3) -->
+  <text x="174" y="40" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" letter-spacing="1" fill="#8c959f">SKILL</text>
+  <text x="186" y="40"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" letter-spacing="1" fill="#8c959f">PROFICIENCY</text>
+
+  
+  <!-- CSS / Tailwind -->
+  <text x="174" y="62" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">CSS / Tailwind</text>
+  <!-- Track -->
+  <rect x="186" y="54" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="54" width="572" height="8" rx="4" fill="#16a34a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="54" width="572" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="62"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">88%</text>
+  <!-- Figma / UI -->
+  <text x="174" y="90" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">Figma / UI</text>
+  <!-- Track -->
+  <rect x="186" y="82" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="82" width="520" height="8" rx="4" fill="#16a34a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="82" width="520" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="90"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">80%</text>
+  <!-- React -->
+  <text x="174" y="118" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">React</text>
+  <!-- Track -->
+  <rect x="186" y="110" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="110" width="488" height="8" rx="4" fill="#16a34a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="110" width="488" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="118"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">75%</text>
+  <!-- Python -->
+  <text x="174" y="146" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">Python</text>
+  <!-- Track -->
+  <rect x="186" y="138" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="138" width="468" height="8" rx="4" fill="#0550ae"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="138" width="468" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="146"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">72%</text>
+  <!-- Next.js -->
+  <text x="174" y="174" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">Next.js</text>
+  <!-- Track -->
+  <rect x="186" y="166" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="166" width="455" height="8" rx="4" fill="#0550ae"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="166" width="455" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="174"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">70%</text>
+  <!-- JavaScript -->
+  <text x="174" y="202" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">JavaScript</text>
+  <!-- Track -->
+  <rect x="186" y="194" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="194" width="442" height="8" rx="4" fill="#0550ae"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="194" width="442" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="202"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">68%</text>
+  <!-- Flask -->
+  <text x="174" y="230" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">Flask</text>
+  <!-- Track -->
+  <rect x="186" y="222" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="222" width="377" height="8" rx="4" fill="#0550ae"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="222" width="377" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="230"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">58%</text>
+  <!-- PostgreSQL -->
+  <text x="174" y="258" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">PostgreSQL</text>
+  <!-- Track -->
+  <rect x="186" y="250" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="250" width="338" height="8" rx="4" fill="#57606a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="250" width="338" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="258"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">52%</text>
+  <!-- CyberSec -->
+  <text x="174" y="286" text-anchor="end"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="11.5" fill="#1a1a1a">CyberSec</text>
+  <!-- Track -->
+  <rect x="186" y="278" width="650" height="8" rx="4" fill="#d4cdbc"/>
+  <!-- Fill -->
+  <rect x="186" y="278" width="293" height="8" rx="4" fill="#57606a"/>
+  <!-- Sheen highlight (depth — makes bar feel physical) -->
+  <rect x="186" y="278" width="293" height="3.5" rx="1.5" fill="white" opacity="0.35"/>
+  <text x="844" y="286"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#8c959f">45%</text>
+
+  <!-- Tier legend -->
+  
+  <!-- Dot (circle rhymes with badge/bullet/OFW dots across all cards) -->
+  <circle cx="28" cy="309" r="4" fill="#16a34a"/>
+  <text x="37" y="312"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" fill="#8c959f">Expert</text>
+  <!-- Dot (circle rhymes with badge/bullet/OFW dots across all cards) -->
+  <circle cx="128" cy="309" r="4" fill="#0550ae"/>
+  <text x="137" y="312"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" fill="#8c959f">Strong</text>
+  <!-- Dot (circle rhymes with badge/bullet/OFW dots across all cards) -->
+  <circle cx="228" cy="309" r="4" fill="#57606a"/>
+  <text x="237" y="312"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" fill="#8c959f">Growing</text>
+
+  <!-- ── TECHNOLOGIES section ──────────────────────────────────────────── -->
+  <line x1="24" y1="330" x2="876" y2="330"
+        stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="24" y="350"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="#8c959f">// TECHNOLOGIES</text>
+
+  
+  <rect x="24" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="81" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Python</text>
+  <rect x="146" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="203" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">HTML</text>
+  <rect x="268" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="325" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">CSS</text>
+  <rect x="390" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="447" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">JavaScript</text>
+  <rect x="512" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="569" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">React</text>
+  <rect x="634" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="691" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Next.js</text>
+  <rect x="756" y="364" width="114" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="813" y="379.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Tailwind</text>
+  <rect x="24" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="91.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Flask</text>
+  <rect x="167" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="234.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">PostgreSQL</text>
+  <rect x="310" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="377.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">PyQt6</text>
+  <rect x="453" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="520.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Figma</text>
+  <rect x="596" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="663.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">Git</text>
+  <rect x="739" y="396" width="135" height="24" rx="12"
+        fill="#f5f2eb" stroke="#e5e1d8" stroke-width="0.5"/>
+  <text x="806.5" y="411.5" text-anchor="middle"
+        font-family="'Courier New',Consolas,monospace"
+        font-size="10" fill="#57606a">CyberSec</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
+  <rect x="0" y="0" width="3" height="448" fill="#16a34a" opacity="0.7"/>
+
+  <rect y="447" width="900" height="1" fill="#e5e1d8"/>
+</g>
+</svg>
