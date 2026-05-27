@@ -3,6 +3,10 @@ export const config = { runtime: "edge" };
 export default async function handler(req) {
   const dark = new URL(req.url).searchParams.get("theme") !== "light";
 
+  const host = req.headers.get('host') || 'hazy.codedevs.com';
+  const proto = host.includes('localhost') ? 'http' : 'https';
+  const assetUrl = `${proto}://${host}/api/pexil_art.gif`;
+
   const c = dark
     ? {
         bg:         "#0d1117",
@@ -30,18 +34,16 @@ export default async function handler(req) {
       };
 
   const W = 900;
+  const H = 372;
 
   // ── Row 1: pixel art panel dimensions ────────────────────────────────────
-  const PAD_X        = 24;
-  const PANEL_X      = PAD_X;
-  const PANEL_Y      = 12;
-  const PANEL_W      = W - PAD_X * 2;
-  const PANEL_H      = 220; // Allocated generous height for a premium asset
-  const PANEL_BOTTOM = PANEL_Y + PANEL_H;
+  const PANEL_Y      = 0;
+  const PANEL_H      = 300;
+  const PANEL_BOTTOM = 300;
 
   // ── Row 2: info & links section ──────────────────────────────────────────
-  const ROW2_TOP = PANEL_BOTTOM + 24;
-  const H        = ROW2_TOP + 80;
+  const ROW2_TOP = 300;
+  const PAD_X    = 24;
 
   // ── Link pills layout ────────────────────────────────────────────────────
   const LINKS = [
@@ -52,7 +54,7 @@ export default async function handler(req) {
   ];
   const LINK_GAP  = 12;
   const LINK_H    = 24;
-  const LINK_Y    = ROW2_TOP + 36;
+  const LINK_Y    = ROW2_TOP + 28;
 
   let lx = PAD_X;
   const linkPills = LINKS.map(({ label, w }) => {
@@ -118,49 +120,37 @@ export default async function handler(req) {
 
   <!-- Canvas -->
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
-  <rect width="${W}" height="0.5" fill="${c.border}"/>
 
   <!-- ══════════════════════════════════════════════════════
        ROW 1 — PIXEL ART IMAGE CONTAINER
-       Replace the href value with your Base64 string/URL.
   ══════════════════════════════════════════════════════ -->
-
-  <!-- Bordered panel background -->
-  <rect x="${PANEL_X}" y="${PANEL_Y}" width="${PANEL_W}" height="${PANEL_H}" rx="8"
-        fill="${c.panelBg}" stroke="${c.border}" stroke-width="1"/>
 
   <!-- Pixel art image slot — crt-flicker animated -->
   <image
     class="crt-flicker"
-    href="YOUR_IMAGE_OR_GIF_URL_HERE"
-    x="${PANEL_X}" y="${PANEL_Y}"
-    width="${PANEL_W}" height="${PANEL_H}"
+    href="${assetUrl}"
+    x="0" y="${PANEL_Y}"
+    width="${W}" height="${PANEL_H}"
     preserveAspectRatio="xMidYMid slice"
-    clip-path="url(#imgClip)"
   />
-  <defs>
-    <clipPath id="imgClip">
-      <rect x="${PANEL_X}" y="${PANEL_Y}" width="${PANEL_W}" height="${PANEL_H}" rx="8"/>
-    </clipPath>
-  </defs>
 
   <!-- ══════════════════════════════════════════════════════
        ROW 2 — SYSTEM INFO & LINKS
   ══════════════════════════════════════════════════════ -->
 
   <!-- Dividers + section label -->
-  <line x1="${PAD_X}" y1="${ROW2_TOP}" x2="${W - PAD_X}" y2="${ROW2_TOP}"
+  <line x1="${PAD_X}" y1="${ROW2_TOP + 8}" x2="${W - PAD_X}" y2="${ROW2_TOP + 8}"
         stroke="${c.border}" stroke-width="0.5"/>
-  <text x="${PAD_X}" y="${ROW2_TOP + 18}"
+  <text x="${PAD_X}" y="${ROW2_TOP + 20}"
         font-family="'Courier New', Consolas, monospace" font-size="10"
         font-weight="700" letter-spacing="1.5" fill="${c.dim}">// connect · collaborate · build</text>
   
   <!-- Terminal cursor element beside title -->
-  <text x="${PAD_X + 270}" y="${ROW2_TOP + 18}"
+  <text x="${PAD_X + 270}" y="${ROW2_TOP + 20}"
         font-family="'Courier New', Consolas, monospace" font-size="10"
         font-weight="700" fill="${c.accent}" class="terminal-cursor">█</text>
 
-  <line x1="${PAD_X}" y1="${ROW2_TOP + 26}" x2="${W - PAD_X}" y2="${ROW2_TOP + 26}"
+  <line x1="${PAD_X}" y1="${ROW2_TOP + 28}" x2="${W - PAD_X}" y2="${ROW2_TOP + 28}"
         stroke="${c.border}" stroke-width="0.5"/>
 
   <!-- Link pills -->
@@ -180,6 +170,10 @@ export default async function handler(req) {
 
   <!-- Bottom rule -->
   <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
+  <!-- Top and sides rules -->
+  <rect width="${W}" height="0.5" fill="${c.border}"/>
+  <line x1="0" y1="0" x2="0" y2="${H}" stroke="${c.border}" stroke-width="1"/>
+  <line x1="${W}" y1="0" x2="${W}" y2="${H}" stroke="${c.border}" stroke-width="1"/>
 
 </g>
 </svg>`;
