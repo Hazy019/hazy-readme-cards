@@ -44,7 +44,7 @@ export default async function handler(req) {
     const response = await fetch("https://api.github.com/graphql", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`,
+        "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`, // <-- MATCHES YOUR VERCEL ENVIRONMENT VARIABLE
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -73,7 +73,6 @@ export default async function handler(req) {
     const json = await response.json();
     const repos = json.data?.viewer?.repositories?.nodes || [];
     
-    // Aggregating sizes of each language across all repos
     const langMap = {};
     let totalSize = 0;
 
@@ -90,7 +89,6 @@ export default async function handler(req) {
       });
     });
 
-    // Convert map to array, sort by size, take the top 4 languages
     topLanguages = Object.values(langMap)
       .sort((a, b) => b.size - a.size)
       .slice(0, 4)
@@ -109,7 +107,6 @@ export default async function handler(req) {
     ];
   }
 
-  // If profile contains zero repository languages data yet
   if (topLanguages.length === 0) {
     topLanguages = [{ name: "No Repository Data", pct: 100, color: c.dim }];
   }
@@ -126,26 +123,20 @@ export default async function handler(req) {
 
     barsSVG += `
       <rect x="${PAD_X}" y="${y - 14}" width="${W - (PAD_X * 2)}" height="22" rx="3" fill="${c.bg}" opacity="0.1"/>
-      
       <text x="${PAD_X + LABEL_W}" y="${y}" text-anchor="end"
             font-family="monospace" font-size="12" font-weight="700" fill="${c.text}">${lang.name}</text>
-      
       <rect x="${BAR_X}" y="${y - 9}" width="${BAR_MAX_W}" height="10" rx="2" fill="${dark ? c.border2 : c.border}"/>
-      
       <rect x="${BAR_X}" y="${y - 9}" width="${pixelWidth}" height="10" rx="2" fill="${lang.color}"/>
-      
       <text x="${BAR_X + BAR_MAX_W + 12}" y="${y}"
             font-family="'Courier New',Consolas,monospace" font-size="11" font-weight="bold" fill="${c.muted}">${lang.pct}%</text>
     `;
   });
 
-  // Dynamic separation baseline positioning anchor
   const DynamicHeight = 85 + (topLanguages.length * 28);
   const SEP_Y = DynamicHeight + 10;
   const LABEL_Y = SEP_Y + 24;
   const TAGS_Y = LABEL_Y + 16;
 
-  // Static tags for your preferred framework configurations
   const tags = ["Next.js 16", "React 19", "FastAPI", "Tailwind v4", "AWS Lambda", "FFmpeg", "CyberSecurity"];
   
   let tagEls = "";
