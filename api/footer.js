@@ -33,155 +33,104 @@ export default async function handler(req) {
         linkBorder: "#d0d7de",
       };
 
-  const W = 900;
-  const H = 372;
+  // ── Layout Geometry ────────────────────────────────────────────────────────
+  const W          = 900;
+  const ART_H      = 280; // Scaled height for the pixel panel to preserve grid balance
+  const CTRL_H     = 72;  // Controls zone height
+  const H          = ART_H + CTRL_H; // Total Footer Canvas Height
+  
+  const PAD_X      = 28;
+  const ROW2_TOP   = ART_H;
+  const BRAND_X    = W - PAD_X;
+  const BRAND_Y    = ROW2_TOP + 46;
 
-  // ── Row 1: pixel art panel dimensions ────────────────────────────────────
-  const PANEL_Y      = 0;
-  const PANEL_H      = 300;
-  const PANEL_BOTTOM = 300;
-
-  // ── Row 2: info & links section ──────────────────────────────────────────
-  const ROW2_TOP = 300;
-  const PAD_X    = 24;
-
-  // ── Link pills layout ────────────────────────────────────────────────────
+  // Links data configuration
   const LINKS = [
-    { label: "GitHub · Hazy019",          w: 130 },
-    { label: "LinkedIn · kyrell-santillan", w: 192 },
-    { label: "Discord · Hazy019",          w: 136 },
-    { label: "Site · hazy.codedevs.com",   w: 170 },
+    { label: "LinkedIn", url: "https://linkedin.com/in/kyrell-santillan" },
+    { label: "GitHub",   url: "https://github.com/Hazy019" },
+    { label: "Discord",  url: "https://discord.gg/Hazy019" },
+    { label: "Website",  url: "https://hazy.codedevs.com" }
   ];
-  const LINK_GAP  = 12;
-  const LINK_H    = 24;
-  const LINK_Y    = ROW2_TOP + 28;
 
-  let lx = PAD_X;
-  const linkPills = LINKS.map(({ label, w }) => {
+  let currentX = PAD_X;
+  const linkPills = LINKS.map(link => {
+    const textLen = link.label.length;
+    const pW      = textLen * 7 + 20; 
+    const pH      = 20;
+    const pY      = ROW2_TOP + 34;
+    const tX      = currentX + pW / 2;
+    const tY      = pY + 13;
+
     const el = `
-  <rect x="${lx}" y="${LINK_Y}" width="${w}" height="${LINK_H}" rx="4"
-        fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-  <text x="${lx + w / 2}" y="${LINK_Y + 15.5}" text-anchor="middle"
-        font-family="'Courier New', Consolas, monospace" font-size="10"
-        fill="${c.linkText}">${label}</text>`;
-    lx += w + LINK_GAP;
+    <a href="${link.url}" target="_blank">
+      <rect x="${currentX}" y="${pY}" width="${pW}" height="${pH}" rx="4"
+            fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
+      <text x="${tX}" y="${tY}" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace" font-size=\"9.5\"
+            font-weight="700" fill="${c.linkText}">${link.label}</text>
+    </a>`;
+    currentX += pW + 8;
     return el;
   }).join("");
 
-  // Right-side branding x anchor
-  const BRAND_X   = W - PAD_X;
-  const BRAND_Y   = LINK_Y + 16;
-  const OFW_DOT_X = BRAND_X - 146;
+  const OFW_DOT_X = currentX + 8;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
   <clipPath id="fc"><rect width="${W}" height="${H}" rx="8"/></clipPath>
 </defs>
-
-<!-- ═══════════════════════════════════════════════════════════════════
-     ANIMATION CLASSES
-     Attach these directly to <image> or <g> elements in the pixel art
-     panel to animate them natively without JavaScript.
-════════════════════════════════════════════════════════════════════ -->
 <style>
-  /* Screen-refresh pulse: subtle opacity oscillation */
-  @keyframes crtFlickerKF {
-    0%   { opacity: 0.96; }
-    15%  { opacity: 1;    }
-    45%  { opacity: 0.97; }
-    70%  { opacity: 1;    }
-    88%  { opacity: 0.96; }
-    100% { opacity: 0.96; }
-  }
-  .crt-flicker {
-    animation: crtFlickerKF 5s ease-in-out infinite;
-  }
-
-  /* Terminal block cursor — sharp step-end blink */
-  @keyframes termCursorKF {
-    0%,  49% { opacity: 1; }
-    50%, 100% { opacity: 0; }
-  }
-  .terminal-cursor {
-    animation: termCursorKF 1s step-end infinite;
-  }
-
-  /* Slow breathing glow for brand / neon elements */
-  @keyframes subtleGlowKF {
-    0%, 100% { opacity: 0.75; filter: drop-shadow(0 0 4px #39d353); }
-    50%      { opacity: 1;    filter: drop-shadow(0 0 8px #39d353);  }
-  }
-  .subtle-glow {
-    animation: subtleGlowKF 3s ease-in-out infinite;
-  }
+  @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  .terminal-cursor { animation: blink 1s step-end infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+  .subtle-glow { animation: pulse 2s ease-in-out infinite; }
+  /* Enforce sharp pixel scaling rendering for the GIF asset */
+  .pixelated { image-rendering: pixelated; image-rendering: crisp-edges; }
 </style>
-
 <g clip-path="url(#fc)">
-
-  <!-- Canvas -->
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
 
-  <!-- ══════════════════════════════════════════════════════
-       ROW 1 — PIXEL ART IMAGE CONTAINER
-  ══════════════════════════════════════════════════════ -->
+  <rect width="${W}" height="${ART_H}" fill="${c.panelBg}"/>
+  <g class="pixelated">
+    <image href="${assetUrl}" x="0" y="0" width="${W}" height="${ART_H}" preserveAspectRatio="xMidYMid slice" />
+  </g>
+  <rect y="${ART_H - 0.5}" width="${W}" height="0.5" fill="${c.border}"/>
 
-  <!-- Pixel art image slot — crt-flicker animated -->
-  <image
-    class="crt-flicker"
-    href="${assetUrl}"
-    x="0" y="${PANEL_Y}"
-    width="${W}" height="${PANEL_H}"
-    preserveAspectRatio="xMidYMid slice"
-  />
-
-  <!-- ══════════════════════════════════════════════════════
-       ROW 2 — SYSTEM INFO & LINKS
-  ══════════════════════════════════════════════════════ -->
-
-  <!-- Dividers + section label -->
-  <line x1="${PAD_X}" y1="${ROW2_TOP + 8}" x2="${W - PAD_X}" y2="${ROW2_TOP + 8}"
-        stroke="${c.border}" stroke-width="0.5"/>
-  <text x="${PAD_X}" y="${ROW2_TOP + 20}"
-        font-family="'Courier New', Consolas, monospace" font-size="10"
-        font-weight="700" letter-spacing="1.5" fill="${c.dim}">// connect · collaborate · build</text>
+  <rect y="${ROW2_TOP}" width="${W}" height="${CTRL_H}" fill="${c.bg}"/>
   
-  <!-- Terminal cursor element beside title -->
-  <text x="${PAD_X + 270}" y="${ROW2_TOP + 20}"
-        font-family="'Courier New', Consolas, monospace" font-size="10"
+  <circle cx="22" cy="${ROW2_TOP + 17}" r="4" fill="#ff5f57"/>
+  <circle cx="36" cy="${ROW2_TOP + 17}" r="4" fill="#febc2e"/>
+  <circle cx="50" cy="${ROW2_TOP + 17}" r="4" fill="#28c840"/>
+  
+  <text x="68" y="${ROW2_TOP + 20}" font-family="'Courier New', Consolas, monospace" font-size="10.5" font-weight="700" fill="${c.dim}">connect · collaborate · build</text>
+  
+  <text x="274" y="${ROW2_TOP + 20}"
+        font-family="'Courier New', Consolas, monospace" font-size="10.5"
         font-weight="700" fill="${c.accent}" class="terminal-cursor">█</text>
 
   <line x1="${PAD_X}" y1="${ROW2_TOP + 28}" x2="${W - PAD_X}" y2="${ROW2_TOP + 28}"
         stroke="${c.border}" stroke-width="0.5"/>
 
-  <!-- Link pills -->
   ${linkPills}
 
-  <!-- OFW dot (subtle-glow animation ready) -->
-  <circle cx="${OFW_DOT_X}" cy="${BRAND_Y - 3}" r="4"
+  <circle cx="${OFW_DOT_X}" cy="${BRAND_Y - 3.5}" r="3.5"
           fill="${c.accent}" class="subtle-glow"/>
   <text x="${OFW_DOT_X + 10}" y="${BRAND_Y}"
         font-family="'Courier New', Consolas, monospace" font-size="10"
         font-weight="700" fill="${c.accent}">OFW</text>
 
-  <!-- Brand name -->
   <text x="${BRAND_X}" y="${BRAND_Y}" text-anchor="end"
         font-family="'Courier New', Consolas, monospace" font-size="11"
         font-weight="700" fill="${c.text}">Kyrell Santillan</text>
 
-  <!-- Bottom rule -->
   <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
-  <!-- Top and sides rules -->
-  <rect width="${W}" height="0.5" fill="${c.border}"/>
-  <line x1="0" y1="0" x2="0" y2="${H}" stroke="${c.border}" stroke-width="1"/>
-  <line x1="${W}" y1="0" x2="${W}" y2="${H}" stroke="${c.border}" stroke-width="1"/>
-
 </g>
 </svg>`;
 
   return new Response(svg, {
     headers: {
       "Content-Type": "image/svg+xml",
-      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      "Cache-Control": "public, max-age=0, must-revalidate",
     },
   });
 }
