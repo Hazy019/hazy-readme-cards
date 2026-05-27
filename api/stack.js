@@ -3,7 +3,6 @@ export const config = { runtime: "edge" };
 export default async function handler(req) {
   const dark = new URL(req.url).searchParams.get("theme") !== "light";
 
-  // ── Design tokens ──────────────────────────────────────────────────────────
   const c = dark
     ? {
       bg: "#0a0c10",
@@ -13,8 +12,6 @@ export default async function handler(req) {
       border: "#30363d",
       border2: "#21262d",
       accent: "#39d353",
-      accentD: "#238636",
-      mid: "#79c0ff",
       tagBg: "#12151b",
       tagText: "#8b949e",
       tagBdr: "#30363d",
@@ -27,8 +24,6 @@ export default async function handler(req) {
       border: "#e5e1d8",
       border2: "#d4cdbc",
       accent: "#16a34a",
-      accentD: "#15803d",
-      mid: "#0550ae",
       tagBg: "#f5f2eb",
       tagText: "#57606a",
       tagBdr: "#e5e1d8",
