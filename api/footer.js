@@ -38,7 +38,6 @@ export default async function handler(req) {
   { label: "GitHub",   url: "https://github.com/Hazy019" },
   { label: "Discord",  url: "https://discord.gg/Hazy019" },
   { label: "Website",  url: "https://hazy.codedevs.com" },
-  { label: "⚙️ Source Engine", url: "https://github.com/Hazy019/hazy-readme-cards" } 
   ];
 
   let currentX = PAD_X;
