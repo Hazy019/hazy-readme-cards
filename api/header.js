@@ -3,63 +3,98 @@ export const config = { runtime: "edge" };
 export default async function handler(req) {
   const dark = new URL(req.url).searchParams.get("theme") !== "light";
 
+  // ── Design tokens ──────────────────────────────────────────────────────────
   const c = dark
     ? {
-        bg:     "#0d1117",
-        bar:    "#161b22",
-        text:   "#e6edf3",
-        muted:  "#8b949e",
-        dim:    "#6e7681",
-        border: "#30363d",
-        accent: "#39d353",
-        aBg:    "#0f2a18",
-      }
+      bg: "#0a0c10",
+      bar: "#12151b",
+      text: "#e6edf3",
+      muted: "#8b949e",
+      dim: "#6e7681",
+      border: "#30363d",
+      accent: "#39d353",
+      aBg: "#0f2a18",
+    }
     : {
-        bg:     "#ffffff",
-        bar:    "#f6f8fa",
-        text:   "#1a1a1a",
-        muted:  "#57606a",
-        dim:    "#8c959f",
-        border: "#d0d7de",
-        accent: "#1a7f37",
-        aBg:    "#dafbe1",
-      };
+      bg: "#fcfbf9",
+      bar: "#f5f2eb",
+      text: "#1a1a1a",
+      muted: "#57606a",
+      dim: "#8c959f",
+      border: "#e5e1d8",
+      accent: "#16a34a",
+      aBg: "#dcfce7",
+    };
 
-  const W = 900, H = 120;
+  const W = 900, H = 156;
+  const BAR_H = 32;
+  const PAD_X = 28;
+  const STRIP_W = 3; // left accent strip — visual rhyme anchor across all cards
 
-  // ── Geometry ────────────────────────────────────────────────────────────────
-  const BAR_H   = 32;         
-  const PAD_X   = 28;         
-  const NAME_Y  = BAR_H + 42; 
-  const ROLE_Y  = NAME_Y + 20; 
-  const BADGE_Y = ROLE_Y + 8;  
+  // Vertical layout
+  const NAME_Y = BAR_H + 48;
+  const ROLE_Y = NAME_Y + 24;
+  const BADGE_Y = ROLE_Y + 12;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
   <clipPath id="hc"><rect width="${W}" height="${H}" rx="8"/></clipPath>
+  <!-- Gradient on title bar: solid left → fades to bg right (depth) -->
+  <linearGradient id="hBarGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%"   stop-color="${c.bar}"/>
+    <stop offset="100%" stop-color="${c.bg}"/>
+  </linearGradient>
 </defs>
 <g clip-path="url(#hc)">
+
+  <!-- Base background -->
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
 
-  <rect width="${W}" height="${BAR_H}" fill="${c.bar}"/>
-  <rect y="${BAR_H - 0.5}" width="${W}" height="0.5" fill="${c.border}"/>
+  <!-- ── TITLE BAR ──────────────────────────────────────────────────────── -->
+  <rect width="${W}" height="${BAR_H}" fill="url(#hBarGrad)"/>
+  <rect y="${BAR_H - 0.5}" width="${W}" height="0.5" fill="${c.border}" opacity="0.6"/>
 
+  <!-- Mac traffic-light dots (visual rhyme: also in footer) -->
   <circle cx="22" cy="16" r="4.5" fill="#ff5f57"/>
   <circle cx="38" cy="16" r="4.5" fill="#febc2e"/>
   <circle cx="54" cy="16" r="4.5" fill="#28c840"/>
-  <text x="74" y="20" font-family="'Courier New', Consolas, monospace" font-size="11" fill="${c.dim}">~/kyrell-santillan — zsh</text>
+  <text x="74" y="20.5"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" font-weight="600"
+        fill="${c.dim}" letter-spacing="0.5">~/kyrell-santillan — zsh</text>
 
-  <text x="${PAD_X}" y="${NAME_Y}" font-family="'Courier New', Consolas, monospace" font-size="30" font-weight="700" fill="${c.text}">Kyrell Santillan</text>
+  <!-- ── HERO NAME (star typography moment) ────────────────────────────── -->
+  <text x="${PAD_X}" y="${NAME_Y}"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="34" font-weight="900"
+        fill="${c.text}" letter-spacing="-0.5">Kyrell Santillan</text>
 
-  <text x="${PAD_X}" y="${ROLE_Y}" font-family="'Courier New', Consolas, monospace" font-size="11" fill="${c.muted}">Web Designer  ·  Frontend Engineer  ·  Cybersecurity  ·  Philippines  ·  UTC+8</text>
+  <!-- Accent underline under name (depth: makes name feel grounded) -->
+  <rect x="${PAD_X}" y="${NAME_Y + 5}" width="248" height="2" rx="1"
+        fill="${c.accent}" opacity="0.35"/>
 
-  <rect x="${PAD_X}" y="${BADGE_Y}" width="116" height="17" rx="8.5" fill="${c.aBg}"/>
-  <circle cx="${PAD_X + 13}" cy="${BADGE_Y + 8.5}" r="3" fill="${c.accent}"/>
-  <text x="${PAD_X + 24}" y="${BADGE_Y + 11.5}" font-family="'Courier New', Consolas, monospace" font-size="9.5" font-weight="700" fill="${c.accent}">OPEN FOR WORK</text>
+  <!-- ── ROLE LINE ──────────────────────────────────────────────────────── -->
+  <text x="${PAD_X}" y="${ROLE_Y}"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" fill="${c.muted}" letter-spacing="0.5">Web Designer  ·  Frontend Engineer  ·  Cybersecurity  ·  Philippines  ·  UTC+8</text>
 
-  <rect width="${W}" height="1" fill="${c.border}"/>
-  <rect x="0" y="0" width="1" height="${H}" fill="${c.border}"/>
+  <!-- ── OPEN FOR WORK BADGE ───────────────────────────────────────────── -->
+  <rect x="${PAD_X}" y="${BADGE_Y}" width="122" height="18" rx="9" fill="${c.aBg}"/>
+  <!-- Dot bullet (visual rhyme: same motif in footer link pills + profile bullets) -->
+  <circle cx="${PAD_X + 13}" cy="${BADGE_Y + 9}" r="3.5" fill="${c.accent}"/>
+  <text x="${PAD_X + 25}" y="${BADGE_Y + 12.5}"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="9.5" font-weight="700"
+        fill="${c.accent}" letter-spacing="0.5">OPEN FOR WORK</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
+  <rect x="0" y="0" width="${STRIP_W}" height="${H}" fill="${c.accent}" opacity="0.7"/>
+
+  <!-- Card border -->
+  <rect y="0" width="${W}" height="1" fill="${c.border}"/>
   <rect x="${W - 1}" y="0" width="1" height="${H}" fill="${c.border}"/>
+  <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
+
 </g>
 </svg>`;
 

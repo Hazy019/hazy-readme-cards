@@ -3,93 +3,128 @@ export const config = { runtime: "edge" };
 export default async function handler(req) {
   const dark = new URL(req.url).searchParams.get("theme") !== "light";
 
+  // ── Design tokens ──────────────────────────────────────────────────────────
   const c = dark
     ? {
-        bg:         "#0d1117",
-        bar:        "#161b22",
-        text:       "#e6edf3",
-        muted:      "#8b949e",
-        dim:        "#6e7681",
-        border:     "#30363d",
-        accent:     "#39d353",
-        linkBg:     "#161b22",
-        linkText:   "#e6edf3",
-        linkBorder: "#30363d",
-      }
+      bg: "#0a0c10",
+      bar: "#12151b",
+      text: "#e6edf3",
+      muted: "#8b949e",
+      dim: "#6e7681",
+      border: "#30363d",
+      accent: "#39d353",
+      linkBg: "#12151b",
+      linkText: "#8b949e",
+      linkBorder: "#30363d",
+    }
     : {
-        bg:         "#ffffff",
-        bar:        "#f6f8fa",
-        text:       "#1a1a1a",
-        muted:      "#57606a",
-        dim:        "#8c959f",
-        border:     "#d0d7de",
-        accent:     "#1a7f37",
-        linkBg:     "#f6f8fa",
-        linkText:   "#1a1a1a",
-        linkBorder: "#d0d7de",
-      };
+      bg: "#fcfbf9",
+      bar: "#f5f2eb",
+      text: "#1a1a1a",
+      muted: "#57606a",
+      dim: "#8c959f",
+      border: "#e5e1d8",
+      accent: "#16a34a",
+      linkBg: "#f5f2eb",
+      linkText: "#57606a",
+      linkBorder: "#e5e1d8",
+    };
 
   const W = 900;
-  const H = 84; 
+  const H = 92;
   const PAD_X = 28;
+  const STRIP_W = 3;   // left accent strip — visual rhyme anchor
 
- const LINKS = [
-  { label: "LinkedIn", url: "https://linkedin.com/in/kyrell-santillan" },
-  { label: "GitHub",   url: "https://github.com/Hazy019" },
-  { label: "Discord",  url: "https://discord.gg/Hazy019" },
-  { label: "Website",  url: "https://hazy.codedevs.com" },
+  const LINKS = [
+    { label: "LinkedIn", url: "https://linkedin.com/in/kyrell-santillan" },
+    { label: "GitHub",   url: "https://github.com/Hazy019" },
+    { label: "Discord",  url: "https://discord.gg/Hazy019" },
+    { label: "Website",  url: "https://hazy.codedevs.com" },
   ];
 
-  let currentX = PAD_X;
+  const TAG_H = 26;
+  const TAG_Y = 52;
+
+  // Build pill links
+  let currentX = PAD_X + STRIP_W + 4;
   const linkPills = LINKS.map(link => {
-    const pW = link.label.length * 6.8 + 22; 
-    const pH = 24;
-    const pY = 44; 
+    // Pill width based on label length, generously padded
+    const pW = link.label.length * 7.2 + 30;
+    const cx = currentX;
     const el = `
     <a href="${link.url}" target="_blank">
-      <rect x="${currentX}" y="${pY}" width="${pW}" height="${pH}" rx="4"
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="${cx}" y="${TAG_Y}" width="${pW}" height="${TAG_H}" rx="13"
             fill="${c.linkBg}" stroke="${c.linkBorder}" stroke-width="0.5"/>
-      <text x="${currentX + pW / 2}" y="${pY + 15.5}" text-anchor="middle"
-            font-family="'Courier New', Consolas, monospace" font-size="10"
-            font-weight="700" fill="${c.linkText}">${link.label}</text>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="${cx + 11}" cy="${TAG_Y + 13}" r="2.5" fill="${c.accent}" opacity="0.65"/>
+      <text x="${cx + 22 + (pW - 22) / 2}" y="${TAG_Y + 17}" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="${c.linkText}" letter-spacing="0.5">${link.label}</text>
     </a>`;
-    currentX += pW + 8;
+    currentX += pW + 10;
     return el;
   }).join("");
 
-  const OFW_DOT_X = currentX + 8;
-  const BRAND_X = W - PAD_X;
+  const OFW_DOT_X = currentX + 14;
+  const BRAND_X = W - PAD_X - 1;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
   <clipPath id="fc"><rect width="${W}" height="${H}" rx="8"/></clipPath>
+  <!-- Gradient on title bar: solid left → fades to bg right (depth — mirrors header) -->
+  <linearGradient id="fBarGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%"   stop-color="${c.bar}"/>
+    <stop offset="100%" stop-color="${c.bg}"/>
+  </linearGradient>
 </defs>
 <style>
-  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-  .subtle-glow { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+  .ofw-dot { animation: pulse 2.2s ease-in-out infinite; }
 </style>
 <g clip-path="url(#fc)">
+
+  <!-- Base background -->
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
 
-  <rect width="${W}" height="32" fill="${c.bar}"/>
-  <rect y="32" width="${W}" height="0.5" fill="${c.border}"/>
+  <!-- ── TITLE BAR ──────────────────────────────────────────────────────── -->
+  <rect width="${W}" height="34" fill="url(#fBarGrad)"/>
+  <rect y="34" width="${W}" height="0.5" fill="${c.border}" opacity="0.6"/>
 
-  <circle cx="22" cy="16" r="4.5" fill="#ff5f57"/>
-  <circle cx="38" cy="16" r="4.5" fill="#febc2e"/>
-  <circle cx="54" cy="16" r="4.5" fill="#28c840"/>
-  <text x="74" y="20" font-family="'Courier New', Consolas, monospace" font-size="11" font-weight="700" fill="${c.dim}">connect · collaborate · build</text>
+  <!-- Mac traffic-light dots (visual rhyme — mirrors header exactly) -->
+  <circle cx="22" cy="17" r="4.5" fill="#ff5f57"/>
+  <circle cx="38" cy="17" r="4.5" fill="#febc2e"/>
+  <circle cx="54" cy="17" r="4.5" fill="#28c840"/>
+  <text x="74" y="21"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" font-weight="600"
+        fill="${c.dim}" letter-spacing="1">connect  ·  collaborate  ·  build</text>
 
+  <!-- ── LINK PILLS ────────────────────────────────────────────────────── -->
   ${linkPills}
 
-  <circle cx="${OFW_DOT_X}" cy="55.5" r="4" fill="${c.accent}" class="subtle-glow"/>
-  <text x="${OFW_DOT_X + 12}" y="59.5" font-family="'Courier New', Consolas, monospace" font-size="10.5" font-weight="700" fill="${c.accent}">OFW</text>
+  <!-- ── OFW STATUS (pulsing dot — visual rhyme with badge dot in header) -->
+  <circle cx="${OFW_DOT_X}" cy="${TAG_Y + 13}" r="4" fill="${c.accent}" class="ofw-dot"/>
+  <text x="${OFW_DOT_X + 13}" y="${TAG_Y + 17}"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="10.5" font-weight="700"
+        fill="${c.accent}" letter-spacing="1">OFW</text>
 
-  <text x="${BRAND_X}" y="59.5" text-anchor="end" font-family="'Courier New', Consolas, monospace" font-size="12" font-weight="700" fill="${c.text}">Kyrell Santillan</text>
-  
-  <rect x="0" y="0" width="1" height="${H}" fill="${c.border}"/>
+  <!-- ── BRAND NAME (typography rhyme — mirrors hero name in header) ────── -->
+  <text x="${BRAND_X}" y="${TAG_Y + 17}" text-anchor="end"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="12" font-weight="800"
+        fill="${c.text}" letter-spacing="0.5">Kyrell Santillan</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ──────── -->
+  <rect x="0" y="0" width="${STRIP_W}" height="${H}" fill="${c.accent}" opacity="0.7"/>
+
+  <!-- Card border -->
   <rect x="${W - 1}" y="0" width="1" height="${H}" fill="${c.border}"/>
   <rect y="0" width="${W}" height="1" fill="${c.border}"/>
   <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
+
 </g>
 </svg>`;
 
