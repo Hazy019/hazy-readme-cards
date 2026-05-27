@@ -33,77 +33,88 @@ export default async function handler(req) {
   const W = 900;
   const PAD_X = 28;
 
-  // ── DYNAMIC GITHUB FETCH ───────────────────────────────────────────────────
   let topLanguages = [];
-  try {
-    const response = await fetch("https://api.github.com/graphql", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`, // <-- MATCHES YOUR VERCEL ENVIRONMENT VARIABLE
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: `
-          query {
-            viewer {
-              repositories(first: 100, ownerAffiliations: OWNER, isFork: false) {
-                nodes {
-                  languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
-                    edges {
-                      size
-                      node {
-                        name
-                        color
+  let debugError = null;
+
+  // Check if token exists in environment at all
+  if (!process.env.GITHUB_TOKEN) {
+    debugError = "ERROR: process.env.GITHUB_TOKEN is completely undefined in Vercel!";
+  } else {
+    try {
+      const response = await fetch("https://api.github.com/graphql", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`,
+          "Content-Type": "application/json",
+          "User-Agent": "Vercel-Edge-Fetch"
+        },
+        body: JSON.stringify({
+          query: `
+            query {
+              viewer {
+                repositories(first: 100, ownerAffiliations: OWNER, isFork: false) {
+                  nodes {
+                    languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+                      edges {
+                        size
+                        node {
+                          name
+                          color
+                        }
                       }
                     }
                   }
                 }
               }
             }
-          }
-        `
-      })
-    });
-
-    const json = await response.json();
-    const repos = json.data?.viewer?.repositories?.nodes || [];
-    
-    const langMap = {};
-    let totalSize = 0;
-
-    repos.forEach(repo => {
-      repo.languages?.edges?.forEach(edge => {
-        const name = edge.node.name;
-        const size = edge.size;
-        totalSize += size;
-        if (!langMap[name]) {
-          langMap[name] = { name, size, color: edge.node.color || c.accent };
-        } else {
-          langMap[name].size += size;
-        }
+          `
+        })
       });
-    });
 
-    topLanguages = Object.values(langMap)
-      .sort((a, b) => b.size - a.size)
-      .slice(0, 4)
-      .map(lang => ({
-        name: lang.name,
-        pct: totalSize > 0 ? Math.round((lang.size / totalSize) * 100) : 0,
-        color: lang.color
-      }));
-  } catch (err) {
-    console.error("Failed fetching live stats, rolling back to fallback placeholders", err);
+      const json = await response.json();
+      
+      if (json.errors) {
+        debugError = `GitHub API Error: ${json.errors[0].message}`;
+      } else {
+        const repos = json.data?.viewer?.repositories?.nodes || [];
+        const langMap = {};
+        let totalSize = 0;
+
+        repos.forEach(repo => {
+          repo.languages?.edges?.forEach(edge => {
+            const name = edge.node.name;
+            const size = edge.size;
+            totalSize += size;
+            if (!langMap[name]) {
+              langMap[name] = { name, size, color: edge.node.color || c.accent };
+            } else {
+              langMap[name].size += size;
+            }
+          });
+        });
+
+        topLanguages = Object.values(langMap)
+          .sort((a, b) => b.size - a.size)
+          .slice(0, 4)
+          .map(lang => ({
+            name: lang.name,
+            pct: totalSize > 0 ? Math.round((lang.size / totalSize) * 100) : 0,
+            color: lang.color
+          }));
+      }
+    } catch (err) {
+      debugError = `System Catch Error: ${err.message}`;
+    }
+  }
+
+  // If there was a failure, use placeholders but note it down
+  if (topLanguages.length === 0) {
     topLanguages = [
       { name: "TypeScript", pct: 45, color: "#3178c6" },
       { name: "Python", pct: 30, color: "#3572A5" },
       { name: "JavaScript", pct: 15, color: "#f1e05a" },
       { name: "CSS", pct: 10, color: "#563d7c" }
     ];
-  }
-
-  if (topLanguages.length === 0) {
-    topLanguages = [{ name: "No Repository Data", pct: 100, color: c.dim }];
   }
 
   // ── RENDER DYNAMIC DATA ────────────────────────────────────────────────────
@@ -118,12 +129,10 @@ export default async function handler(req) {
 
     barsSVG += `
       <rect x="${PAD_X}" y="${y - 14}" width="${W - (PAD_X * 2)}" height="22" rx="3" fill="${c.bg}" opacity="0.1"/>
-      <text x="${PAD_X + LABEL_W}" y="${y}" text-anchor="end"
-            font-family="monospace" font-size="12" font-weight="700" fill="${c.text}">${lang.name}</text>
+      <text x="${PAD_X + LABEL_W}" y="${y}" text-anchor="end" font-family="monospace" font-size="12" font-weight="700" fill="${c.text}">${lang.name}</text>
       <rect x="${BAR_X}" y="${y - 9}" width="${BAR_MAX_W}" height="10" rx="2" fill="${dark ? c.border2 : c.border}"/>
       <rect x="${BAR_X}" y="${y - 9}" width="${pixelWidth}" height="10" rx="2" fill="${lang.color}"/>
-      <text x="${BAR_X + BAR_MAX_W + 12}" y="${y}"
-            font-family="'Courier New',Consolas,monospace" font-size="11" font-weight="bold" fill="${c.muted}">${lang.pct}%</text>
+      <text x="${BAR_X + BAR_MAX_W + 12}" y="${y}" font-family="monospace" font-size="11" font-weight="bold" fill="${c.muted}">${lang.pct}%</text>
     `;
   });
 
@@ -133,61 +142,52 @@ export default async function handler(req) {
   const TAGS_Y = LABEL_Y + 16;
 
   const tags = ["Next.js 16", "React 19", "FastAPI", "Tailwind v4", "AWS Lambda", "FFmpeg", "CyberSecurity"];
-  
   let tagEls = "";
   let currentX = PAD_X;
   let currentY = TAGS_Y;
 
   tags.forEach((tag) => {
-    const approxCharWidth = 7.2;
-    const paddingX = 14;
-    const boxW = Math.round((tag.length * approxCharWidth) + paddingX);
-    
-    if (currentX + boxW > W - PAD_X) {
-      currentX = PAD_X;
-      currentY += 28;
-    }
-
+    const boxW = Math.round((tag.length * 7.2) + 14);
+    if (currentX + boxW > W - PAD_X) { currentX = PAD_X; currentY += 28; }
     tagEls += `
       <rect x="${currentX}" y="${currentY}" width="${boxW}" height="20" rx="4" fill="${c.tagBg}" stroke="${c.tagBdr}" stroke-width="0.5"/>
-      <text x="${currentX + (boxW / 2)}" y="${currentY + 13}" text-anchor="middle"
-            font-family="'Courier New',Consolas,monospace" font-size="10.5" font-weight="700" fill="${c.tagText}">${tag}</text>
+      <text x="${currentX + (boxW / 2)}" y="${currentY + 13}" text-anchor="middle" font-family="monospace" font-size="10.5" font-weight="700" fill="${c.tagText}">${tag}</text>
     `;
     currentX += boxW + 8;
   });
 
-  const FINAL_H = currentY + 36;
+  const FINAL_H = currentY + 56; // added extra height padding for debug log layout
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${FINAL_H}" viewBox="0 0 ${W} ${FINAL_H}">
-<defs>
-  <clipPath id="bc"><rect width="${W}" height="${FINAL_H}" rx="8"/></clipPath>
-</defs>
-<g clip-path="url(#bc)">
+<g>
   <rect width="${W}" height="${FINAL_H}" fill="${c.bg}"/>
   <rect x="0" y="0" width="${W}" height="${FINAL_H}" fill="none" stroke="${c.border}" stroke-width="1" opacity="0.3"/>
 
-  <text x="${PAD_X}" y="20" font-family="'Courier New',Consolas,monospace"
-        font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// AUTOMATED REPO LANGUAGES PROFILE</text>
+  <text x="${PAD_X}" y="20" font-family="monospace" font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// AUTOMATED REPO LANGUAGES PROFILE</text>
   <line x1="${PAD_X}" y1="24" x2="${W - PAD_X}" y2="24" stroke="${c.border}" stroke-width="0.5"/>
-
-  <text x="${PAD_X + LABEL_W}" y="40" text-anchor="end" font-family="'Courier New',Consolas,monospace" font-size="9" fill="${c.dim}">CORE CORE</text>
-  <text x="${BAR_X}" y="40" font-family="'Courier New',Consolas,monospace" font-size="9" fill="${c.dim}">GIT PROFILE DISTRIBUTION</text>
 
   ${barsSVG}
 
   <line x1="${PAD_X}" y1="${SEP_Y}" x2="${W - PAD_X}" y2="${SEP_Y}" stroke="${c.border}" stroke-width="0.5"/>
-  <text x="${PAD_X}" y="${LABEL_Y}" font-family="'Courier New',Consolas,monospace" font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// CORE STACK DEPLOYMENTS</text>
+  <text x="${PAD_X}" y="${LABEL_Y}" font-family="monospace" font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// CORE STACK DEPLOYMENTS</text>
 
   ${tagEls}
 
-  <rect x="0" y="0" width="${STRIP_W}" height="${FINAL_H}" fill="${c.accent}" opacity="0.7"/>
+  ${debugError ? `
+    <rect x="${PAD_X}" y="${FINAL_H - 32}" width="${W - (PAD_X * 2)}" height="20" rx="4" fill="#441515" stroke="#ea6060" stroke-width="0.5"/>
+    <text x="${PAD_X + 10}" y="${FINAL_H - 19}" font-family="monospace" font-size="10" font-weight="bold" fill="#ea6060">${debugError}</text>
+  ` : `
+    <text x="${PAD_X}" y="${FINAL_H - 15}" font-family="monospace" font-size="9" fill="#39d353">✓ API TOKEN CONNECTED SUCCESSFULLY</text>
+  `}
+
+  <rect x="0" y="0" width="${STRIP_W}" height="${FINAL_H}" fill="${debugError ? '#ea6060' : c.accent}" opacity="0.7"/>
 </g>
 </svg>`;
 
   return new Response(svg, {
     headers: {
       "Content-Type": "image/svg+xml",
-      "Cache-Control": "public, max-age=1800, s-maxage=1800, stale-while-revalidate=600",
+      "Cache-Control": "no-cache, no-store, must-revalidate", // Strict local testing header override
     },
   });
 }
