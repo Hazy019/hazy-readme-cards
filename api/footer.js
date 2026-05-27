@@ -33,11 +33,12 @@ export default async function handler(req) {
   const H = 84; 
   const PAD_X = 28;
 
-  const LINKS = [
-    { label: "LinkedIn", url: "https://linkedin.com/in/kyrell-santillan" },
-    { label: "GitHub",   url: "https://github.com/Hazy019" },
-    { label: "Discord",  url: "https://discord.gg/Hazy019" },
-    { label: "Website",  url: "https://hazy.codedevs.com" }
+ const LINKS = [
+  { label: "LinkedIn", url: "https://linkedin.com/in/kyrell-santillan" },
+  { label: "GitHub",   url: "https://github.com/Hazy019" },
+  { label: "Discord",  url: "https://discord.gg/Hazy019" },
+  { label: "Website",  url: "https://hazy.codedevs.com" },
+  { label: "⚙️ Source Engine", url: "https://github.com/Hazy019/hazy-readme-cards" } 
   ];
 
   let currentX = PAD_X;
