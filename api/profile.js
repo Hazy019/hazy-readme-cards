@@ -235,34 +235,7 @@ export default async function handler(req) {
         font-family="'Courier New',Consolas,monospace"
         font-size="9.5" font-weight="700" fill="${c.tagBFg}">UTC+8 · PH</text>`;
 
-  // ── SEPARATOR ──────────────────────────────────────────────────────────────
-  const SEP_Y = Math.max(BUL_Y2 + 20, TAG_Y + TAG_H + 20);
-
-  // ── TOP LANGUAGES ──────────────────────────────────────────────────────────
-  const LANG_SY = SEP_Y + 16;
-  const LABEL_W = 136;
-  const LBAR_X = L_X + LABEL_W + 10;
-  const LBAR_W = W - LBAR_X - 56;
-  const LANG_ROW_H = 30;
-
-  const langSVG = langs.map(({ name, pct }, i) => {
-    const ry = LANG_SY + 16 + i * LANG_ROW_H;
-    const fw = Math.round((pct / 100) * LBAR_W);
-    const col = LANG_COLORS[name] || LANG_COLORS.default;
-    return `
-  <text x="${L_X + LABEL_W}" y="${ry}" text-anchor="end"
-        font-family="'Courier New',Consolas,monospace" font-size="11" fill="${c.muted}">${name}</text>
-  <!-- Track -->
-  <rect x="${LBAR_X}" y="${ry - 10}" width="${LBAR_W}" height="8" rx="4" fill="${c.border2}"/>
-  <!-- Fill -->
-  <rect x="${LBAR_X}" y="${ry - 10}" width="${fw}" height="8" rx="4" fill="${col}"/>
-  <!-- Sheen (depth — same treatment as skill bars) -->
-  <rect x="${LBAR_X}" y="${ry - 10}" width="${fw}" height="3.5" rx="1.5" fill="white" opacity="${dark ? "0.12" : "0.30"}"/>
-  <text x="${LBAR_X + LBAR_W + 8}" y="${ry}" text-anchor="end"
-        font-family="'Courier New',Consolas,monospace" font-size="10" fill="${c.dim}">${pct}%</text>`;
-  }).join("");
-
-  const H = LANG_SY + 16 + langs.length * LANG_ROW_H + 20;
+  const H = Math.max(BUL_Y2 + 20, TAG_Y + TAG_H + 20);
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
@@ -276,9 +249,9 @@ export default async function handler(req) {
     </feMerge>
   </filter>
   <!-- Column divider gradient: solid top → transparent bottom (depth) -->
-  <linearGradient id="divGrad" x1="0" y1="0" x2="0" y2="1"
+  <linearGradient id="divGrad" x1="0" x2="0"
                   gradientUnits="userSpaceOnUse"
-                  y1="${UND_Y}" y2="${SEP_Y - 12}">
+                  y1="${UND_Y}" y2="${H - 12}">
     <stop offset="0%"   stop-color="${c.accent}" stop-opacity="0.6"/>
     <stop offset="100%" stop-color="${c.accent}" stop-opacity="0"/>
   </linearGradient>
@@ -312,12 +285,12 @@ export default async function handler(req) {
         font-family="'Courier New',Consolas,monospace" font-size="11" fill="${c.dim}">Next.js · React · Flask · PostgreSQL · Python</text>
 
   <!-- ── COLUMN DIVIDER (gradient fade — depth) ───────────────────────── -->
-  <rect x="${DIVX}" y="${UND_Y}" width="1" height="${SEP_Y - 12 - UND_Y}"
+  <rect x="${DIVX}" y="${UND_Y}" width="1" height="${H - 12 - UND_Y}"
         fill="url(#divGrad)"/>
 
   <!-- ── RIGHT: GITHUB STATS ───────────────────────────────────────────── -->
   <!-- Tinted card background (depth layer — elevation panel) -->
-  <rect x="${CARD_X}" y="${CARD_Y}" width="${CARD_W}" height="${SEP_Y}"
+  <rect x="${CARD_X}" y="${CARD_Y}" width="${CARD_W}" height="${H}"
         fill="${c.bg2}" opacity="${dark ? "0.6" : "0.5"}"/>
 
   <!-- Section label -->
@@ -329,15 +302,6 @@ export default async function handler(req) {
 
   ${statsSVG}
   ${metaSVG}
-
-  <!-- ── FULL-WIDTH SEPARATOR + LANGUAGES ──────────────────────────────── -->
-  <line x1="${L_X}" y1="${SEP_Y}" x2="${R_END}" y2="${SEP_Y}"
-        stroke="${c.border}" stroke-width="0.5"/>
-  <text x="${L_X}" y="${SEP_Y + 14}"
-        font-family="'Courier New',Consolas,monospace"
-        font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// TOP LANGUAGES</text>
-
-  ${langSVG}
 
   <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ────────── -->
   <rect x="0" y="0" width="${STRIP_W}" height="${H}" fill="${c.accent}" opacity="0.7"/>
