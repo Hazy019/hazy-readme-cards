@@ -41,9 +41,9 @@ export default async function handler(req) {
 
   // Typing lines — rotate through these with CSS animation
   const LINES = [
-    `&gt;_Staging: Web Designer | Frontend Engineer | Next.js`,
-    `&gt;_Pipeline: Building real products since 2024`,
-    `&gt;_Target: CyberSecurity | Open for Work &middot; PHT UTC+8`,
+    `>_Staging: Web Designer | Frontend Engineer | Next.js`,
+    `>_Pipeline: Building real products since 2024`,
+    `>_Target: CyberSecurity | Open for Work · PHT UTC+8`,
   ];
   const LINE_DUR = 4; // seconds each line is visible
   const TOTAL   = LINES.length * LINE_DUR;
