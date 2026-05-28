@@ -102,6 +102,7 @@ export default async function handler(req) {
         tagBg:   "#12151b",
         tagText: "#8b949e",
         tagBdr:  "#30363d",
+        shimmer: "0.12"
       }
     : {
         bg:      "#fcfbf9",
@@ -114,6 +115,7 @@ export default async function handler(req) {
         tagBg:   "#f5f2eb",
         tagText: "#57606a",
         tagBdr:  "#e5e1d8",
+        shimmer: "0.35"
       };
 
   const { langs, totalBytes, source } = await fetchEngineData();
@@ -198,7 +200,7 @@ export default async function handler(req) {
   const badgesSVG = renderFluidBadgeRow(techStack.slice(0, PER_ROW), TAGS_Y)
                   + renderFluidBadgeRow(techStack.slice(PER_ROW), TAGS_Y + TAG_H + TAG_GAP);
 
-  const FINAL_H = GRID_START_Y + (2 * TAG_H) + TAG_GAP + 24;
+  const FINAL_H = TAGS_Y + 2 * (TAG_H + TAG_GAP) + 16;
 
   // ── SVG Assembly ───────────────────────────────────────────────────────────
   return new Response(`
