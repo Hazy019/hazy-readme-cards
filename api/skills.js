@@ -1,9 +1,32 @@
 export const config = { runtime: "edge" };
 
+const USERNAME = "Hazy019";
+
+// Dictates clean display naming conventions for raw GitHub topic strings
+const TOPIC_MAP = {
+  "typescript": "TypeScript",
+  "python": "Python",
+  "nextjs": "Next.js",
+  "react": "React",
+  "tailwindcss": "Tailwind",
+  "flask": "Flask",
+  "postgresql": "PostgreSQL",
+  "pyqt6": "PyQt6",
+  "figma": "Figma",
+  "git": "Git",
+  "cybersecurity": "CyberSec",
+  "javascript": "JavaScript",
+  "html": "HTML",
+  "css": "CSS"
+};
+
+// Fallback stack if API limits or network issues occur
+const FALLBACK_TAGS = ["Python", "Next.js", "React", "Tailwind", "Flask", "PostgreSQL", "Figma", "Git", "CyberSec", "TypeScript", "JavaScript", "CSS", "HTML"];
+
 export default async function handler(req) {
   const dark = new URL(req.url).searchParams.get("theme") !== "light";
 
-  // ── Design tokens (Perfectly matched to profile.js & header.js) ──────────
+  // ── Design Tokens (Mirrors header.js and profile.js exactly) ──────────────
   const c = dark
     ? {
         bg:      "#0a0c10",
@@ -13,11 +36,9 @@ export default async function handler(req) {
         border:  "#30363d",
         border2: "#21262d",
         accent:  "#39d353",
-        mid:     "#79c0ff",
         tagBg:   "#12151b",
         tagText: "#8b949e",
         tagBdr:  "#30363d",
-        shimmer: "0.12"
       }
     : {
         bg:      "#fcfbf9",
@@ -27,146 +48,117 @@ export default async function handler(req) {
         border:  "#e5e1d8",
         border2: "#d4cdbc",
         accent:  "#16a34a",
-        mid:     "#0550ae",
         tagBg:   "#f5f2eb",
         tagText: "#57606a",
         tagBdr:  "#e5e1d8",
-        shimmer: "0.35"
       };
 
-  const STRIP_W = 3; 
+  const W = 900;
+  const PAD_X = 28; // Standardized grid padding
+  const STRIP_W = 3;
 
-  // ── 1. Curated Skills Portfolio ────────────────────────────────────────────
-  // Free from GitHub API limitations, allowing you to showcase tools like Figma
-  const skills = [
-    { label: "CSS / Tailwind", pct: 88, tier: "expert" },
-    { label: "Figma / UI",     pct: 80, tier: "expert" },
-    { label: "React",          pct: 75, tier: "expert" },
-    { label: "Python",         pct: 72, tier: "strong" },
-    { label: "Next.js",        pct: 70, tier: "strong" },
-    { label: "JavaScript",     pct: 68, tier: "strong" },
-    { label: "Flask",          pct: 58, tier: "strong" },
-    { label: "PostgreSQL",     pct: 52, tier: "growing" },
-    { label: "CyberSec",       pct: 45, tier: "growing" },
-  ];
+  // ── Automated Data Pipeline ───────────────────────────────────────────────
+  let displayTags = [];
+  let dataSource = "LIVE · Topics Engine";
 
-  const tierColor = {
-    expert:  c.accent,
-    strong:  c.mid,
-    growing: c.muted,
-  };
+  try {
+    const token = typeof globalThis !== "undefined" && globalThis.GITHUB_TOKEN;
+    const hdrs = { 
+      "User-Agent": "hazy-skills-engine/3.0", 
+      Accept: "application/vnd.github.v3+json",
+      ...(token && { Authorization: `Bearer ${token}` })
+    };
 
-  // ── 2. Technology Stack ────────────────────────────────────────────────────
-  const tags = [
-    "Python", "HTML", "CSS", "JavaScript", "React",
-    "Next.js", "Tailwind", "Flask", "PostgreSQL", "PyQt6",
-    "Figma", "Git", "CyberSec",
-  ];
+    const res = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=60&type=owner`, { headers: hdrs });
+    
+    if (!res.ok) throw new Error("API_LIMIT_OR_ERROR");
+    
+    const repos = await res.json();
+    
+    if (Array.isArray(repos)) {
+      const topicCounts = {};
+      
+      // Extract and tally topics across all active repositories
+      repos.forEach(repo => {
+        if (repo.topics && Array.isArray(repo.topics)) {
+          repo.topics.forEach(t => {
+            const normalized = t.toLowerCase();
+            topicCounts[normalized] = (topicCounts[normalized] || 0) + 1;
+          });
+        }
+      });
 
-  // ── Layout Mathematics ─────────────────────────────────────────────────────
-  const W       = 900;
-  const PAD_X   = 24;
-  const LABEL_W = 140;
-  const BAR_X   = PAD_X + LABEL_W + 16;
-  const BAR_W   = W - BAR_X - 60;
-  const PCT_X   = BAR_X + BAR_W + 12;
-  const ROW_H   = 28;
-  const START_Y = 56;
+      // Sort tags based on frequency of occurrence in codebases
+      const sortedTopics = Object.entries(topicCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([topic]) => TOPIC_MAP[topic] || topic.charAt(0).toUpperCase() + topic.slice(1));
 
-  // Render Proficiency Bars
-  const barsSVG = skills.map((s, i) => {
-    const y = START_Y + i * ROW_H;
-    const fw = Math.round((s.pct / 100) * BAR_W);
-    const fill = tierColor[s.tier];
-    return `
-  <text x="${PAD_X + LABEL_W}" y="${y + 10}" text-anchor="end"
-        font-family="'Courier New',Consolas,monospace"
-        font-size="11.5" font-weight="600" fill="${c.text}">${s.label}</text>
-  
-  <rect x="${BAR_X}" y="${y + 2}" width="${BAR_W}" height="8" rx="4" fill="${c.border2}"/>
-  <rect x="${BAR_X}" y="${y + 2}" width="${fw}" height="8" rx="4" fill="${fill}"/>
-  <rect x="${BAR_X}" y="${y + 2}" width="${fw}" height="3.5" rx="1.5" fill="white" opacity="${c.shimmer}"/>
-  
-  <text x="${PCT_X}" y="${y + 10}"
-        font-family="'Courier New',Consolas,monospace"
-        font-size="10" font-weight="600" fill="${c.dim}">${s.pct}%</text>`;
-  }).join("");
+      // Merge with map definitions to clean up missing items, keeping unique entries
+      displayTags = [...new Set([...sortedTopics, ...Object.values(TOPIC_MAP)])].slice(0, 14);
+    }
+  } catch (err) {
+    displayTags = FALLBACK_TAGS;
+    dataSource = "CACHED · System Fallback";
+  }
 
-  // Render Legend
-  const LEG_Y = START_Y + skills.length * ROW_H + 10;
-  const legendSVG = [
-    { label: "Expert",  color: c.accent },
-    { label: "Strong",  color: c.mid },
-    { label: "Growing", color: c.muted },
-  ].map(({ label, color }, i) => {
-    const lx = PAD_X + i * 110;
-    return `
-  <circle cx="${lx + 4}" cy="${LEG_Y - 3}" r="3.5" fill="${color}"/>
-  <text x="${lx + 14}" y="${LEG_Y}"
-        font-family="'Courier New',Consolas,monospace"
-        font-size="9" font-weight="700" fill="${c.dim}">${label}</text>`;
-  }).join("");
+  if (!displayTags || displayTags.length === 0) {
+    displayTags = FALLBACK_TAGS;
+  }
 
-  // Render Technology Badges
+  // ── Layout Calculations ────────────────────────────────────────────────────
+  const TAG_H = 26;
   const TAG_GAP = 8;
-  const TAG_H   = 26;
-  const PER_ROW = 7;
-  const SEP_Y   = LEG_Y + 20;
-  const LABEL_Y = SEP_Y + 20;
-  const TAGS_Y  = LABEL_Y + 16;
-  
-  function fullStretchRow(items, yPos) {
+  const PER_ROW = Math.ceil(displayTags.length / 2); // Dynamically balancing grid rows
+
+  const HDR_Y = 22;
+  const GRID_START_Y = HDR_Y + 20;
+
+  // Generates fluid rows that expand to full width smoothly
+  function generateFlexibleRow(items, yPos) {
     const n = items.length;
-    const total_gap = TAG_GAP * (n - 1);
-    const tw = Math.floor((W - PAD_X * 2 - total_gap) / n);
-    return items.map((t, i) => {
-      const x = PAD_X + i * (tw + TAG_GAP);
+    const totalGaps = TAG_GAP * (n - 1);
+    const usableWidth = W - (PAD_X * 2);
+    const itemWidth = Math.floor((usableWidth - totalGaps) / n);
+
+    return items.map((tag, i) => {
+      const x = PAD_X + i * (itemWidth + TAG_GAP);
       return `
-  <rect x="${x}" y="${yPos}" width="${tw}" height="${TAG_H}" rx="13"
+  <rect x="${x}" y="${yPos}" width="${itemWidth}" height="${TAG_H}" rx="4"
         fill="${c.tagBg}" stroke="${c.tagBdr}" stroke-width="0.5"/>
-  <circle cx="${x + 12}" cy="${yPos + 13}" r="2.5" fill="${c.accent}" opacity="0.45"/>
-  <text x="${x + 22 + (tw - 22) / 2}" y="${yPos + 17}" text-anchor="middle"
-        font-family="'Courier New',Consolas,monospace"
-        font-size="10.5" font-weight="600" fill="${c.tagText}">${t}</text>`;
+  <circle cx="${x + 12}" cy="${yPos + 13}" r="2.5" fill="${c.accent}" opacity="0.6"/>
+  <text x="${x + 22 + (itemWidth - 22) / 2}" y="${yPos + 16.5}" text-anchor="middle"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="10.5" font-weight=\"700\" fill="${c.tagText}">${tag}</text>`;
     }).join("");
   }
 
-  const tagEls = fullStretchRow(tags.slice(0, PER_ROW), TAGS_Y)
-               + fullStretchRow(tags.slice(PER_ROW), TAGS_Y + TAG_H + TAG_GAP);
+  const row1 = generateFlexibleRow(displayTags.slice(0, PER_ROW), GRID_START_Y);
+  const row2 = generateFlexibleRow(displayTags.slice(PER_ROW), GRID_START_Y + TAG_H + TAG_GAP);
 
-  const FINAL_H = TAGS_Y + 2 * (TAG_H + TAG_GAP) + 16;
+  const FINAL_H = GRID_START_Y + (2 * TAG_H) + TAG_GAP + 24;
 
-  // ── SVG Assembly ───────────────────────────────────────────────────────────
+  // ── SVG Canvas Output ──────────────────────────────────────────────────────
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${FINAL_H}" viewBox="0 0 ${W} ${FINAL_H}">
 <defs>
-  <clipPath id="sc"><rect width="${W}" height="${FINAL_H}"/></clipPath>
+  <clipPath id=\"cardClip\"><rect width="${W}" height="${FINAL_H}"/></clipPath>
 </defs>
-<g clip-path="url(#sc)">
+<g clip-path="url(#cardClip)">
 
   <rect width="${W}" height="${FINAL_H}" fill="${c.bg}"/>
   <rect width="${W}" height="0.5" fill="${c.border}"/>
 
-  <text x="${PAD_X}" y="20"
-        font-family="'Courier New',Consolas,monospace"
-        font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// SKILLS &amp; STACK</text>
-  <line x1="${PAD_X}" y1="28" x2="${W - PAD_X}" y2="28" stroke="${c.border}" stroke-width="0.5"/>
+  <text x="${PAD_X}" y="${HDR_Y}"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// AUTOMATED TECH STACK DEPLOYMENT</text>
+  
+  <text x="${W - PAD_X}" y="${HDR_Y}" text-anchor="end"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="8" font-weight="700" fill="${dark ? c.accent : c.muted}" opacity="0.7">${dataSource}</text>
 
-  <text x="${PAD_X + LABEL_W}" y="44" text-anchor="end"
-        font-family="'Courier New',Consolas,monospace"
-        font-size="8.5" letter-spacing="1" fill="${c.dim}">SKILL</text>
-  <text x="${BAR_X}" y="44"
-        font-family="'Courier New',Consolas,monospace"
-        font-size="8.5" letter-spacing="1" fill="${c.dim}">PROFICIENCY</text>
+  <line x1="${PAD_X}" y1="${HDR_Y + 8}" x2="${W - PAD_X}" y2="${HDR_Y + 8}" stroke="${c.border}" stroke-width="0.5"/>
 
-  ${barsSVG}
-  ${legendSVG}
-
-  <line x1="${PAD_X}" y1="${SEP_Y}" x2="${W - PAD_X}" y2="${SEP_Y}" stroke="${c.border}" stroke-width="0.5"/>
-  <text x="${PAD_X}" y="${LABEL_Y}"
-        font-family="'Courier New',Consolas,monospace"
-        font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// TECHNOLOGIES</text>
-
-  ${tagEls}
+  ${row1}
+  ${row2}
 
   <rect x="0" y="0" width="${STRIP_W}" height="${FINAL_H}" fill="${c.accent}" opacity="0.7"/>
   <rect y="${FINAL_H - 1}" width="${W}" height="1" fill="${c.border}"/>
@@ -177,8 +169,7 @@ export default async function handler(req) {
   return new Response(svg, {
     headers: {
       "Content-Type": "image/svg+xml",
-      // Very long cache since this data is static and manual
-      "Cache-Control": "public, max-age=86400, s-maxage=86400",
+      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=1800",
     },
   });
 }
