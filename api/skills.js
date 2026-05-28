@@ -1,14 +1,8 @@
 export const config = { runtime: "edge" };
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  SKILLS.JS — Dynamic GitHub Language Intelligence
-//  Endpoint: /api/skills
-//  Fetches real language bytes from GitHub API.
-//  Edge Runtime: token is accessed via globalThis (not process.env).
-// ─────────────────────────────────────────────────────────────────────────────
-
 const USERNAME = "Hazy019";
 
+// ── Language colour map ──────────────────────────────────────────────────────
 const LANG_META = {
   TypeScript:  { color: "#3178c6" },
   Python:      { color: "#3572a5" },
@@ -21,46 +15,39 @@ const LANG_META = {
   default:     { color: "#8b949e" },
 };
 
-const FALLBACK_LANGS = [
+// ── Fallback data (shown when GitHub is unreachable) ────────────────────────
+const FB_LANGS   = [
   { name: "TypeScript",  bytes: 41000 },
   { name: "Python",      bytes: 36000 },
   { name: "CSS",         bytes: 11000 },
   { name: "JavaScript",  bytes:  7000 },
   { name: "HTML",        bytes:  3200 },
 ];
-const FALLBACK_REPOS   = 12;
-const FALLBACK_STARS   = 4;
-const FALLBACK_COMMITS = 265;
+const FB_REPOS   = 12;
+const FB_STARS   = 4;
+const FB_COMMITS = 265;
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
 function fmtBytes(b) {
   if (b >= 1_000_000) return `${(b / 1_000_000).toFixed(1)}MB`;
   if (b >= 1_000)     return `${Math.round(b / 1_000)}KB`;
   return `${b}B`;
 }
 
-// ── Edge-safe token access ───────────────────────────────────────────────────
-//  Vercel Edge Runtime does NOT expose process.env.
-//  Environment variables are injected directly into globalThis.
+/** Edge-safe token: Vercel injects env vars as globals, not process.env. */
 function getToken() {
-  try {
-    // Vercel Edge Runtime: variables are top-level globals
-    if (typeof GITHUB_TOKEN !== "undefined") return GITHUB_TOKEN;
-  } catch {}
-  try {
-    // Node.js / local dev fallback
-    if (typeof process !== "undefined" && process.env?.GITHUB_TOKEN)
-      return process.env.GITHUB_TOKEN;
-  } catch {}
+  try { if (typeof GITHUB_TOKEN !== "undefined") return GITHUB_TOKEN; } catch {}
+  try { if (typeof process !== "undefined" && process.env?.GITHUB_TOKEN) return process.env.GITHUB_TOKEN; } catch {}
   return undefined;
 }
 
-// ── GitHub data fetcher ───────────────────────────────────────────────────────
+// ── GitHub data fetch ────────────────────────────────────────────────────────
 async function fetchLiveData() {
   const token = getToken();
   const base  = { "User-Agent": "hazy-readme/3.0", Accept: "application/vnd.github.v3+json" };
   const hdrs  = token ? { ...base, Authorization: `Bearer ${token}` } : base;
 
-  // ── GraphQL (authenticated — most accurate) ─────────────────────────────
+  // GraphQL path — most accurate, requires token
   if (token) {
     const q = `{
       user(login:"${USERNAME}") {
@@ -79,7 +66,7 @@ async function fetchLiveData() {
       }
     }`;
     try {
-      const res = await fetch("https://api.github.com/graphql", {
+      const res        = await fetch("https://api.github.com/graphql", {
         method: "POST",
         headers: { ...hdrs, "Content-Type": "application/json" },
         body: JSON.stringify({ query: q }),
@@ -87,8 +74,8 @@ async function fetchLiveData() {
       const { data } = await res.json();
       if (!data?.user) throw new Error("no user");
 
-      const u          = data.user;
-      const lm         = {};
+      const u     = data.user;
+      const lm    = {};
       u.repositories.nodes.forEach(r =>
         r.languages.edges.forEach(({ size, node }) => {
           lm[node.name] = (lm[node.name] || 0) + size;
@@ -100,18 +87,13 @@ async function fetchLiveData() {
         .sort(([, a], [, b]) => b - a).slice(0, 6)
         .map(([name, bytes]) => ({ name, bytes, pct: Math.round((bytes / totalBytes) * 100) }));
 
-      return {
-        langs,
-        repoCount: u.repositories.totalCount,
-        stars,
-        commits: u.contributionsCollection.totalCommitContributions,
-        totalBytes,
-        source: "graphql",
-      };
-    } catch { /* fall through to REST */ }
+      return { langs, repoCount: u.repositories.totalCount, stars,
+               commits: u.contributionsCollection.totalCommitContributions,
+               totalBytes, source: "graphql" };
+    } catch { /* fall through */ }
   }
 
-  // ── REST (unauthenticated) ─────────────────────────────────────────────
+  // REST path — unauthenticated
   try {
     const [reposRes, commitsRes] = await Promise.allSettled([
       fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&type=owner`, { headers: hdrs }),
@@ -121,24 +103,17 @@ async function fetchLiveData() {
       ),
     ]);
 
-    let repos     = [];
-    let repoCount = FALLBACK_REPOS;
-    let stars     = FALLBACK_STARS;
-    let commits   = FALLBACK_COMMITS;
-
+    let repos = [], repoCount = FB_REPOS, stars = FB_STARS, commits = FB_COMMITS;
     if (reposRes.status === "fulfilled" && reposRes.value.ok) {
       repos     = await reposRes.value.json();
-      repoCount = Array.isArray(repos) ? repos.length : FALLBACK_REPOS;
-      stars     = Array.isArray(repos)
-        ? repos.reduce((s, r) => s + (r.stargazers_count || 0), 0)
-        : FALLBACK_STARS;
+      repoCount = Array.isArray(repos) ? repos.length : FB_REPOS;
+      stars     = Array.isArray(repos) ? repos.reduce((s, r) => s + (r.stargazers_count || 0), 0) : FB_STARS;
     }
     if (commitsRes.status === "fulfilled" && commitsRes.value.ok) {
       const d = await commitsRes.value.json();
-      commits = d.total_count ?? FALLBACK_COMMITS;
+      commits = d.total_count ?? FB_COMMITS;
     }
 
-    // Per-repo language byte counts (capped at 30 repos for rate-limit safety)
     const langMap = {};
     if (repos.length > 0) {
       const results = await Promise.allSettled(
@@ -156,26 +131,18 @@ async function fetchLiveData() {
     }
 
     const totalBytes = Object.values(langMap).reduce((a, b) => a + b, 0);
-    let langs;
-    if (totalBytes > 0) {
-      langs = Object.entries(langMap)
-        .sort(([, a], [, b]) => b - a).slice(0, 6)
-        .map(([name, bytes]) => ({ name, bytes, pct: Math.round((bytes / totalBytes) * 100) }));
-    } else {
-      const fbTotal = FALLBACK_LANGS.reduce((a, l) => a + l.bytes, 0);
-      langs = FALLBACK_LANGS.map(l => ({ ...l, pct: Math.round((l.bytes / fbTotal) * 100) }));
-    }
+    const langs = totalBytes > 0
+      ? Object.entries(langMap).sort(([, a], [, b]) => b - a).slice(0, 6)
+          .map(([name, bytes]) => ({ name, bytes, pct: Math.round((bytes / totalBytes) * 100) }))
+      : FB_LANGS.map(l => ({ ...l, pct: Math.round((l.bytes / FB_LANGS.reduce((a, x) => a + x.bytes, 0)) * 100) }));
 
     return { langs, repoCount, stars, commits, totalBytes, source: "rest" };
   } catch {
-    const fbTotal = FALLBACK_LANGS.reduce((a, l) => a + l.bytes, 0);
+    const fbTotal = FB_LANGS.reduce((a, l) => a + l.bytes, 0);
     return {
-      langs:     FALLBACK_LANGS.map(l => ({ ...l, pct: Math.round((l.bytes / fbTotal) * 100) })),
-      repoCount: FALLBACK_REPOS,
-      stars:     FALLBACK_STARS,
-      commits:   FALLBACK_COMMITS,
-      totalBytes: fbTotal,
-      source:    "fallback",
+      langs:     FB_LANGS.map(l => ({ ...l, pct: Math.round((l.bytes / fbTotal) * 100) })),
+      repoCount: FB_REPOS, stars: FB_STARS, commits: FB_COMMITS,
+      totalBytes: fbTotal, source: "fallback",
     };
   }
 }
@@ -186,6 +153,7 @@ async function fetchLiveData() {
 export default async function handler(req) {
   const dark = new URL(req.url).searchParams.get("theme") !== "light";
 
+  // ── Design tokens (matches header/profile/footer exactly) ───────────────
   const c = dark
     ? {
         bg:      "#0a0c10",
@@ -196,14 +164,14 @@ export default async function handler(req) {
         dim:     "#6e7681",
         border:  "#30363d",
         border2: "#21262d",
-        accent:  "#39d353",
-        mid:     "#79c0ff",
-        cyan:    "#56d4dd",
+        accent:  "#39d353",   // green  — expert tier / primary accent
+        mid:     "#79c0ff",   // blue   — strong tier
+        cyan:    "#56d4dd",   // cyan   — code written metric
+        yellow:  "#f1c40f",   // gold   — stars metric
         tagBg:   "#12151b",
         tagText: "#8b949e",
         tagBdr:  "#30363d",
         shimmer: "0.11",
-        yellow:  "#f1c40f",
       }
     : {
         bg:      "#fcfbf9",
@@ -217,44 +185,59 @@ export default async function handler(req) {
         accent:  "#16a34a",
         mid:     "#0550ae",
         cyan:    "#0891b2",
+        yellow:  "#ca8a04",
         tagBg:   "#f5f2eb",
         tagText: "#57606a",
         tagBdr:  "#e5e1d8",
         shimmer: "0.30",
-        yellow:  "#ca8a04",
       };
 
   const { langs, repoCount, stars, commits, totalBytes, source } = await fetchLiveData();
 
-  // ── Layout ──────────────────────────────────────────────────────────────────
-  const W         = 900;
-  const PAD_X     = 28;
-  const STRIP_W   = 3;
+  // ── Layout constants ─────────────────────────────────────────────────────
+  const W        = 900;
+  const PAD_X    = 28;
+  const STRIP_W  = 3;
 
-  // §1 — Language bars (left) + Stat cards (right)
+  // §1 — two-column zone
   const SEC1_LABEL_Y = 16;
   const SEC1_LINE_Y  = 24;
-  const COLS_Y       = 44;
-  const BAR_COL_W    = 510;
-  const LABEL_W      = 118;
-  const BAR_X        = PAD_X + LABEL_W + 10;
-  const BAR_W        = BAR_COL_W - LABEL_W - 10 - 56;
-  const PCT_X        = BAR_X + BAR_W + 8;
-  const BYTE_X       = PCT_X + 38;
-  const ROW_H        = 31;
+  const COL_HEAD_Y   = 38;          // "LANGUAGE" / "BYTE DISTRIBUTION" / "REPOSITORY METRICS" labels
+  const COLS_Y       = 50;          // first data row
 
-  const R_X    = BAR_COL_W + 20;
+  const BAR_COL_W = 510;            // left column ends here
+  const LABEL_W   = 118;
+  const BAR_X     = PAD_X + LABEL_W + 10;
+  const BAR_W     = BAR_COL_W - BAR_X - 56;   // bar fill width
+  const PCT_X     = BAR_X + BAR_W + 8;
+  const BYTE_X    = PCT_X + 36;
+  const ROW_H     = 31;
+
+  const R_X    = BAR_COL_W + 20;   // right column start
   const CARD_W = W - R_X - PAD_X;
   const CARD_H = 42;
   const CARD_GAP = 10;
 
+  // Stat cards definition
   const STAT_CARDS = [
-    { label: "Repositories", value: repoCount,         icon: "⬡", color: c.accent },
-    { label: "Stars Earned",  value: stars,             icon: "★", color: c.yellow },
-    { label: "Commits 2026",  value: commits,           icon: "↑", color: c.mid    },
-    { label: "Code Written",  value: fmtBytes(totalBytes), icon: "◈", color: c.cyan  },
+    { label: "Repositories", value: repoCount,            icon: "⬡", color: c.accent },
+    { label: "Stars Earned",  value: stars,               icon: "★", color: c.yellow },
+    { label: "Commits 2026",  value: commits,             icon: "↑", color: c.mid    },
+    { label: "Code Written",  value: fmtBytes(totalBytes), icon: "◈", color: c.cyan   },
   ];
 
+  // Height of §1 = whatever is taller: lang bars or stat cards
+  const SEC1_H = COLS_Y
+    + Math.max(langs.length * ROW_H, STAT_CARDS.length * (CARD_H + CARD_GAP))
+    + 20;
+
+  // Source label
+  const sourceLabel = source === "graphql" ? "● LIVE · GraphQL"
+                    : source === "rest"    ? "● LIVE · REST"
+                    : "◌ CACHED · fallback";
+  const sourceColor = source === "fallback" ? c.dim : c.accent;
+
+  // ── §1 Language bars ──────────────────────────────────────────────────────
   const langBarsSVG = langs.map((lang, i) => {
     const meta = LANG_META[lang.name] || LANG_META.default;
     const y    = COLS_Y + i * ROW_H;
@@ -279,53 +262,43 @@ export default async function handler(req) {
     : ""}`;
   }).join("");
 
+  // ── §1 Stat cards ────────────────────────────────────────────────────────
   const statCardsSVG = STAT_CARDS.map(({ label, value, icon, color }, i) => {
     const cy = COLS_Y + i * (CARD_H + CARD_GAP);
     return `
   <rect x="${R_X}" y="${cy}" width="${CARD_W}" height="${CARD_H}" rx="6"
         fill="${c.bgCard}" stroke="${c.border}" stroke-width="0.5"/>
-  <rect x="${R_X}" y="${cy}" width="3" height="${CARD_H / 2}" rx="3"
+  <!-- Left accent bar on card — 2 separate rects avoids double-rx artifacts -->
+  <rect x="${R_X}" y="${cy + 2}"             width="3" height="${CARD_H - 4}" rx="1.5"
         fill="${color}" opacity="0.85"/>
-  <rect x="${R_X}" y="${cy + CARD_H / 2}" width="3" height="${CARD_H / 2}" rx="3"
-        fill="${color}" opacity="0.85"/>
-  <text x="${R_X + 14}" y="${cy + 14}"
+  <text x="${R_X + 14}" y="${cy + 15}"
         font-family="'Courier New',Consolas,monospace"
         font-size="11" fill="${color}" opacity="0.8">${icon}</text>
-  <text x="${R_X + 14}" y="${cy + 30}"
+  <text x="${R_X + 14}" y="${cy + 31}"
         font-family="'Courier New',Consolas,monospace"
         font-size="8.5" letter-spacing="1" fill="${c.dim}">${label.toUpperCase()}</text>
-  <text x="${R_X + CARD_W - 10}" y="${cy + 27}" text-anchor="end"
+  <text x="${R_X + CARD_W - 10}" y="${cy + 28}" text-anchor="end"
         font-family="'Courier New',Consolas,monospace"
         font-size="22" font-weight="800" fill="${color}">${value}</text>`;
   }).join("");
 
-  const SEC1_H = COLS_Y
-    + Math.max(langs.length * ROW_H, STAT_CARDS.length * (CARD_H + CARD_GAP))
-    + 16;
-
-  const sourceLabel = source === "graphql" ? "● LIVE · GraphQL"
-                    : source === "rest"    ? "● LIVE · REST"
-                    : "◌ CACHED · fallback";
-  const sourceColor = source === "fallback" ? c.dim : c.accent;
-
-  // §2 — Technology badges
-  const SEC2_Y    = SEC1_H + 6;
-  const TAGS_HEAD = SEC2_Y + 20;
-  const TAGS_Y    = TAGS_HEAD + 16;
-  const TAG_H     = 26;
-  const TAG_GAP   = 8;
-  const PER_ROW   = 7;
-
-  const tags = [
+  // ── §2 Technology badges ─────────────────────────────────────────────────
+  const TAGS = [
     "Python","HTML","CSS","JavaScript","React",
     "Next.js","Tailwind","Flask","PostgreSQL","PyQt6",
     "Figma","Git","CyberSec",
   ];
+  const TAG_H   = 26;
+  const TAG_GAP = 8;
+  const PER_ROW = 7;
 
-  function fullStretchRow(items, yPos) {
-    const n         = items.length;
-    const total_gap = TAG_GAP * (n - 1);
-    const tw        = Math.floor((W - PAD_X * 2 - total_gap) / n);
+  const SEC2_Y   = SEC1_H + 8;
+  const TAGS_HDR = SEC2_Y + 20;
+  const TAGS_Y   = TAGS_HDR + 14;
+
+  function badgeRow(items, yPos) {
+    const n   = items.length;
+    const tw  = Math.floor((W - PAD_X * 2 - TAG_GAP * (n - 1)) / n);
     return items.map((t, i) => {
       const x = PAD_X + i * (tw + TAG_GAP);
       return `
@@ -338,24 +311,26 @@ export default async function handler(req) {
     }).join("");
   }
 
-  const tagEls = fullStretchRow(tags.slice(0, PER_ROW), TAGS_Y)
-    + fullStretchRow(tags.slice(PER_ROW), TAGS_Y + TAG_H + TAG_GAP);
+  const tagEls = badgeRow(TAGS.slice(0, PER_ROW), TAGS_Y)
+               + badgeRow(TAGS.slice(PER_ROW),     TAGS_Y + TAG_H + TAG_GAP);
 
-  // §3 — Composition bar
+  // ── §3 Composition bar ───────────────────────────────────────────────────
   const SEC3_Y   = TAGS_Y + 2 * (TAG_H + TAG_GAP) + 18;
-  const COMP_HEAD = SEC3_Y + 18;
-  const COMP_Y    = COMP_HEAD + 14;
-  const COMP_H    = 10;
-  const COMP_W    = W - PAD_X * 2;
-  const LEGEND_Y  = COMP_Y + COMP_H + 14;
+  const COMP_HDR = SEC3_Y + 18;
+  const COMP_Y   = COMP_HDR + 14;
+  const COMP_H   = 10;
+  const COMP_W   = W - PAD_X * 2;
+  const LEG_Y    = COMP_Y + COMP_H + 16;
 
   let segX = PAD_X;
   const segments = langs.map((lang, i) => {
     const meta = LANG_META[lang.name] || LANG_META.default;
     const sw   = Math.max(6, Math.round((lang.pct / 100) * COMP_W));
-    const rx   = i === 0 ? 5 : (i === langs.length - 1 ? 5 : 0);
-    const el   = `<rect x="${segX}" y="${COMP_Y}" width="${sw}" height="${COMP_H}"
-          rx="${rx}" fill="${meta.color}" opacity="0.9"/>`;
+    const isFirst = i === 0;
+    const isLast  = i === langs.length - 1;
+    // rx only on the outer ends — inner joins are flush for a contiguous bar look
+    const el = `<rect x="${segX}" y="${COMP_Y}" width="${sw}" height="${COMP_H}"
+          rx="${isFirst || isLast ? 5 : 0}" fill="${meta.color}" opacity="0.9"/>`;
     segX += sw;
     return el;
   }).join("\n  ");
@@ -365,15 +340,15 @@ export default async function handler(req) {
     const lx   = PAD_X + i * 130;
     if (lx + 120 > W) return "";
     return `
-  <circle cx="${lx + 5}" cy="${LEGEND_Y - 3}" r="4" fill="${meta.color}"/>
-  <text x="${lx + 14}" y="${LEGEND_Y}"
+  <circle cx="${lx + 5}" cy="${LEG_Y - 3}" r="4" fill="${meta.color}"/>
+  <text x="${lx + 14}" y="${LEG_Y}"
         font-family="'Courier New',Consolas,monospace"
         font-size="9" fill="${c.dim}">${lang.name} ${lang.pct}%</text>`;
   }).join("");
 
-  const H = LEGEND_Y + 22;
+  const H = LEG_Y + 22;
 
-  // ── SVG ────────────────────────────────────────────────────────────────────
+  // ── SVG ───────────────────────────────────────────────────────────────────
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
 <defs>
   <clipPath id="sc"><rect width="${W}" height="${H}"/></clipPath>
@@ -385,71 +360,73 @@ export default async function handler(req) {
     <stop offset="0%"   stop-color="${c.accent}" stop-opacity="0.5"/>
     <stop offset="100%" stop-color="${c.accent}" stop-opacity="0"/>
   </linearGradient>
+  <filter id="numGlow" x="-40%" y="-60%" width="180%" height="220%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
 </defs>
 <g clip-path="url(#sc)">
 
   <rect width="${W}" height="${H}" fill="${c.bg}"/>
   <rect width="${W}" height="0.5" fill="${c.border}"/>
 
-  <!-- ══ §1 LANGUAGE ANALYSIS ══════════════════════════════════════════════ -->
+  <!-- ══ §1  LANGUAGE ANALYSIS ═══════════════════════════════════════════ -->
   <text x="${PAD_X}" y="${SEC1_LABEL_Y}"
         font-family="'Courier New',Consolas,monospace"
         font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// LANGUAGE ANALYSIS</text>
   <line x1="${PAD_X}" y1="${SEC1_LINE_Y}" x2="${W - PAD_X}" y2="${SEC1_LINE_Y}"
         stroke="${c.border}" stroke-width="0.5"/>
 
-  <!-- Right panel tint -->
-  <rect x="${R_X - 10}" y="${COLS_Y - 4}" width="${CARD_W + 20}" height="${SEC1_H - COLS_Y}"
-        fill="url(#panelGrad)" rx="4"/>
-
-  <!-- Column divider gradient line -->
-  <rect x="${BAR_COL_W + 10}" y="${SEC1_LINE_Y}" width="1" height="${SEC1_H - SEC1_LINE_Y - 8}"
-        fill="url(#divGrad)"/>
-
-  <!-- Col headers -->
-  <text x="${PAD_X}" y="${COLS_Y - 4}"
+  <!-- Column headers -->
+  <text x="${PAD_X}" y="${COL_HEAD_Y}"
         font-family="'Courier New',Consolas,monospace"
         font-size="8.5" letter-spacing="1.5" fill="${c.dim}">LANGUAGE</text>
-  <text x="${BAR_X}" y="${COLS_Y - 4}"
+  <text x="${BAR_X}" y="${COL_HEAD_Y}"
         font-family="'Courier New',Consolas,monospace"
         font-size="8.5" letter-spacing="1.5" fill="${c.dim}">BYTE DISTRIBUTION</text>
-  <text x="${R_X}" y="${COLS_Y - 4}"
+  <text x="${R_X}" y="${COL_HEAD_Y}"
         font-family="'Courier New',Consolas,monospace"
         font-size="8.5" letter-spacing="1.5" fill="${c.dim}">REPOSITORY METRICS</text>
+
+  <!-- Right panel subtle tint -->
+  <rect x="${R_X - 10}" y="${COLS_Y - 4}" width="${CARD_W + 18}" height="${SEC1_H - COLS_Y}"
+        fill="url(#panelGrad)" rx="4"/>
+
+  <!-- Column divider — fades to transparent (depth) -->
+  <rect x="${BAR_COL_W + 10}" y="${SEC1_LINE_Y}" width="1" height="${SEC1_H - SEC1_LINE_Y - 10}"
+        fill="url(#divGrad)"/>
 
   ${langBarsSVG}
   ${statCardsSVG}
 
-  <!-- Source badge -->
+  <!-- Source badge — bottom-right of §1 -->
   <text x="${W - PAD_X}" y="${SEC1_H - 4}" text-anchor="end"
         font-family="'Courier New',Consolas,monospace"
         font-size="8" letter-spacing="1" fill="${sourceColor}" opacity="0.65">${sourceLabel}</text>
 
-  <!-- ══ §2 TECHNOLOGIES ═══════════════════════════════════════════════════ -->
+  <!-- ══ §2  TECHNOLOGIES ═════════════════════════════════════════════════ -->
   <line x1="${PAD_X}" y1="${SEC2_Y}" x2="${W - PAD_X}" y2="${SEC2_Y}"
         stroke="${c.border}" stroke-width="0.5"/>
-  <text x="${PAD_X}" y="${TAGS_HEAD}"
+  <text x="${PAD_X}" y="${TAGS_HDR}"
         font-family="'Courier New',Consolas,monospace"
         font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// TECHNOLOGIES</text>
+
   ${tagEls}
 
-  <!-- ══ §3 COMPOSITION BAR ════════════════════════════════════════════════ -->
+  <!-- ══ §3  COMPOSITION BAR ══════════════════════════════════════════════ -->
   <line x1="${PAD_X}" y1="${SEC3_Y}" x2="${W - PAD_X}" y2="${SEC3_Y}"
         stroke="${c.border}" stroke-width="0.5"/>
-  <text x="${PAD_X}" y="${COMP_HEAD}"
+  <text x="${PAD_X}" y="${COMP_HDR}"
         font-family="'Courier New',Consolas,monospace"
         font-size="9" font-weight="700" letter-spacing="2" fill="${c.dim}">// COMPOSITION</text>
 
-  <!-- Track -->
   <rect x="${PAD_X}" y="${COMP_Y}" width="${COMP_W}" height="${COMP_H}" rx="5" fill="${c.border2}"/>
-  <!-- Segments -->
   ${segments}
-  <!-- Sheen -->
   <rect x="${PAD_X}" y="${COMP_Y}" width="${COMP_W}" height="4" rx="5"
         fill="white" opacity="${c.shimmer}"/>
   ${legendSVG}
 
-  <!-- ══ LEFT ACCENT STRIP (visual rhyme — every card) ════════════════════ -->
+  <!-- ══ LEFT ACCENT STRIP — visual rhyme anchor on every card ════════════ -->
   <rect x="0" y="0" width="${STRIP_W}" height="${H}" fill="${c.accent}" opacity="0.7"/>
   <rect y="${H - 1}" width="${W}" height="1" fill="${c.border}"/>
 
