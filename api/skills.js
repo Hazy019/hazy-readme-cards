@@ -6,6 +6,7 @@ export const config = { runtime: "edge" };
 
 const USERNAME = "Hazy019";
 
+// ── Language colour map ──────────────────────────────────────────────────────
 const LANG_META = {
   TypeScript:  { color: "#3178c6" },
   Python:      { color: "#3572a5" },
@@ -15,7 +16,8 @@ const LANG_META = {
   default:     { color: "#8b949e" },
 };
 
-const FALLBACK_LANGS = [
+// ── Fallback data (shown when GitHub is unreachable) ────────────────────────
+const FB_LANGS   = [
   { name: "TypeScript",  bytes: 41000 },
   { name: "Python",      bytes: 36000 },
   { name: "CSS",         bytes: 11000 },
@@ -23,6 +25,7 @@ const FALLBACK_LANGS = [
   { name: "HTML",        bytes:  3200 },
 ];
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
 function fmtBytes(b) {
   if (b >= 1_000_000) return `${(b / 1_000_000).toFixed(1)}MB`;
   if (b >= 1_000)      return `${Math.round(b / 1_000)}KB`;
