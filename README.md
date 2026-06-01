@@ -1,4 +1,3 @@
-
 # Hazy Readme Cards
 
 A collection of dynamic, terminal-inspired SVG cards designed to build a striking, cohesive GitHub profile README. Powered by Vercel Edge Functions, these cards render instantly and provide live stats, animated headers, and a unified design system.
