@@ -1,131 +1,163 @@
-# Hazy Readme Cards
+<div align="center">
 
-A collection of dynamic, terminal-inspired SVG cards designed to build a striking, cohesive GitHub profile README. Powered by Vercel Edge Functions, these cards render instantly and provide live stats, animated headers, and a unified design system.
+  <h1>Hazy Readme Cards</h1>
 
-## Features
+  <p><strong>Dynamic, terminal-inspired SVG cards engineered to build a striking, cohesive GitHub Profile README.</strong></p>
 
-* **Terminal Aesthetic**: A consistent, hacker/developer-focused design with micro-typography, terminal dots, and cohesive visual rhymes.
-* **Light & Dark Mode**: Fully responsive to GitHub's theme settings. Uses dynamic coloring based on `?theme=light` or `?theme=dark` parameters.
-* **Live GitHub Stats**: Automatically fetches and caches your total stars, commits, pull requests, issues, and top languages.
-* **Animated Elements**: Includes SMIL animations like typing effects in the header and pulsing status dots.
-* **Edge Optimized**: Built on Vercel Edge Functions for zero-cold-start, lightning-fast rendering.
+  <p>
+    <a href="https://vercel.com"><img src="https://img.shields.io/badge/Vercel-Edge_Functions-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel Edge"></a>
+    <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node 18+"></a>
+    <a href="#-theme-support"><img src="https://img.shields.io/badge/Theme-Auto_Light_%26_Dark-39d353?style=for-the-badge" alt="Theme Support"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License"></a>
+  </p>
 
-## Live Preview & Usage
+</div>
 
-To use these cards in your own GitHub `README.md`, you can host the project on your own Vercel account or use your deployed URL.
+---
 
-*(Note: Replace `https://your-deployment-url.vercel.app` with your actual Vercel project URL).*
+## Overview
 
-### 1. Header Card
-Features an animated typing effect, a simulated terminal window, and your role/location details.
+**Hazy Readme Cards** is a design system and serverless API built for developers who want a sleek, modern terminal aesthetic for their GitHub profile. Each card renders pure SVG directly from Vercel Edge Functions, delivering zero cold-start latency, crisp typography, and automatic dark/light theme switching based on user preferences.
+
+### Key Highlights
+
+* 🖥️ **Terminal Micro-Aesthetic**: Clean visual hierarchy featuring simulated zsh header controls, status indicators, and subtle glowing stats.
+* 🌗 **Native Theme Switching**: Powered by GitHub `<picture>` tags with `(prefers-color-scheme: dark)` and `(prefers-color-scheme: light)` support.
+* 📊 **Live GitHub Statistics**: Real-time integration with GitHub's GraphQL and REST APIs to fetch stars, annual commits, PRs, and top language distributions.
+* ⚡ **Edge Optimized**: Lightweight Vercel Edge Functions with smart HTTP caching headers for instant rendering.
+* 🤝 **Human-Centered Engineering**: Designed to present your professional identity, software architecture philosophy, and technical stack with clarity and warmth.
+
+---
+
+## Card Catalog & Snippets
+
+Copy and paste the markdown snippets below into your GitHub profile `README.md`. Replace `https://your-deployment-url.vercel.app` with your deployed Vercel domain.
+
+### 1. Animated Header Card
+Displays your name, primary engineering roles, location badge, and an animated rotating terminal typing sequence.
 
 ```markdown
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://your-deployment-url.vercel.app/api/header?theme=dark">
     <source media="(prefers-color-scheme: light)" srcset="https://your-deployment-url.vercel.app/api/header?theme=light">
-    <img src="https://your-deployment-url.vercel.app/api/header?theme=dark" alt="Header">
+    <img src="https://your-deployment-url.vercel.app/api/header?theme=dark" alt="Kyrell Santillan — Header Card" width="100%">
   </picture>
 </div>
 ```
 
-### 2. Profile & GitHub Stats Card
-Displays a short "About Me" section on the left and live GitHub statistics (Stars, Commits, PRs, Issues) on the right.
+---
+
+### 2. Profile & Live GitHub Stats Card
+Showcases your personal engineering philosophy, background, core tech stack, live GitHub commit counter, star count, and pull requests.
 
 ```markdown
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://your-deployment-url.vercel.app/api/profile?theme=dark">
     <source media="(prefers-color-scheme: light)" srcset="https://your-deployment-url.vercel.app/api/profile?theme=light">
-    <img src="https://your-deployment-url.vercel.app/api/profile?theme=dark" alt="Profile and Stats">
+    <img src="https://your-deployment-url.vercel.app/api/profile?theme=dark" alt="Kyrell Santillan — Profile & Stats Card" width="100%">
   </picture>
 </div>
 ```
 
-### 3. Skills & Stack Card
-Visualizes your proficiency in various technologies using physical-sheen progress bars and a grid of technology badges.
+---
+
+### 3. Skills & Technology Stack Card
+Visualizes technical skill proficiency with physical sheen progress bars and a full-width grid of technology badges.
 
 ```markdown
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://your-deployment-url.vercel.app/api/skills?theme=dark">
     <source media="(prefers-color-scheme: light)" srcset="https://your-deployment-url.vercel.app/api/skills?theme=light">
-    <img src="https://your-deployment-url.vercel.app/api/skills?theme=dark" alt="Skills and Tech Stack">
+    <img src="https://your-deployment-url.vercel.app/api/skills?theme=dark" alt="Kyrell Santillan — Skills & Stack Card" width="100%">
   </picture>
 </div>
 ```
 
-### 4. Footer / Links Card
-A sleek footer for your social and professional links, featuring a pulsing "Open For Work" (OFW) indicator.
+---
+
+### 4. Interactive Footer Links Card
+Provides visual social and portfolio links styled as terminal pills alongside a live pulsing `Open For Work` status indicator.
+
+> [!NOTE]
+> **GitHub Link Interactivity**: When SVG images are embedded in GitHub READMEs via `<img>` or `<picture>` tags, browser security rules treat them as static images and disable internal SVG `<a href>` links. To provide instant, clickable social buttons on your GitHub profile, pair the footer card with markdown link badges as shown below:
 
 ```markdown
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://your-deployment-url.vercel.app/api/footer?theme=dark">
     <source media="(prefers-color-scheme: light)" srcset="https://your-deployment-url.vercel.app/api/footer?theme=light">
-    <img src="https://your-deployment-url.vercel.app/api/footer?theme=dark" alt="Footer Links">
+    <img src="https://your-deployment-url.vercel.app/api/footer?theme=dark" alt="Kyrell Santillan — Footer Links Card" width="100%">
   </picture>
+  <br>
+  <p>
+    <a href="https://linkedin.com/in/kyrell-santillan"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"/></a>
+    <a href="https://github.com/Hazy019"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/></a>
+    <a href="https://discord.gg/Hazy019"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"/></a>
+    <a href="https://hazy.codedevs.com"><img src="https://img.shields.io/badge/Website-16A34A?style=for-the-badge&logo=googlechrome&logoColor=white"/></a>
+  </p>
 </div>
 ```
 
-### 5. Banner Card
-A minimal call-to-action banner.
+---
 
-```markdown
-<div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://your-deployment-url.vercel.app/api/banner?theme=dark">
-    <source media="(prefers-color-scheme: light)" srcset="https://your-deployment-url.vercel.app/api/banner?theme=light">
-    <img src="https://your-deployment-url.vercel.app/api/banner?theme=dark" alt="Banner">
-  </picture>
-</div>
+## Local Development & Preview Generator
+
+This project includes a local HTML preview generator that renders both **Dark Mode** and **Light Mode** SVG outputs side-by-side in your browser without requiring a full server setup.
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Hazy019/hazy-readme-cards.git
+cd hazy-readme-cards
 ```
 
-## Local Development
+### 2. Generate Local HTML Design Preview
+```bash
+node preview.mjs
+```
+> This script executes the Edge function handlers locally and generates a rendered preview at `preview/index.html`.
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Hazy019/hazy-readme-cards.git
-   cd hazy-readme-cards
-   ```
+### 3. Open preview in browser
+```bash
+# On Windows PowerShell / Command Prompt
+start preview/index.html
+```
 
-2. **Install Vercel CLI (if not already installed):**
-   ```bash
-   npm i -g vercel
-   ```
+---
 
-3. **Run the local development server:**
-   ```bash
-   vercel dev
-   ```
-   *The server will start, usually at `http://localhost:3000`.*
+## ⚙️ Customization Guide
 
-4. **Environment Variables (Optional but recommended):**
-   For the `api/profile.js` card to fetch GitHub stats reliably without hitting rate limits, you should set a `GITHUB_TOKEN` environment variable.
-   Create a `.env` file in the root:
-   ```env
-   GITHUB_TOKEN=your_github_personal_access_token_here
-   ```
+Customizing the cards for your own profile is straightforward:
 
-## Deployment
+| File | Customization Target |
+| :--- | :--- |
+| `api/header.js` | Change name, role line, status badge, and animated typing sentences (`LINES` array). |
+| `api/profile.js` | Set `USERNAME` constant, update the bio text in `ABOUT_LINES`, status tags (`CS Graduate`), and skills bullets. |
+| `api/skills.js` | Adjust skill proficiency percentages, mastery tiers (`expert`, `strong`, `growing`), and technology tags. |
+| `api/footer.js` | Update social media links (`LINKS` array), portfolio URLs, and brand text. |
 
-This project is configured to deploy directly to Vercel as Edge Functions.
+---
 
-1. Push your code to a GitHub repository.
-2. Go to your [Vercel Dashboard](https://vercel.com/dashboard) and click **Add New... > Project**.
-3. Import your GitHub repository.
-4. **Important:** Under Environment Variables, add your `GITHUB_TOKEN` so the profile stats can be fetched via the GitHub GraphQL/REST APIs.
+## 🚀 One-Click Vercel Deployment
+
+Deploy your own instance of Hazy Readme Cards to Vercel in seconds:
+
+1. Fork or push this repository to your GitHub account.
+2. Go to your [Vercel Dashboard](https://vercel.com/dashboard) and select **Add New Project**.
+3. Import your repository.
+4. *(Recommended)* Set an Environment Variable in Vercel:
+   * **Key**: `GITHUB_TOKEN`
+   * **Value**: Your Personal Access Token (PAT) with `read:user` and `repo` scope to bypass GitHub API rate limits.
 5. Click **Deploy**.
 
-## Customization
-
-To personalize the cards for your own profile, you will need to edit the source files in the `api/` directory:
-
-*   **`api/header.js`**: Update the `Kyrell Santillan` text, your roles, and the animated typing sentences in the `lines` array.
-*   **`api/profile.js`**: Change the `USERNAME` constant at the top of the file to your GitHub username. Update the `ABOUT_LINES` array with your own bio. Update the location and status tags.
-*   **`api/skills.js` / `api/stack.js`**: Update the `skills` array with your proficiency percentages and the `tags` array with your technology stack.
-*   **`api/footer.js`**: Update the `LINKS` array with your own URLs and update the brand name at the bottom right.
+---
 
 ## License
 
-This project is open-source and available under the MIT License. Feel free to fork, customize, and use it for your own GitHub profile!
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+<div align="center">
+  <sub>Built with care by <a href="https://github.com/Hazy019">Kyrell Santillan</a></sub>
+</div>
