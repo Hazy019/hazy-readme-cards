@@ -148,20 +148,18 @@ export default async function handler(req) {
 
   // ── LEFT: ABOUT ─────────────────────────────────────────────────────────────
   const ABOUT_LINES = [
-    { text: "I build systems the way architects design buildings —", bold: true },
-    { text: "failure modes first, elegance second.",                 bold: true },
+    { text: "Building resilient systems with human empathy —",       bold: true },
+    { text: "designed for reliability, crafted for real people.",    bold: true },
     { text: null },
-    { text: "Currently finishing my CS degree in the Philippines,",  bold: false },
-    { text: "with production deployments already in the field. I",   bold: false },
-    { text: "gravitate toward problems with real consequences —",     bold: false },
-    { text: "government systems, tools that run unattended,",        bold: false },
-    { text: "interfaces used by people who never asked for them.",    bold: false },
+    { text: "Computer Science graduate from the Philippines with",   bold: false },
+    { text: "active production deployments in the field. I build",   bold: false },
+    { text: "software that solves real human needs — from municipal", bold: false },
+    { text: "infrastructure to developer tools and clean applications.", bold: false },
     { text: null },
-    { text: "Security mindset first: every input hostile, every",    bold: false },
-    { text: "permission a liability, every data store a target.",     bold: false },
+    { text: "Defense-in-depth security mindset paired with modern UX.", bold: false },
     { text: "Pursuing Google's Professional Cybersecurity cert",     bold: false },
-    { text: "alongside UX design — how systems fail and how",        bold: false },
-    { text: "people think are a developer's sharpest edges.",        bold: false },
+    { text: "alongside UI/UX design — software is only as safe as",  bold: false },
+    { text: "its core, and as valuable as the experience it creates.", bold: false },
   ];
 
   const L_H = 15;
@@ -172,7 +170,7 @@ export default async function handler(req) {
     const y = L_SY + i * L_H;
     return `<text x="${L_X}" y="${y}"
       font-family="'Courier New',Consolas,monospace"
-      font-size="${line.bold ? 12.5 : 11}" font-weight="${line.bold ? "700" : "400"}"
+      font-size="${line.bold ? 12 : 11}" font-weight="${line.bold ? "700" : "400"}"
       fill="${line.bold ? c.text : c.muted}">${line.text}</text>`;
   }).join("\n");
 
@@ -224,11 +222,11 @@ export default async function handler(req) {
   const TAG_H = 20;
 
   const metaSVG = `
-  <rect x="${R_END - 186}" y="${TAG_Y}" width="88" height="${TAG_H}" rx="10"
+  <rect x="${R_END - 192}" y="${TAG_Y}" width="94" height="${TAG_H}" rx="10"
         fill="${c.tagABg}" stroke="${c.border}" stroke-width="0.5"/>
-  <text x="${R_END - 142}" y="${TAG_Y + 13}" text-anchor="middle"
+  <text x="${R_END - 145}" y="${TAG_Y + 13}" text-anchor="middle"
         font-family="'Courier New',Consolas,monospace"
-        font-size="9.5" font-weight="700" fill="${c.tagAFg}">CS Student</text>
+        font-size="9.5" font-weight="700" fill="${c.tagAFg}">CS Graduate</text>
   <rect x="${R_END - 88}" y="${TAG_Y}" width="88" height="${TAG_H}" rx="10"
         fill="${c.tagBBg}" stroke="${c.border}" stroke-width="0.5"/>
   <text x="${R_END - 44}" y="${TAG_Y + 13}" text-anchor="middle"
