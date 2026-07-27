@@ -82,6 +82,8 @@ export default async function handler(req) {
 <style>
   @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
   .ofw-dot { animation: pulse 2.2s ease-in-out infinite; }
+  a { cursor: pointer; text-decoration: none; }
+  a:hover rect { stroke: ${c.accent}; stroke-width: 1px; }
 </style>
 <g clip-path="url(#fc)">
 
