@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="92" viewBox="0 0 900 92">
+<defs>
+  <clipPath id="fc"><rect width="900" height="92" rx="8"/></clipPath>
+  <!-- Gradient on title bar: solid left → fades to bg right (depth — mirrors header) -->
+  <linearGradient id="fBarGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%"   stop-color="#12151b"/>
+    <stop offset="100%" stop-color="#0a0c10"/>
+  </linearGradient>
+</defs>
+<style>
+  @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+  .ofw-dot { animation: pulse 2.2s ease-in-out infinite; }
+</style>
+<g clip-path="url(#fc)">
+
+  <!-- Base background -->
+  <rect width="900" height="92" fill="#0a0c10"/>
+
+  <!-- ── TITLE BAR ──────────────────────────────────────────────────────── -->
+  <rect width="900" height="34" fill="url(#fBarGrad)"/>
+  <rect y="34" width="900" height="0.5" fill="#30363d" opacity="0.6"/>
+
+  <!-- Mac traffic-light dots (visual rhyme — mirrors header exactly) -->
+  <circle cx="22" cy="17" r="4.5" fill="#ff5f57"/>
+  <circle cx="38" cy="17" r="4.5" fill="#febc2e"/>
+  <circle cx="54" cy="17" r="4.5" fill="#28c840"/>
+  <text x="74" y="21"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="11" font-weight="600"
+        fill="#6e7681" letter-spacing="1">connect  ·  collaborate  ·  build</text>
+
+  <!-- ── LINK PILLS ────────────────────────────────────────────────────── -->
+  
+    <a href="https://linkedin.com/in/kyrell-santillan" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="35" y="52" width="87.6" height="26" rx="13"
+            fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="46" cy="65" r="2.5" fill="#39d353" opacity="0.65"/>
+      <text x="89.8" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#8b949e" letter-spacing="0.5">LinkedIn</text>
+    </a>
+    <a href="https://github.com/Hazy019" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="132.6" y="52" width="73.2" height="26" rx="13"
+            fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="143.6" cy="65" r="2.5" fill="#39d353" opacity="0.65"/>
+      <text x="180.2" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#8b949e" letter-spacing="0.5">GitHub</text>
+    </a>
+    <a href="https://discord.gg/Hazy019" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="215.8" y="52" width="80.4" height="26" rx="13"
+            fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="226.8" cy="65" r="2.5" fill="#39d353" opacity="0.65"/>
+      <text x="267" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#8b949e" letter-spacing="0.5">Discord</text>
+    </a>
+    <a href="https://hazy.codedevs.com" target="_blank">
+      <!-- Pill shape (rx=13 — rhymes with badge rx=9 in header) -->
+      <rect x="306.20000000000005" y="52" width="80.4" height="26" rx="13"
+            fill="#12151b" stroke="#30363d" stroke-width="0.5"/>
+      <!-- Accent dot prefix (visual rhyme: badge dot in header, bullet dots in profile) -->
+      <circle cx="317.20000000000005" cy="65" r="2.5" fill="#39d353" opacity="0.65"/>
+      <text x="357.40000000000003" y="69" text-anchor="middle"
+            font-family="'Courier New', Consolas, monospace"
+            font-size="10" font-weight="700"
+            fill="#8b949e" letter-spacing="0.5">Website</text>
+    </a>
+
+  <!-- ── OFW STATUS (pulsing dot — visual rhyme with badge dot in header) -->
+  <circle cx="410.6" cy="65" r="4" fill="#39d353" class="ofw-dot"/>
+  <text x="423.6" y="69"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="10.5" font-weight="700"
+        fill="#39d353" letter-spacing="1">OFW</text>
+
+  <!-- ── BRAND NAME (typography rhyme — mirrors hero name in header) ────── -->
+  <text x="871" y="69" text-anchor="end"
+        font-family="'Courier New', Consolas, monospace"
+        font-size="12" font-weight="800"
+        fill="#e6edf3" letter-spacing="0.5">Kyrell Santillan</text>
+
+  <!-- ── LEFT ACCENT STRIP (visual rhyme anchor — on every card) ──────── -->
+  <rect x="0" y="0" width="3" height="92" fill="#39d353" opacity="0.7"/>
+
+  <!-- Card border -->
+  <rect x="899" y="0" width="1" height="92" fill="#30363d"/>
+  <rect y="0" width="900" height="1" fill="#30363d"/>
+  <rect y="91" width="900" height="1" fill="#30363d"/>
+
+</g>
+</svg>

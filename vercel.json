@@ -1,0 +1,5 @@
+{
+  "version": 2,
+  "functions": { "api/*.js": { "maxDuration": 15 } },
+  "headers": [{ "source": "/api/(.*)", "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }] }]
+}
