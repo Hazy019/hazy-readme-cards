@@ -1,6 +1,6 @@
 export const config = { runtime: "edge" };
 
-const USERNAME = "Hazy019";
+const DEFAULT_USERNAME = "Hazy019";
 
 const FALLBACK = {
   stars: 4, commits: 265, prs: 0, issues: 0,
@@ -22,14 +22,14 @@ const LANG_COLORS = {
   default:    "#8b949e",
 };
 
-async function fetchStats() {
+async function fetchStats(username = DEFAULT_USERNAME) {
   const token = typeof process !== "undefined" ? process.env.GITHUB_TOKEN : undefined;
   const base = { "User-Agent": "hazy-readme/2.0", Accept: "application/vnd.github.v3+json" };
   const hdrs = token ? { ...base, Authorization: `Bearer ${token}` } : base;
 
   // ── GraphQL (authenticated) ────────────────────────────────────────────────
   if (token) {
-    const q = `{user(login:"${USERNAME}"){
+    const q = `{user(login:"${username}"){
       repositories(first:100,ownerAffiliations:OWNER,isFork:false){nodes{
         stargazerCount
         languages(first:8,orderBy:{field:SIZE,direction:DESC}){edges{size node{name}}}
@@ -68,10 +68,10 @@ async function fetchStats() {
   // ── REST (unauthenticated) ─────────────────────────────────────────────────
   try {
     const [rR, pR, iR, cR] = await Promise.allSettled([
-      fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&type=owner`, { headers: hdrs }),
-      fetch(`https://api.github.com/search/issues?q=author:${USERNAME}+type:pr&per_page=1`, { headers: hdrs }),
-      fetch(`https://api.github.com/search/issues?q=author:${USERNAME}+type:issue&per_page=1`, { headers: hdrs }),
-      fetch(`https://api.github.com/search/commits?q=author:${USERNAME}+committer-date:2026-01-01..2026-12-31&per_page=1`, {
+      fetch(`https://api.github.com/users/${username}/repos?per_page=100&type=owner`, { headers: hdrs }),
+      fetch(`https://api.github.com/search/issues?q=author:${username}+type:pr&per_page=1`, { headers: hdrs }),
+      fetch(`https://api.github.com/search/issues?q=author:${username}+type:issue&per_page=1`, { headers: hdrs }),
+      fetch(`https://api.github.com/search/commits?q=author:${username}+committer-date:2026-01-01..2026-12-31&per_page=1`, {
         headers: { ...hdrs, Accept: "application/vnd.github.cloak-preview+json" },
       }),
     ]);
@@ -97,7 +97,10 @@ async function fetchStats() {
 }
 
 export default async function handler(req) {
-  const dark = new URL(req.url).searchParams.get("theme") !== "light";
+  const url = new URL(req.url);
+  const dark = url.searchParams.get("theme") !== "light";
+  const envUser = typeof process !== "undefined" ? process.env.GITHUB_USERNAME : undefined;
+  const username = url.searchParams.get("username") || envUser || DEFAULT_USERNAME;
 
   // ── Design tokens ──────────────────────────────────────────────────────────
   const c = dark
@@ -130,7 +133,7 @@ export default async function handler(req) {
       tagBBg:  "#f3e8ff", tagBFg: "#7e22ce",
     };
 
-  const stats = await fetchStats();
+  const stats = await fetchStats(username);
   const { stars, commits, prs, issues, langs } = stats;
 
   // ── Layout constants ────────────────────────────────────────────────────────
